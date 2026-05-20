@@ -1,0 +1,82 @@
+{
+  "Common": {
+    "appName": "Kunjungan Tracker DPRD",
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "edit": "Ubah",
+    "add": "Tambah",
+    "search": "Cari",
+    "filter": "Filter",
+    "export": "Ekspor",
+    "back": "Kembali",
+    "submit": "Kirim",
+    "required": "Wajib diisi",
+    "yes": "Ya",
+    "no": "Tidak",
+    "status": "Status"
+  },
+  "Nav": {
+    "dashboard": "Dashboard",
+    "aspirasi": "Tracing Aspirasi",
+    "kunjungan": "Kunjungan",
+    "kunjunganBaru": "Input Kunjungan",
+    "kunjunganList": "Daftar Kunjungan",
+    "login": "Masuk",
+    "logout": "Keluar",
+    "settings": "Pengaturan"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "totalKunjungan": "Total Kunjungan",
+    "totalAspirasi": "Total Aspirasi",
+    "kunjunganPerBulan": "Kunjungan per Bulan",
+    "aspirasiPerBulan": "Aspirasi per Bulan",
+    "aspirasiPerStatus": "Aspirasi per Status",
+    "aspirasiPerSumber": "Aspirasi per Sumber",
+    "kelurahanDikunjungi": "Kelurahan Sudah Dikunjungi",
+    "kelurahanBelumDikunjungi": "Kelurahan Belum Dikunjungi"
+  },
+  "Aspirasi": {
+    "title": "Tracing Aspirasi",
+    "tambahAspirasi": "Tambah Aspirasi",
+    "detailAspirasi": "Detail Aspirasi",
+    "updateStatus": "Update Status",
+    "sumber": "Sumber Aspirasi",
+    "deskripsi": "Deskripsi",
+    "pelapor": "Pelapor",
+    "lampiran": "Lampiran",
+    "buktiTindakLanjut": "Bukti Tindak Lanjut",
+    "catatanTindakLanjut": "Catatan Tindak Lanjut",
+    "BELUM_DITINDAKLANJUTI": "Belum Ditindaklanjuti",
+    "SEDANG_DITINDAKLANJUTI": "Sedang Ditindaklanjuti",
+    "SUDAH_DITINDAKLANJUTI": "Sudah Ditindaklanjuti"
+  },
+  "Kunjungan": {
+    "title": "Kunjungan",
+    "inputKunjungan": "Input Kunjungan Baru",
+    "daftarKunjungan": "Daftar Kunjungan",
+    "tanggal": "Tanggal",
+    "jam": "Jam",
+    "jalan": "Jalan",
+    "kelurahan": "Kelurahan",
+    "kecamatan": "Kecamatan",
+    "kota": "Kota"
+  },
+  "Auth": {
+    "login": "Masuk",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "loginError": "Email atau kata sandi salah"
+  },
+  "Sumber": {
+    "LEMBAR_ASPIRASI_RESES": "Lembar Aspirasi Reses",
+    "LEMBAR_ASPIRASI_SOSPERDA": "Lembar Aspirasi Sosperda",
+    "ASPIRASI_PROPOSAL_LANGSUNG": "Aspirasi Proposal Langsung",
+    "KOORDINASI_DINAS_TERKAIT": "Koordinasi Dinas Terkait",
+    "USULAN_MUSRENBANG_DEWAN": "Usulan Musrenbang Dewan",
+    "CALL_CENTER": "Call Center"
+  }
+}

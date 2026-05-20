@@ -1,0 +1,82 @@
+{
+  "Common": {
+    "appName": "DPRD Visit Tracker",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "back": "Back",
+    "submit": "Submit",
+    "required": "Required",
+    "yes": "Yes",
+    "no": "No",
+    "status": "Status"
+  },
+  "Nav": {
+    "dashboard": "Dashboard",
+    "aspirasi": "Aspiration Tracking",
+    "kunjungan": "Visits",
+    "kunjunganBaru": "New Visit",
+    "kunjunganList": "Visit List",
+    "login": "Login",
+    "logout": "Logout",
+    "settings": "Settings"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "totalKunjungan": "Total Visits",
+    "totalAspirasi": "Total Aspirations",
+    "kunjunganPerBulan": "Visits per Month",
+    "aspirasiPerBulan": "Aspirations per Month",
+    "aspirasiPerStatus": "Aspirations by Status",
+    "aspirasiPerSumber": "Aspirations by Source",
+    "kelurahanDikunjungi": "Visited Villages",
+    "kelurahanBelumDikunjungi": "Unvisited Villages"
+  },
+  "Aspirasi": {
+    "title": "Aspiration Tracking",
+    "tambahAspirasi": "Add Aspiration",
+    "detailAspirasi": "Aspiration Detail",
+    "updateStatus": "Update Status",
+    "sumber": "Aspiration Source",
+    "deskripsi": "Description",
+    "pelapor": "Reporter",
+    "lampiran": "Attachments",
+    "buktiTindakLanjut": "Follow-up Evidence",
+    "catatanTindakLanjut": "Follow-up Notes",
+    "BELUM_DITINDAKLANJUTI": "Not Followed Up",
+    "SEDANG_DITINDAKLANJUTI": "In Progress",
+    "SUDAH_DITINDAKLANJUTI": "Completed"
+  },
+  "Kunjungan": {
+    "title": "Visits",
+    "inputKunjungan": "New Visit",
+    "daftarKunjungan": "Visit List",
+    "tanggal": "Date",
+    "jam": "Time",
+    "jalan": "Street",
+    "kelurahan": "Village",
+    "kecamatan": "District",
+    "kota": "City"
+  },
+  "Auth": {
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "loginError": "Invalid email or password"
+  },
+  "Sumber": {
+    "LEMBAR_ASPIRASI_RESES": "Reses Aspiration Sheet",
+    "LEMBAR_ASPIRASI_SOSPERDA": "Sosperda Aspiration Sheet",
+    "ASPIRASI_PROPOSAL_LANGSUNG": "Direct Proposal Aspiration",
+    "KOORDINASI_DINAS_TERKAIT": "Related Agency Coordination",
+    "USULAN_MUSRENBANG_DEWAN": "Council Musrenbang Proposal",
+    "CALL_CENTER": "Call Center"
+  }
+}

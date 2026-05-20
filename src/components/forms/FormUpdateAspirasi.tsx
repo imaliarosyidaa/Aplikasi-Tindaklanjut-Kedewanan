@@ -1,0 +1,135 @@
+'use client'
+import React, { useState } from 'react'
+
+import { useTranslations } from 'next-intl'
+import { useUpdateStatus } from '@/hooks/useAspirasi'
+import { Button } from '@/components/ui/button'
+import { Select } from '@/components/ui/select'
+import { FileUpload } from '@/components/ui/file-upload'
+import { Input } from '@/components/ui/input'
+import type { AspirasiStatus, Aspirasi } from '@/types'
+interface UploadedFile {
+  name: string
+  size: number
+  type: string
+  base64: string
+}
+interface FormUpdateAspirasiProps {
+  aspirasi: Aspirasi
+  onSuccess?: () => void
+}
+
+const statusOptions = [
+  { value: 'BELUM_DITINDAKLANJUTI', labelKey: 'BELUM_DITINDAKLANJUTI' },
+  { value: 'SEDANG_DITINDAKLANJUTI', labelKey: 'SEDANG_DITINDAKLANJUTI' },
+  { value: 'SUDAH_DITINDAKLANJUTI', labelKey: 'SUDAH_DITINDAKLANJUTI' },
+]
+
+export const FormUpdateAspirasi = ({
+  aspirasi,
+  onSuccess,
+}: FormUpdateAspirasiProps): React.ReactNode => {
+  const t = useTranslations('Aspirasi')
+  const c = useTranslations('Common')
+  const { trigger, isMutating } = useUpdateStatus(aspirasi.id)
+
+  const [status, setStatus] = useState<AspirasiStatus>(aspirasi.status)
+  const [catatan, setCatatan] = useState(aspirasi.catatan_tindak_lanjut ?? '')
+  const [buktiFiles, setBuktiFiles] = useState<UploadedFile[]>([])
+  const [kirimEmail, setKirimEmail] = useState(!!aspirasi.pelapor_email)
+  const [kirimTelepon, setKirimTelepon] = useState(!!aspirasi.pelapor_telepon)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await trigger({
+      status: status as AspirasiStatus,
+      catatan_tindak_lanjut: catatan,
+      bukti_tindak_lanjut: buktiFiles.map((f) => f.base64),
+      kirim_email: kirimEmail && !!aspirasi.pelapor_email,
+      kirim_telepon: kirimTelepon && !!aspirasi.pelapor_telepon,
+      pelapor_email: aspirasi.pelapor_email,
+      pelapor_telepon: aspirasi.pelapor_telepon,
+    })
+    if (onSuccess) onSuccess()
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Select
+        id="status"
+        label={c('status')}
+        options={statusOptions.map((opt) => ({
+          value: opt.value,
+          label: t(opt.labelKey),
+        }))}
+        value={status}
+        onChange={(e) => setStatus(e.target.value as AspirasiStatus)}
+      />
+
+      <div>
+        <label
+          htmlFor="catatan"
+          className="block text-sm font-medium text-[var(--color-text)] mb-1"
+        >
+          {t('catatanTindakLanjut')}
+        </label>
+        <textarea
+          id="catatan"
+          rows={3}
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+          value={catatan}
+          onChange={(e) => setCatatan(e.target.value)}
+          placeholder="Masukkan catatan tindak lanjut"
+        />
+      </div>
+
+      <FileUpload
+        label={t('buktiTindakLanjut')}
+        value={buktiFiles}
+        onChange={setBuktiFiles}
+      />
+
+      {status === 'SUDAH_DITINDAKLANJUTI' && (
+        <div className="rounded-lg border border-[var(--color-border)] p-4 space-y-3 bg-[var(--color-bg-secondary)]">
+          <p className="text-sm font-medium text-[var(--color-text)]">
+            Kirim notifikasi kepada warga
+          </p>
+          <div className="space-y-2">
+            {aspirasi.pelapor_email && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={kirimEmail}
+                  onChange={(e) => setKirimEmail(e.target.checked)}
+                  className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                />
+                <span className="text-sm text-[var(--color-text)]">
+                  Kirim ke email: {aspirasi.pelapor_email}
+                </span>
+              </label>
+            )}
+            {aspirasi.pelapor_telepon && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={kirimTelepon}
+                  onChange={(e) => setKirimTelepon(e.target.checked)}
+                  className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                />
+                <span className="text-sm text-[var(--color-text)]">
+                  Kirim ke telepon: {aspirasi.pelapor_telepon}
+                </span>
+              </label>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-end gap-3 pt-2">
+        <Button type="submit" disabled={isMutating}>
+          {isMutating ? c('loading') : c('save')}
+        </Button>
+      </div>
+    </form>
+  )
+}

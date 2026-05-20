@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant yellow (&:where(.yellow, .yellow *));
+@custom-variant ramadan (&:where(.ramadan, .ramadan *));
+@custom-variant valentine (&:where(.valentine, .valentine *));
+
+:root {
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #dbeafe;
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-text: #111827;
+  --color-text-secondary: #6b7280;
+  --color-border: #e5e7eb;
+  --color-sidebar: #1e293b;
+  --color-sidebar-text: #f1f5f9;
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #0ea5e9;
+}
+
+.dark {
+  --color-primary: #60a5fa;
+  --color-primary-hover: #3b82f6;
+  --color-primary-light: #1e3a5f;
+  --color-bg: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-border: #334155;
+  --color-sidebar: #0f172a;
+  --color-sidebar-text: #e2e8f0;
+}
+
+.yellow {
+  --color-primary: #eab308;
+  --color-primary-hover: #d4a407;
+  --color-primary-light: #fef9c3;
+  --color-bg: #fffbeb;
+  --color-bg-secondary: #fef3c7;
+  --color-text: #451a03;
+  --color-text-secondary: #92400e;
+  --color-border: #fde68a;
+}
+
+.ramadan {
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-primary-light: #d1fae5;
+  --color-bg: #f0fdf4;
+  --color-bg-secondary: #dcfce7;
+  --color-text: #052e16;
+  --color-text-secondary: #166534;
+  --color-border: #bbf7d0;
+}
+
+.valentine {
+  --color-primary: #e11d48;
+  --color-primary-hover: #be123c;
+  --color-primary-light: #ffe4e6;
+  --color-bg: #fff1f2;
+  --color-bg-secondary: #ffe4e6;
+  --color-text: #4c0519;
+  --color-text-secondary: #9f1239;
+  --color-border: #fecdd3;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
