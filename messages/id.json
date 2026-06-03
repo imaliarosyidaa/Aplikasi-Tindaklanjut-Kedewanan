@@ -21,18 +21,18 @@
   "Nav": {
     "dashboard": "Dashboard",
     "aspirasi": "Tracing Aspirasi",
-    "kunjungan": "Kunjungan",
-    "kunjunganBaru": "Input Kunjungan",
-    "kunjunganList": "Daftar Kunjungan",
+    "kunjungan": "Kegiatan",
+    "kunjunganBaru": "Input Kegiatan",
+    "kunjunganList": "Daftar Kegiatan",
     "login": "Masuk",
     "logout": "Keluar",
     "settings": "Pengaturan"
   },
   "Dashboard": {
     "title": "Dashboard",
-    "totalKunjungan": "Total Kunjungan",
+    "totalKunjungan": "Total Kegiatan",
     "totalAspirasi": "Total Aspirasi",
-    "kunjunganPerBulan": "Kunjungan per Bulan",
+    "kunjunganPerBulan": "Kegiatan per Bulan",
     "aspirasiPerBulan": "Aspirasi per Bulan",
     "aspirasiPerStatus": "Aspirasi per Status",
     "aspirasiPerSumber": "Aspirasi per Sumber",
@@ -55,9 +55,9 @@
     "SUDAH_DITINDAKLANJUTI": "Sudah Ditindaklanjuti"
   },
   "Kunjungan": {
-    "title": "Kunjungan",
-    "inputKunjungan": "Input Kunjungan Baru",
-    "daftarKunjungan": "Daftar Kunjungan",
+    "title": "Kegiatan",
+    "inputKunjungan": "Input Kegiatan Baru",
+    "daftarKunjungan": "Daftar Kegiatan",
     "tanggal": "Tanggal",
     "jam": "Jam",
     "jalan": "Jalan",

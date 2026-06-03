@@ -21,18 +21,18 @@
   "Nav": {
     "dashboard": "Dashboard",
     "aspirasi": "Aspiration Tracking",
-    "kunjungan": "Visits",
-    "kunjunganBaru": "New Visit",
-    "kunjunganList": "Visit List",
+    "kunjungan": "Activities",
+    "kunjunganBaru": "New Activity",
+    "kunjunganList": "Activity List",
     "login": "Login",
     "logout": "Logout",
     "settings": "Settings"
   },
   "Dashboard": {
     "title": "Dashboard",
-    "totalKunjungan": "Total Visits",
+    "totalKunjungan": "Total Activities",
     "totalAspirasi": "Total Aspirations",
-    "kunjunganPerBulan": "Visits per Month",
+    "kunjunganPerBulan": "Activities per Month",
     "aspirasiPerBulan": "Aspirations per Month",
     "aspirasiPerStatus": "Aspirations by Status",
     "aspirasiPerSumber": "Aspirations by Source",
@@ -55,9 +55,9 @@
     "SUDAH_DITINDAKLANJUTI": "Completed"
   },
   "Kunjungan": {
-    "title": "Visits",
-    "inputKunjungan": "New Visit",
-    "daftarKunjungan": "Visit List",
+    "title": "Activities",
+    "inputKunjungan": "New Activity",
+    "daftarKunjungan": "Activity List",
     "tanggal": "Date",
     "jam": "Time",
     "jalan": "Street",

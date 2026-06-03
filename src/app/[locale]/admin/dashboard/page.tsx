@@ -104,7 +104,7 @@ export default function AdminDashboardPage(): React.ReactNode {
           {t('title')}
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Statistik kunjungan dan aspirasi DPRD Jakarta Selatan
+          Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
         </p>
       </div>
 
@@ -118,7 +118,7 @@ export default function AdminDashboardPage(): React.ReactNode {
             onClick={() => setModalType('dikunjungi')}
           />
           <StatCard
-            title="Kecamatan Terbanyak"
+            title="Kecamatan yang Banyak Dikunjungi"
             value={`${palingBanyak?.jumlah_kunjungan ?? 0}x`}
             icon={<MdDirectionsWalk size={24} />}
             variant="primary"
@@ -129,7 +129,7 @@ export default function AdminDashboardPage(): React.ReactNode {
             }}
           />
           <StatCard
-            title="Kecamatan Tersedikit"
+            title="Kecamatan yang Kurang Dikunjungi"
             value={`${palingSedikit?.jumlah_kunjungan ?? 0}x`}
             icon={<MdPending size={24} />}
             variant="warning"
@@ -140,7 +140,7 @@ export default function AdminDashboardPage(): React.ReactNode {
             }}
           />
           <StatCard
-            title="Rata-rata Kunjungan/Kec"
+            title="Rata-rata Kegiatan/Kec"
             value={rataKunjungan}
             icon={<MdTrackChanges size={24} />}
             variant="success"
@@ -212,7 +212,7 @@ export default function AdminDashboardPage(): React.ReactNode {
       <Modal
         isOpen={modalType === 'dikunjungi'}
         onClose={() => setModalType(null)}
-        title="Status Kunjungan Kecamatan"
+        title="Status Kegiatan Kecamatan"
       >
         <div className="space-y-3">
           {kecamatanStats.map((k) => {
@@ -257,7 +257,7 @@ export default function AdminDashboardPage(): React.ReactNode {
               <p className="text-2xl font-bold text-[var(--color-text)]">
                 {selectedKecamatan?.jumlah_kunjungan ?? 0}
               </p>
-              <p className="text-xs text-[var(--color-text-secondary)]">Total Kunjungan</p>
+              <p className="text-xs text-[var(--color-text-secondary)]">Total Kegiatan</p>
             </div>
             <div className="rounded-lg bg-[var(--color-bg-secondary)] p-4 text-center">
               <p className="text-2xl font-bold text-[var(--color-text)]">
@@ -280,12 +280,12 @@ export default function AdminDashboardPage(): React.ReactNode {
       <Modal
         isOpen={modalType === 'rata-rata'}
         onClose={() => setModalType(null)}
-        title="Distribusi Kunjungan per Kecamatan"
+        title="Distribusi Kegiatan per Kecamatan"
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg bg-[var(--color-bg-secondary)] p-3 text-sm font-medium">
             <span className="text-[var(--color-text-secondary)]">Rata-rata</span>
-            <span className="text-[var(--color-text)]">{rataKunjungan} kunjungan/kec</span>
+            <span className="text-[var(--color-text)]">{rataKunjungan} kegiatan/kec</span>
           </div>
           {kecamatanStats.map((k) => (
             <div
@@ -295,7 +295,7 @@ export default function AdminDashboardPage(): React.ReactNode {
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-[var(--color-text)]">{k.kecamatan}</span>
                 <span className="text-sm text-[var(--color-text-secondary)]">
-                  {k.jumlah_kunjungan} kunjungan
+                  {k.jumlah_kunjungan} kegiatan
                 </span>
               </div>
               <div className="h-2 w-full rounded-full bg-[var(--color-bg-secondary)]">

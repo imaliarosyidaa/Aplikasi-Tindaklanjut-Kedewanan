@@ -13,7 +13,7 @@ export default function KunjunganBaruPage(): React.ReactNode {
           {t('inputKunjungan')}
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Input data kunjungan baru ke Jakarta Selatan
+          Input Kegiatan Kedewanan Bu Yuke
         </p>
       </div>
 

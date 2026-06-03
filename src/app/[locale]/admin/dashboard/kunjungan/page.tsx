@@ -47,10 +47,10 @@ export default function DashboardKunjunganPage(): React.ReactNode {
 
       <div>
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Kunjungan per Wilayah Dapil 8
+          Kegiatan per Wilayah Dapil 8
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Daftar kunjungan berdasarkan wilayah kecamatan
+          Daftar kegiatan berdasarkan wilayah kecamatan
         </p>
       </div>
 
@@ -62,7 +62,7 @@ export default function DashboardKunjunganPage(): React.ReactNode {
             </h2>
             {kunjungan.length === 0 ? (
               <p className="text-sm text-[var(--color-text-secondary)] ml-4">
-                Belum ada kunjungan
+                Belum ada kegiatan
               </p>
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
