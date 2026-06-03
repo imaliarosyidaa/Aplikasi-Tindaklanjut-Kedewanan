@@ -133,6 +133,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-01-15T10:00:00Z',
     updated_at: '2026-01-15T10:00:00Z',
+    kecamatan: 'Tebet',
+    kelurahan: 'Bukit Duri',
+    lokasi: 'RW 03 Bukit Duri',
   },
   {
     id: 'a-002',
@@ -154,6 +157,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-20',
     created_at: '2026-01-20T14:30:00Z',
     updated_at: '2026-02-10T09:00:00Z',
+    kecamatan: 'Mampang Prapatan',
+    kelurahan: 'Bangka',
+    lokasi: 'Posyandu Bangka',
   },
   {
     id: 'a-003',
@@ -175,6 +181,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-02-05',
     created_at: '2026-02-05T11:00:00Z',
     updated_at: '2026-03-20T16:00:00Z',
+    kecamatan: 'Pasar Minggu',
+    kelurahan: 'Pejaten Barat',
+    lokasi: 'Kelurahan Pejaten Barat',
   },
   {
     id: 'a-004',
@@ -196,6 +205,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-02-20',
     created_at: '2026-02-20T09:45:00Z',
     updated_at: '2026-03-05T13:30:00Z',
+    kecamatan: 'Pancoran',
+    kelurahan: 'Kalibata',
+    lokasi: 'SDN Kalibata 01',
   },
   {
     id: 'a-005',
@@ -217,6 +229,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-03-02',
     created_at: '2026-03-02T10:30:00Z',
     updated_at: '2026-03-28T15:00:00Z',
+    kecamatan: 'Jagakarsa',
+    kelurahan: 'Jagakarsa',
+    lokasi: 'RW 05 Jagakarsa',
   },
   {
     id: 'a-006',
@@ -237,6 +252,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-03-15T16:20:00Z',
     updated_at: '2026-03-15T16:20:00Z',
+    kecamatan: 'Jagakarsa',
+    kelurahan: 'Lenteng Agung',
+    lokasi: 'Jl. Raya Lenteng Agung',
   },
   {
     id: 'a-007',
@@ -258,6 +276,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-04-01',
     created_at: '2026-04-01T08:15:00Z',
     updated_at: '2026-04-15T11:00:00Z',
+    kecamatan: 'Pancoran',
+    kelurahan: 'Duren Tiga',
+    lokasi: 'Gang H. Saidi, Duren Tiga',
   },
   {
     id: 'a-008',
@@ -278,6 +299,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-04-22T13:00:00Z',
     updated_at: '2026-04-22T13:00:00Z',
+    kecamatan: 'Pasar Minggu',
+    kelurahan: 'Ragunan',
+    lokasi: 'TPS Liar Kelurahan Ragunan',
   },
   {
     id: 'a-009',
@@ -299,6 +323,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-05-05',
     created_at: '2026-05-05T10:30:00Z',
     updated_at: '2026-05-18T14:00:00Z',
+    kecamatan: 'Tebet',
+    kelurahan: 'Tebet Timur',
+    lokasi: 'Gudang proyek, Tebet Timur',
   },
   {
     id: 'a-010',
@@ -319,6 +346,9 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-05-12T15:45:00Z',
     updated_at: '2026-05-12T15:45:00Z',
+    kecamatan: 'Jagakarsa',
+    kelurahan: 'Srengseng Sawah',
+    lokasi: 'RPTRA Srengseng Sawah',
   },
 ]
 

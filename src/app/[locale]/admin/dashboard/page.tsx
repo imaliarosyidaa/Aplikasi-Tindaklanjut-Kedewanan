@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 
 import { useTranslations } from 'next-intl'
 import { useDashboardStats } from '@/hooks/useDashboard'
+import { useAspirasiList } from '@/hooks/useAspirasi'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { BarChart } from '@/components/dashboard/BarChart'
 import { PieChart } from '@/components/dashboard/PieChart'
@@ -17,13 +18,27 @@ import {
   MdLocationOn,
 } from 'react-icons/md'
 import type { KecamatanStat } from '@/types'
+
+const SUMBER_COLORS: Record<string, string> = {
+  LEMBAR_ASPIRASI_RESES: '#3b82f6',
+  LEMBAR_ASPIRASI_SOSPERDA: '#f97316',
+  ASPIRASI_PROPOSAL_LANGSUNG: '#22c55e',
+  KOORDINASI_DINAS_TERKAIT: '#a855f7',
+  USULAN_MUSRENBANG_DEWAN: '#ef4444',
+  CALL_CENTER: '#f59e0b',
+}
+
 export default function AdminDashboardPage(): React.ReactNode {
   const t = useTranslations('Dashboard')
+  const s = useTranslations('Sumber')
+  const aspirasiT = useTranslations('Aspirasi')
   const { data, isLoading } = useDashboardStats()
+  const { data: aspirasiList } = useAspirasiList()
   const router = useRouter()
 
   const [modalType, setModalType] = useState<string | null>(null)
   const [selectedKecamatan, setSelectedKecamatan] = useState<KecamatanStat | null>(null)
+  const [selectedSumber, setSelectedSumber] = useState<string | null>(null)
 
   const kecamatanStats = data?.kunjungan_per_kecamatan ?? []
   const totalKecamatan = kecamatanStats.length
@@ -79,7 +94,7 @@ export default function AdminDashboardPage(): React.ReactNode {
     (data?.aspirasi_per_sumber ?? []).map((a) => ({
       label: a.sumber,
       value: a.jumlah,
-      color: 'var(--color-primary)',
+      color: SUMBER_COLORS[a.sumber] ?? 'var(--color-primary)',
     }))
 
   return (
@@ -187,6 +202,10 @@ export default function AdminDashboardPage(): React.ReactNode {
         <PieChart
           title={t('aspirasiPerSumber')}
           data={aspirasiPerSumber}
+          onSliceClick={(label) => {
+            setSelectedSumber(label)
+            setModalType('sumber-detail')
+          }}
         />
       </div>
 
@@ -289,6 +308,56 @@ export default function AdminDashboardPage(): React.ReactNode {
               </div>
             </div>
           ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={modalType === 'sumber-detail' && !!selectedSumber}
+        onClose={() => {
+          setModalType(null)
+          setSelectedSumber(null)
+        }}
+        title={`Aspirasi — ${selectedSumber ? s(selectedSumber) : ''}`}
+      >
+        <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-[var(--color-bg-secondary)]">
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Lokasi</th>
+                <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Status</th>
+                <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Tanggal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {aspirasiList
+                .filter((a) => a.sumber === selectedSumber)
+                .map((a, i) => (
+                  <tr
+                    key={a.id}
+                    className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
+                  >
+                    <td className="px-4 py-3">{i + 1}</td>
+                    <td className="px-4 py-3">{a.kecamatan ?? '-'}</td>
+                    <td className="px-4 py-3">{a.kelurahan ?? '-'}</td>
+                    <td className="px-4 py-3">{a.lokasi ?? '-'}</td>
+                    <td className="px-4 py-3 text-center">
+                      <Badge status={a.status}>{aspirasiT(a.status)}</Badge>
+                    </td>
+                    <td className="px-4 py-3 text-center">{a.tanggal_dibuat}</td>
+                  </tr>
+                ))}
+              {aspirasiList.filter((a) => a.sumber === selectedSumber).length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
+                    Tidak ada data aspirasi
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </Modal>
     </div>

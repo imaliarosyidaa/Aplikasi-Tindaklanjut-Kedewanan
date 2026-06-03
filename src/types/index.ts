@@ -40,6 +40,9 @@ export interface Aspirasi {
   tanggal_dibuat: string
   created_at: string
   updated_at: string
+  kecamatan?: string
+  kelurahan?: string
+  lokasi?: string
 }
 
 export interface MasterKecamatan {
