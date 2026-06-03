@@ -80,7 +80,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             <Button onClick={() => setSubmitted(false)} variant="outline">
               Ajukan Lagi
             </Button>
-            <Link href="/dashboard/tiket-saya">
+            <Link href="/dashboard/laporan-saya">
               <Button>Cek Laporan Saya</Button>
             </Link>
           </div>
@@ -108,15 +108,15 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         </p>
       </div>
 
-      <Card className="p-6 max-w-2xl">
+      <Card className="p-6 max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="nik"
             label="Nomor Induk Kependudukan (NIK)"
             value={nik}
             onChange={(e) => setNik(e.target.value)}
-            required
           />
+          <p className="text-sm text-[var(--color-text-secondary)] -mt-2">*Boleh Dikosongkan</p>
           <Input
             id="nama"
             label="Nama Pelapor"
@@ -190,6 +190,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             value={lampiran}
             onChange={setLampiran}
           />
+          <p className="text-sm text-[var(--color-text-secondary)] -mt-2">*Boleh Dikosongkan</p>
           <Button type="submit" className="w-full" disabled={loading}>
             <MdSend size={18} className="mr-1" />
             {loading ? 'Mengirim...' : 'Kirim Aspirasi'}

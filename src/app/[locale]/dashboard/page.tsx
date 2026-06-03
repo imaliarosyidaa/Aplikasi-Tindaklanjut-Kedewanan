@@ -32,7 +32,7 @@ export default function DashboardHomePage(): React.ReactNode {
           </Card>
         </Link>
 
-        <Link href="/dashboard/tiket-saya">
+        <Link href="/dashboard/laporan-saya">
           <Card className="p-6 flex flex-col items-center text-center space-y-3 hover:border-[var(--color-primary)] transition-colors cursor-pointer">
             <div className="h-16 w-16 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
               <MdTrackChanges size={32} className="text-[var(--color-primary)]" />
