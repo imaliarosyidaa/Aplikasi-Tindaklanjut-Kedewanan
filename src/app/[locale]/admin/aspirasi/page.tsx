@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
 import { Link } from '@/routing'
-import { MdAdd, MdVisibility } from 'react-icons/md'
+import { MdVisibility } from 'react-icons/md'
 import type { Aspirasi } from '@/types'
 export default function AspirasiPage(): React.ReactNode {
   const t = useTranslations('Aspirasi')
@@ -26,21 +26,13 @@ export default function AspirasiPage(): React.ReactNode {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">
-            {t('title')}
-          </h1>
-          <p className="text-sm text-[var(--color-text-secondary)]">
-            Lacak status tindak lanjut aspirasi
-          </p>
-        </div>
-        <Link href="/admin/aspirasi/baru">
-          <Button>
-            <MdAdd size={18} className="mr-1" />
-            {t('tambahAspirasi')}
-          </Button>
-        </Link>
+      <div>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">
+          {t('title')}
+        </h1>
+        <p className="text-sm text-[var(--color-text-secondary)]">
+          Lacak status tindak lanjut aspirasi
+        </p>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">

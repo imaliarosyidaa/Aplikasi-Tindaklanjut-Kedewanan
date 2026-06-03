@@ -2,7 +2,7 @@
 
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
-import type { Aspirasi, AspirasiStatus, SumberAspirasi } from '@/types'
+import type { Aspirasi, AspirasiStatus } from '@/types'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -20,28 +20,6 @@ export function useAspirasi(id: string) {
     fetcher
   )
   return { data, error, isLoading }
-}
-
-interface CreateAspirasiPayload {
-  sumber: SumberAspirasi
-  deskripsi: string
-  pelapor_nama: string
-  pelapor_email: string
-  pelapor_telepon: string
-  lampiran?: string[]
-}
-
-export function useCreateAspirasi() {
-  const { trigger, isMutating } = useSWRMutation(
-    '/api/aspirasi',
-    (url, { arg }: { arg: CreateAspirasiPayload }) =>
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(arg),
-      }).then((res) => res.json())
-  )
-  return { trigger, isMutating }
 }
 
 interface UpdateStatusPayload {
