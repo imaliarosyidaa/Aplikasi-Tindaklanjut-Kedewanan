@@ -24,11 +24,16 @@ export async function POST(request: Request) {
     const { data, error } = await supabaseAdmin
       .from('aspirasi')
       .insert({
+        nik: body.nik ?? '',
         sumber: body.sumber,
         deskripsi: body.deskripsi,
         pelapor_nama: body.pelapor_nama,
         pelapor_email: body.pelapor_email ?? '',
         pelapor_telepon: body.pelapor_telepon ?? '',
+        kota: body.kota ?? '',
+        kecamatan: body.kecamatan ?? '',
+        kelurahan: body.kelurahan ?? '',
+        lokasi: body.lokasi ?? '',
         status: 'BELUM_DITINDAKLANJUTI',
         lampiran: body.lampiran ?? [],
         bukti_tindak_lanjut: [],

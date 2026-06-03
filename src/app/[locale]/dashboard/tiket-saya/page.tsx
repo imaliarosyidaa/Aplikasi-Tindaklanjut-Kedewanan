@@ -41,7 +41,7 @@ export default function TiketSayaPage(): React.ReactNode {
 
       <div>
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Tiket Saya
+          Laporan Saya
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Masukkan no. telepon Anda untuk melihat progres aspirasi

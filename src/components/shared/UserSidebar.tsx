@@ -24,7 +24,7 @@ export const UserSidebar = (): React.ReactNode => {
   const items: SidebarItem[] = [
     { href: '/dashboard', label: 'Beranda', icon: <MdDashboard size={20} /> },
     { href: '/dashboard/pengajuan-aspirasi', label: 'Pengajuan Aspirasi', icon: <MdAdd size={20} /> },
-    { href: '/dashboard/tiket-saya', label: 'Tiket Saya', icon: <MdTrackChanges size={20} /> },
+    { href: '/dashboard/laporan-saya', label: 'Laporan Saya', icon: <MdTrackChanges size={20} /> },
   ]
 
   return (

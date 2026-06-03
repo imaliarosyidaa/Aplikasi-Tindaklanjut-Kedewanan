@@ -116,6 +116,7 @@ export const dummyKunjungan: Kunjungan[] = [
 export const dummyAspirasi: Aspirasi[] = [
   {
     id: 'a-001',
+    nik: '3174011234560001',
     sumber: 'LEMBAR_ASPIRASI_RESES',
     deskripsi:
       'Warga mengusulkan perbaikan drainase di RW 03 Kelurahan Bukit Duri karena sering banjir saat hujan deras.',
@@ -133,12 +134,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-01-15T10:00:00Z',
     updated_at: '2026-01-15T10:00:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Tebet',
     kelurahan: 'Bukit Duri',
     lokasi: 'RW 03 Bukit Duri',
   },
   {
     id: 'a-002',
+    nik: '3174011234560002',
     sumber: 'LEMBAR_ASPIRASI_SOSPERDA',
     deskripsi:
       'Usulan pembangunan posyandu untuk melayani balita dan lansia di Kelurahan Bangka.',
@@ -157,12 +160,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-20',
     created_at: '2026-01-20T14:30:00Z',
     updated_at: '2026-02-10T09:00:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Mampang Prapatan',
     kelurahan: 'Bangka',
     lokasi: 'Posyandu Bangka',
   },
   {
     id: 'a-003',
+    nik: '3174011234560003',
     sumber: 'ASPIRASI_PROPOSAL_LANGSUNG',
     deskripsi:
       'Pengajuan bantuan modal usaha untuk kelompok UMKM binaan Kelurahan Pejaten Barat sebanyak 50 orang.',
@@ -181,12 +186,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-02-05',
     created_at: '2026-02-05T11:00:00Z',
     updated_at: '2026-03-20T16:00:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Pasar Minggu',
     kelurahan: 'Pejaten Barat',
     lokasi: 'Kelurahan Pejaten Barat',
   },
   {
     id: 'a-004',
+    nik: '3174011234560004',
     sumber: 'KOORDINASI_DINAS_TERKAIT',
     deskripsi:
       'Koordinasi dengan Dinas Pendidikan terkait renovasi 3 ruang kelas SDN Kalibata 01 yang rusak berat.',
@@ -205,12 +212,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-02-20',
     created_at: '2026-02-20T09:45:00Z',
     updated_at: '2026-03-05T13:30:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Pancoran',
     kelurahan: 'Kalibata',
     lokasi: 'SDN Kalibata 01',
   },
   {
     id: 'a-005',
+    nik: '3174011234560005',
     sumber: 'USULAN_MUSRENBANG_DEWAN',
     deskripsi:
       'Usulan pembangunan jalan lingkungan di RW 05 Kelurahan Jagakarsa yang masih berupa tanah.',
@@ -229,12 +238,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-03-02',
     created_at: '2026-03-02T10:30:00Z',
     updated_at: '2026-03-28T15:00:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Jagakarsa',
     kelurahan: 'Jagakarsa',
     lokasi: 'RW 05 Jagakarsa',
   },
   {
     id: 'a-006',
+    nik: '3174011234560006',
     sumber: 'CALL_CENTER',
     deskripsi:
       'Laporan warga tentang tiang listrik miring di Jl. Raya Lenteng Agung yang membahayakan pengguna jalan.',
@@ -252,12 +263,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-03-15T16:20:00Z',
     updated_at: '2026-03-15T16:20:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Jagakarsa',
     kelurahan: 'Lenteng Agung',
     lokasi: 'Jl. Raya Lenteng Agung',
   },
   {
     id: 'a-007',
+    nik: '3174011234560007',
     sumber: 'LEMBAR_ASPIRASI_RESES',
     deskripsi:
       'Permohonan penerangan jalan umum (PJU) di Gang H. Saidi, Kelurahan Duren Tiga yang gelap gulita.',
@@ -276,12 +289,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-04-01',
     created_at: '2026-04-01T08:15:00Z',
     updated_at: '2026-04-15T11:00:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Pancoran',
     kelurahan: 'Duren Tiga',
     lokasi: 'Gang H. Saidi, Duren Tiga',
   },
   {
     id: 'a-008',
+    nik: '3174011234560008',
     sumber: 'KOORDINASI_DINAS_TERKAIT',
     deskripsi:
       'Koordinasi penanganan sampah di TPS liar Kelurahan Ragunan dengan Dinas Lingkungan Hidup.',
@@ -299,12 +314,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-04-22T13:00:00Z',
     updated_at: '2026-04-22T13:00:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Pasar Minggu',
     kelurahan: 'Ragunan',
     lokasi: 'TPS Liar Kelurahan Ragunan',
   },
   {
     id: 'a-009',
+    nik: '3174011234560009',
     sumber: 'CALL_CENTER',
     deskripsi:
       'Pengaduan suara bising dari gudang proyek di dekat pemukiman warga Kelurahan Tebet Timur.',
@@ -323,12 +340,14 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-05-05',
     created_at: '2026-05-05T10:30:00Z',
     updated_at: '2026-05-18T14:00:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Tebet',
     kelurahan: 'Tebet Timur',
     lokasi: 'Gudang proyek, Tebet Timur',
   },
   {
     id: 'a-010',
+    nik: '3174011234560010',
     sumber: 'USULAN_MUSRENBANG_DEWAN',
     deskripsi:
       'Usulan pembangunan taman bermain anak di area RPTRA Kelurahan Srengseng Sawah untuk fasilitas publik.',
@@ -346,6 +365,7 @@ export const dummyAspirasi: Aspirasi[] = [
     tanggal_dibuat: '2026-01-15',
     created_at: '2026-05-12T15:45:00Z',
     updated_at: '2026-05-12T15:45:00Z',
+    kota: 'Jakarta Selatan',
     kecamatan: 'Jagakarsa',
     kelurahan: 'Srengseng Sawah',
     lokasi: 'RPTRA Srengseng Sawah',

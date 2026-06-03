@@ -78,6 +78,7 @@ model Kunjungan {
 
 model Aspirasi {
   id                   String          @id
+  nik                  String          @default("")
   sumber               SumberAspirasi
   deskripsi            String
   status               AspirasiStatus
@@ -92,6 +93,10 @@ model Aspirasi {
   jenis_reses          String
   tindak_lanjut        String
   tanggal_dibuat       DateTime
+  kota                 String          @default("")
+  kecamatan            String          @default("")
+  kelurahan            String          @default("")
+  lokasi               String          @default("")
   user_id              String?
   user                 User?           @relation(fields: [user_id], references: [id])
   created_at           DateTime        @default(now())

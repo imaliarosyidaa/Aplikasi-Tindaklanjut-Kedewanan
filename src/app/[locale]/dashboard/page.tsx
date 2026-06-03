@@ -38,7 +38,7 @@ export default function DashboardHomePage(): React.ReactNode {
               <MdTrackChanges size={32} className="text-[var(--color-primary)]" />
             </div>
             <h2 className="text-lg font-semibold text-[var(--color-text)]">
-              Tiket Saya
+              Laporan Saya
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)]">
               Lacak status aspirasi yang sudah diajukan

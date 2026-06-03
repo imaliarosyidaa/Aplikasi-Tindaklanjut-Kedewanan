@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
+import { FileUpload } from '@/components/ui/file-upload'
 import { Card } from '@/components/ui/card'
 import { Link } from '@/routing'
 import {
@@ -10,27 +12,53 @@ import {
   MdCheckCircle,
   MdArrowBack,
 } from 'react-icons/md'
+import { getKecamatanOptions, getKelurahanByKecamatanId } from '@/utils/masterWilayah'
+
+interface UploadedFile {
+  name: string
+  size: number
+  type: string
+  base64: string
+}
 
 export default function PengajuanAspirasiPage(): React.ReactNode {
+  const [nik, setNik] = useState('')
   const [nama, setNama] = useState('')
+  const [kota] = useState('Jakarta Selatan')
+  const [kecamatanId, setKecamatanId] = useState('')
+  const [kelurahanId, setKelurahanId] = useState('')
   const [alamat, setAlamat] = useState('')
   const [telepon, setTelepon] = useState('')
   const [pengaduan, setPengaduan] = useState('')
+  const [lampiran, setLampiran] = useState<UploadedFile[]>([])
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const kecamatanOptions = getKecamatanOptions()
+  const kelurahanOptions = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+
+    const kecamatan = kecamatanOptions.find(k => k.value === kecamatanId)?.label ?? ''
+    const kelurahan = kelurahanOptions.find(k => k.value === kelurahanId)?.label ?? ''
+
     await fetch('/api/aspirasi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        nik,
         sumber: 'CALL_CENTER',
         deskripsi: pengaduan,
         pelapor_nama: nama,
         pelapor_email: '',
         pelapor_telepon: telepon,
+        kota,
+        kecamatan,
+        kelurahan,
+        lokasi: alamat,
+        lampiran: lampiran.map(f => ({ name: f.name, size: f.size, type: f.type, base64: f.base64 })),
       }),
     })
     setLoading(false)
@@ -53,7 +81,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               Ajukan Lagi
             </Button>
             <Link href="/dashboard/tiket-saya">
-              <Button>Cek Tiket Saya</Button>
+              <Button>Cek Laporan Saya</Button>
             </Link>
           </div>
         </Card>
@@ -83,15 +111,51 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       <Card className="p-6 max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
+            id="nik"
+            label="Nomor Induk Kependudukan (NIK)"
+            value={nik}
+            onChange={(e) => setNik(e.target.value)}
+            required
+          />
+          <Input
             id="nama"
-            label="Nama Pengadu"
+            label="Nama Pelapor"
             value={nama}
             onChange={(e) => setNama(e.target.value)}
             required
           />
           <Input
+            id="kota"
+            label="Kota"
+            value={kota}
+            disabled
+          />
+          <Select
+            id="kecamatan"
+            label="Kecamatan"
+            placeholder="Pilih Kecamatan"
+            options={kecamatanOptions}
+            value={kecamatanId}
+            onChange={(e) => {
+              setKecamatanId(e.target.value)
+              setKelurahanId('')
+            }}
+            required
+          />
+          {kecamatanId && (
+            <Select
+              id="kelurahan"
+              label="Kelurahan"
+              placeholder="Pilih Kelurahan"
+              options={kelurahanOptions}
+              value={kelurahanId}
+              onChange={(e) => setKelurahanId(e.target.value)}
+              required
+            />
+          )}
+          <Input
             id="alamat"
-            label="Alamat"
+            label="Keterangan Tempat"
             value={alamat}
             onChange={(e) => setAlamat(e.target.value)}
             required
@@ -121,6 +185,11 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               placeholder="Tuliskan aspirasi Anda..."
             />
           </div>
+          <FileUpload
+            label="Upload Lampiran"
+            value={lampiran}
+            onChange={setLampiran}
+          />
           <Button type="submit" className="w-full" disabled={loading}>
             <MdSend size={18} className="mr-1" />
             {loading ? 'Mengirim...' : 'Kirim Aspirasi'}

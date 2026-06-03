@@ -24,6 +24,7 @@ export interface Kunjungan {
 
 export interface Aspirasi {
   id: string
+  nik?: string
   sumber: SumberAspirasi
   deskripsi: string
   status: AspirasiStatus
@@ -40,6 +41,7 @@ export interface Aspirasi {
   tanggal_dibuat: string
   created_at: string
   updated_at: string
+  kota?: string
   kecamatan?: string
   kelurahan?: string
   lokasi?: string
