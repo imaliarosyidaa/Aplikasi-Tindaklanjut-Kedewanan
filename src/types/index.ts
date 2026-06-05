@@ -12,6 +12,7 @@ export type SumberAspirasi =
 
 export interface Kunjungan {
   id: string
+  jenis_kegiatan?: string
   tanggal: string
   jam: string
   jalan: string

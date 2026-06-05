@@ -61,13 +61,14 @@ model Kelurahan {
 }
 
 model Kunjungan {
-  id           String    @id
-  tanggal      DateTime
-  jam          String
-  jalan        String
-  kelurahan_id String
-  kecamatan_id String
-  kota         String
+  id             String    @id
+  jenis_kegiatan String    @default("")
+  tanggal        DateTime
+  jam            String
+  jalan          String
+  kelurahan_id   String
+  kecamatan_id   String
+  kota           String
   kelurahan    Kelurahan @relation(fields: [kelurahan_id], references: [id])
   kecamatan    Kecamatan @relation(fields: [kecamatan_id], references: [id])
   kegiatans    Kegiatan[]

@@ -108,7 +108,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         </p>
       </div>
 
-      <Card className="p-6 max-w-2xl mx-auto bg-blue-50 border-blue-200">
+      <Card className="p-6 w-full mx-auto bg-blue-50 border-blue-200">
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="nik"

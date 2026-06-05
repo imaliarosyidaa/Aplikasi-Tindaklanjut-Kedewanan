@@ -11,12 +11,19 @@ import {
   getKelurahanByKecamatanId,
 } from '@/utils/masterWilayah'
 import { useRouter } from '@/routing'
+
+const JENIS_KEGIATAN_OPTIONS = [
+  { value: 'reses', label: 'Kegiatan reses (serap aspirasi masyarakat)' },
+  { value: 'sosperda', label: 'Sosperda (fungsi pengawasan produk hukum daerah DKI Jakarta)' },
+]
+
 export const FormKunjungan = (): React.ReactNode => {
   const t = useTranslations('Kunjungan')
   const c = useTranslations('Common')
   const router = useRouter()
   const { trigger, isMutating } = useCreateKunjungan()
 
+  const [jenisKegiatan, setJenisKegiatan] = useState('')
   const [tanggal, setTanggal] = useState('')
   const [jam, setJam] = useState('')
   const [jalan, setJalan] = useState('')
@@ -28,6 +35,7 @@ export const FormKunjungan = (): React.ReactNode => {
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
+    if (!jenisKegiatan) errs.jenisKegiatan = c('required')
     if (!tanggal) errs.tanggal = c('required')
     if (!jam) errs.jam = c('required')
     if (!jalan) errs.jalan = c('required')
@@ -42,6 +50,7 @@ export const FormKunjungan = (): React.ReactNode => {
     if (!validate()) return
 
     await trigger({
+      jenis_kegiatan: jenisKegiatan,
       tanggal,
       jam,
       jalan,
@@ -60,6 +69,16 @@ export const FormKunjungan = (): React.ReactNode => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <Select
+        id="jenis_kegiatan"
+        label="Jenis Kegiatan"
+        placeholder="Pilih jenis kegiatan"
+        options={JENIS_KEGIATAN_OPTIONS}
+        value={jenisKegiatan}
+        onChange={(e) => setJenisKegiatan(e.target.value)}
+        error={errors.jenisKegiatan}
+      />
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
           id="tanggal"

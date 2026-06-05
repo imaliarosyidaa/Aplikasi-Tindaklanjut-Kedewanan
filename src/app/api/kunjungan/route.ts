@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabaseAdmin
       .from('kunjungan')
       .insert({
+        jenis_kegiatan: body.jenis_kegiatan ?? '',
         tanggal: body.tanggal,
         jam: body.jam,
         jalan: body.jalan,
