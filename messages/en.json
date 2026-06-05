@@ -52,7 +52,8 @@
     "catatanTindakLanjut": "Follow-up Notes",
     "BELUM_DITINDAKLANJUTI": "Not Followed Up",
     "SEDANG_DITINDAKLANJUTI": "In Progress",
-    "SUDAH_DITINDAKLANJUTI": "Completed"
+    "SUDAH_DITINDAKLANJUTI": "Completed",
+    "TIDAK_BISA_DITINDAKLANJUTI": "Cannot Be Followed Up"
   },
   "Kunjungan": {
     "title": "Activities",

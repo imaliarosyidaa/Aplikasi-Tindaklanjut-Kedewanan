@@ -14,6 +14,7 @@ const statusVariants: Record<AspirasiStatus, string> = {
   BELUM_DITINDAKLANJUTI: 'bg-[var(--color-danger)]/10 text-[var(--color-danger)] border-[var(--color-danger)]/20',
   SEDANG_DITINDAKLANJUTI: 'bg-[var(--color-warning)]/10 text-[var(--color-warning)] border-[var(--color-warning)]/20',
   SUDAH_DITINDAKLANJUTI: 'bg-[var(--color-success)]/10 text-[var(--color-success)] border-[var(--color-success)]/20',
+  TIDAK_BISA_DITINDAKLANJUTI: 'bg-gray-500/10 text-gray-600 border-gray-500/20',
 }
 
 export const Badge = ({

@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -9,6 +10,7 @@ import { Link } from '@/routing'
 import { dummyAspirasi } from '@/data/dummy'
 import { useTranslations } from 'next-intl'
 import type { Aspirasi } from '@/types'
+import { getKecamatanOptions, getKelurahanByKecamatanId } from '@/utils/masterWilayah'
 import {
   MdSearch,
   MdArrowBack,
@@ -16,24 +18,39 @@ import {
   MdPerson,
 } from 'react-icons/md'
 
-export default function TiketSayaPage(): React.ReactNode {
+export default function LaporanSayaPage(): React.ReactNode {
   const s = useTranslations('Sumber')
+  const [kota] = useState('Jakarta Selatan')
+  const [kecamatanId, setKecamatanId] = useState('')
+  const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
   const [searched, setSearched] = useState(false)
   const [results, setResults] = useState<Aspirasi[]>([])
   const [selected, setSelected] = useState<Aspirasi | null>(null)
 
+  const kecamatanOptions = getKecamatanOptions()
+
   const handleSearch = () => {
     const q = query.toLowerCase().trim()
-    const filtered = dummyAspirasi.filter(
-      (a) =>
+    const kecamatanNama = kecamatanOptions.find(k => k.value === kecamatanId)?.label ?? ''
+    const kelurahanOptions = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
+    const kelurahanNama = kelurahanOptions.find(k => k.value === kelurahanId)?.label ?? ''
+
+    const filtered = dummyAspirasi.filter((a) => {
+      if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
+      if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
+      if (!q) return true
+      return (
         a.pelapor_nama.toLowerCase().includes(q) ||
         a.pelapor_telepon.includes(q)
-    )
+      )
+    })
     setResults(filtered)
     setSearched(true)
     setSelected(null)
   }
+
+  const hasFilter = kota || kecamatanId || kelurahanId || query.trim()
 
   return (
     <div className="space-y-6">
@@ -50,26 +67,63 @@ export default function TiketSayaPage(): React.ReactNode {
           Laporan Saya
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Cari laporan Anda berdasarkan nama atau no. telepon
+          Filter dan cari laporan Anda
         </p>
       </div>
 
-      <Card className="p-6 max-w-lg mx-auto">
-        <div className="flex gap-3 items-end">
-          <div className="flex-1">
-            <Input
-              id="query"
-              label="Nama atau No. Telepon"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Contoh: Siti atau 081234567890"
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
-            />
+      <Card className="p-6 w-full mx-auto bg-purple-50 border-purple-200">
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian Laporan</p>
+          <div className="flex flex-wrap gap-3">
+            <div className="min-w-[140px] flex-1">
+              <Input
+                id="kota"
+                label="Kota"
+                value={kota}
+                disabled
+              />
+            </div>
+            <div className="min-w-[160px] flex-1">
+              <Select
+                id="kecamatan"
+                label="Kecamatan"
+                placeholder="Semua Kecamatan"
+                options={kecamatanOptions}
+                value={kecamatanId}
+                onChange={(e) => {
+                  setKecamatanId(e.target.value)
+                  setKelurahanId('')
+                }}
+              />
+            </div>
+            <div className="min-w-[160px] flex-1">
+              <Select
+                id="kelurahan"
+                label="Kelurahan"
+                placeholder={kecamatanId ? 'Semua Kelurahan' : 'Pilih Kecamatan dulu'}
+                options={kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []}
+                value={kelurahanId}
+                onChange={(e) => setKelurahanId(e.target.value)}
+                disabled={!kecamatanId}
+              />
+            </div>
           </div>
-          <Button onClick={handleSearch} disabled={!query.trim()}>
-            <MdSearch size={18} className="mr-1" />
-            Cari
-          </Button>
+          <div className="flex gap-3 items-end">
+            <div className="flex-1">
+              <Input
+                id="query"
+                label="Nama atau No. Telepon"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Contoh: Siti atau 081234567890"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
+              />
+            </div>
+            <Button onClick={handleSearch} disabled={!hasFilter}>
+              <MdSearch size={18} className="mr-1" />
+              Cari
+            </Button>
+          </div>
         </div>
       </Card>
 

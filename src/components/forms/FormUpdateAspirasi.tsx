@@ -23,6 +23,7 @@ const statusOptions = [
   { value: 'BELUM_DITINDAKLANJUTI', labelKey: 'BELUM_DITINDAKLANJUTI' },
   { value: 'SEDANG_DITINDAKLANJUTI', labelKey: 'SEDANG_DITINDAKLANJUTI' },
   { value: 'SUDAH_DITINDAKLANJUTI', labelKey: 'SUDAH_DITINDAKLANJUTI' },
+  { value: 'TIDAK_BISA_DITINDAKLANJUTI', labelKey: 'TIDAK_BISA_DITINDAKLANJUTI' },
 ]
 
 export const FormUpdateAspirasi = ({

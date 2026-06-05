@@ -52,7 +52,8 @@
     "catatanTindakLanjut": "Catatan Tindak Lanjut",
     "BELUM_DITINDAKLANJUTI": "Belum Ditindaklanjuti",
     "SEDANG_DITINDAKLANJUTI": "Sedang Ditindaklanjuti",
-    "SUDAH_DITINDAKLANJUTI": "Sudah Ditindaklanjuti"
+    "SUDAH_DITINDAKLANJUTI": "Sudah Ditindaklanjuti",
+    "TIDAK_BISA_DITINDAKLANJUTI": "Tidak Bisa Ditindaklanjuti"
   },
   "Kunjungan": {
     "title": "Kegiatan",

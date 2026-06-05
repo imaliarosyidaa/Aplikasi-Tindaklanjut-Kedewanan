@@ -87,7 +87,9 @@ export default function AdminDashboardPage(): React.ReactNode {
           ? 'var(--color-danger)'
           : a.status === 'SEDANG_DITINDAKLANJUTI'
             ? 'var(--color-warning)'
-            : 'var(--color-success)',
+            : a.status === 'SUDAH_DITINDAKLANJUTI'
+              ? 'var(--color-success)'
+              : '#6b7280',
     }))
 
   const aspirasiPerSumber =

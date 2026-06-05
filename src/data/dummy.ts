@@ -249,7 +249,7 @@ export const dummyAspirasi: Aspirasi[] = [
     sumber: 'CALL_CENTER',
     deskripsi:
       'Laporan warga tentang tiang listrik miring di Jl. Raya Lenteng Agung yang membahayakan pengguna jalan.',
-    status: 'BELUM_DITINDAKLANJUTI',
+    status: 'TIDAK_BISA_DITINDAKLANJUTI',
     pelapor_nama: 'Rudi Hartono',
     pelapor_email: '',
     pelapor_telepon: '081234567895',
@@ -404,9 +404,10 @@ export const dummyDashboardStats: DashboardStats = {
     { bulan: 'Des', jumlah: 0 },
   ],
   aspirasi_per_status: [
-    { status: 'BELUM_DITINDAKLANJUTI', jumlah: 4 },
+    { status: 'BELUM_DITINDAKLANJUTI', jumlah: 3 },
     { status: 'SEDANG_DITINDAKLANJUTI', jumlah: 3 },
     { status: 'SUDAH_DITINDAKLANJUTI', jumlah: 3 },
+    { status: 'TIDAK_BISA_DITINDAKLANJUTI', jumlah: 1 },
   ],
   aspirasi_per_sumber: [
     { sumber: 'LEMBAR_ASPIRASI_RESES' as SumberAspirasi, jumlah: 2 },
