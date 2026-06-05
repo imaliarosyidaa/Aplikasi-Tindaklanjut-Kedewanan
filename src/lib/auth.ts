@@ -4,6 +4,7 @@ import { dummyUsers } from '@/data/dummyUsers'
 import type { UserRole } from '@/data/dummyUsers'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: 'credentials',
