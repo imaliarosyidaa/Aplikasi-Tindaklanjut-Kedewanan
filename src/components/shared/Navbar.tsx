@@ -16,6 +16,7 @@ export const Navbar = (): React.ReactNode => {
     { href: '/admin/aspirasi', label: t('aspirasi') },
     { href: '/admin/kunjungan/list', label: t('kunjunganList') },
     { href: '/admin/kunjungan/baru', label: t('kunjunganBaru') },
+    { href: '/admin/relawan', label: t('relawan') },
   ]
 
   return (

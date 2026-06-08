@@ -4,7 +4,7 @@ import { ThemeProvider } from 'next-themes'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Kunjungan Tracker DPRD',
+  title: 'Aplikasi Tindaklanjut Kedewanan',
   description: 'Dashboard tracker kunjungan dan aspirasi DPRD Jakarta Selatan',
 }
 

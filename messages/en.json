@@ -1,6 +1,6 @@
 {
   "Common": {
-    "appName": "DPRD Visit Tracker",
+    "appName": "Follow-up Application",
     "loading": "Loading...",
     "error": "An error occurred",
     "save": "Save",
@@ -24,6 +24,7 @@
     "kunjungan": "Activities",
     "kunjunganBaru": "New Activity",
     "kunjunganList": "Activity List",
+    "relawan": "Volunteer Data",
     "login": "Login",
     "logout": "Logout",
     "settings": "Settings"

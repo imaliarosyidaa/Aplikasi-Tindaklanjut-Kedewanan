@@ -44,8 +44,9 @@ export default function LoginPage(): React.ReactNode {
     <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg)]">
       <Card className="w-full max-w-md p-8">
         <div className="mb-6 text-center">
-          <div className="flex justify-center mb-2">
-            <MdDirectionsWalk size={40} className="text-[var(--color-primary)]" />
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <img src="/Lambang_DPRD_Generik.png" alt="Logo" className="h-24 w-auto" />
+            <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo Text" className="h-24 w-auto" />
           </div>
           <h1 className="text-xl font-bold text-[var(--color-text)]">
             {t('login')}

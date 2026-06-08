@@ -1,6 +1,6 @@
 {
   "Common": {
-    "appName": "Kunjungan Tracker DPRD",
+    "appName": "Aplikasi Tindaklanjut Kedewanan",
     "loading": "Memuat...",
     "error": "Terjadi kesalahan",
     "save": "Simpan",
@@ -24,6 +24,7 @@
     "kunjungan": "Kegiatan",
     "kunjunganBaru": "Input Kegiatan",
     "kunjunganList": "Daftar Kegiatan",
+    "relawan": "Data Relawan",
     "login": "Masuk",
     "logout": "Keluar",
     "settings": "Pengaturan"

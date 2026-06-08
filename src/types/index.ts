@@ -19,6 +19,7 @@ export interface Kunjungan {
   kelurahan: string
   kecamatan: string
   kota: string
+  link_gmaps?: string
   created_at: string
   updated_at: string
 }
@@ -77,6 +78,33 @@ export interface DashboardStats {
   kelurahan_belum_dikunjungi: number
   total_kelurahan: number
   kunjungan_per_kecamatan: KecamatanStat[]
+}
+
+export type JenisKelamin = 'LAKI_LAKI' | 'PEREMPUAN'
+
+export type PosisiRelawan =
+  | 'KOORDINATOR_RW'
+  | 'KOORDINATOR_RT'
+  | 'KOORDINATOR_KELURAHAN'
+  | 'KOORDINATOR_KECAMATAN'
+  | 'FKDM'
+  | 'LMK'
+  | 'TOKOH_MASYARAKAT'
+  | 'PROFESIONAL'
+
+export interface Relawan {
+  id: string
+  nik: string
+  nama: string
+  no_telepon: string
+  jenis_kelamin: JenisKelamin
+  kota_kabupaten: string
+  kecamatan: string
+  kelurahan: string
+  alamat: string
+  posisi: PosisiRelawan
+  created_at: string
+  updated_at: string
 }
 
 export interface Kegiatan {

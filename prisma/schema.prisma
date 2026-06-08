@@ -69,6 +69,7 @@ model Kunjungan {
   kelurahan_id   String
   kecamatan_id   String
   kota           String
+  link_gmaps     String    @default("")
   kelurahan    Kelurahan @relation(fields: [kelurahan_id], references: [id])
   kecamatan    Kecamatan @relation(fields: [kecamatan_id], references: [id])
   kegiatans    Kegiatan[]
@@ -105,6 +106,39 @@ model Aspirasi {
   updated_at           DateTime        @updatedAt
 
   @@map("aspirasis")
+}
+
+enum JenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum PosisiRelawan {
+  KOORDINATOR_RW
+  KOORDINATOR_RT
+  KOORDINATOR_KELURAHAN
+  KOORDINATOR_KECAMATAN
+  FKDM
+  LMK
+  TOKOH_MASYARAKAT
+  PROFESIONAL
+}
+
+model Relawan {
+  id             String        @id @default(cuid())
+  nik            String        @unique
+  nama           String
+  no_telepon     String
+  jenis_kelamin  JenisKelamin
+  kota_kabupaten String
+  kecamatan      String
+  kelurahan      String
+  alamat         String
+  posisi         PosisiRelawan
+  created_at     DateTime      @default(now()) @map("created_at")
+  updated_at     DateTime      @updatedAt @map("updated_at")
+
+  @@map("relawans")
 }
 
 model Kegiatan {

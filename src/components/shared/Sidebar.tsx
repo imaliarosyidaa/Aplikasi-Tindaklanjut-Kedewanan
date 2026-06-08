@@ -10,6 +10,7 @@ import {
   MdDirectionsWalk,
   MdAddLocation,
   MdList,
+  MdGroup,
 } from 'react-icons/md'
 import { cn } from '@/utils/cn'
 interface SidebarItem {
@@ -27,6 +28,7 @@ export const Sidebar = (): React.ReactNode => {
     { href: '/admin/aspirasi', label: t('aspirasi'), icon: <MdTrackChanges size={20} /> },
     { href: '/admin/kunjungan/list', label: t('kunjunganList'), icon: <MdList size={20} /> },
     { href: '/admin/kunjungan/baru', label: t('kunjunganBaru'), icon: <MdAddLocation size={20} /> },
+    { href: '/admin/relawan', label: t('relawan'), icon: <MdGroup size={20} /> },
   ]
 
   return (

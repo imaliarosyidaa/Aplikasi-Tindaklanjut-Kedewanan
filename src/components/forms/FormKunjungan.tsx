@@ -29,6 +29,7 @@ export const FormKunjungan = (): React.ReactNode => {
   const [jalan, setJalan] = useState('')
   const [kecamatan, setKecamatan] = useState('')
   const [kelurahan, setKelurahan] = useState('')
+  const [linkGmaps, setLinkGmaps] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const kelurahanOptions = kecamatan ? getKelurahanByKecamatanId(kecamatan) : []
@@ -57,6 +58,7 @@ export const FormKunjungan = (): React.ReactNode => {
       kelurahan: getKelurahanByKecamatanId(kecamatan).find((k) => k.value === kelurahan)?.label ?? kelurahan,
       kecamatan: getKecamatanOptions().find((k) => k.value === kecamatan)?.label ?? kecamatan,
       kota: 'Jakarta Selatan',
+      link_gmaps: linkGmaps,
     })
 
     router.push('/kunjungan/list')
@@ -133,6 +135,14 @@ export const FormKunjungan = (): React.ReactNode => {
         label={t('kota')}
         value="Jakarta Selatan"
         disabled
+      />
+
+      <Input
+        id="link_gmaps"
+        label="Titik Lokasi (Google Maps)"
+        placeholder="https://maps.google.com/?q=..."
+        value={linkGmaps}
+        onChange={(e) => setLinkGmaps(e.target.value)}
       />
 
       <div className="flex justify-end gap-3 pt-4">

@@ -31,6 +31,7 @@ export async function POST(request: Request) {
         kelurahan: body.kelurahan,
         kecamatan: body.kecamatan,
         kota: body.kota ?? 'Jakarta Selatan',
+        link_gmaps: body.link_gmaps ?? '',
       })
       .select()
       .single()
