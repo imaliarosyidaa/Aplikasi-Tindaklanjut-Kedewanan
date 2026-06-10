@@ -26,7 +26,7 @@ export const Sidebar = (): React.ReactNode => {
   const items: SidebarItem[] = [
     { href: '/admin/dashboard', label: t('dashboard'), icon: <MdDashboard size={20} /> },
     { href: '/admin/aspirasi', label: t('aspirasi'), icon: <MdTrackChanges size={20} /> },
-    { href: '/admin/kunjungan/list', label: t('kunjunganList'), icon: <MdList size={20} /> },
+    { href: '/admin/kunjungan', label: t('kunjunganList'), icon: <MdList size={20} /> },
     { href: '/admin/kunjungan/baru', label: t('kunjunganBaru'), icon: <MdAddLocation size={20} /> },
     { href: '/admin/relawan', label: t('relawan'), icon: <MdGroup size={20} /> },
   ]

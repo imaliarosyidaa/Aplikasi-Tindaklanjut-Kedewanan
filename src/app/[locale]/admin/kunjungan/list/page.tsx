@@ -1,5 +1,7 @@
 'use client'
 import React, { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import useSWR from 'swr'
 
 import { useTranslations } from 'next-intl'
 import { useKunjunganList } from '@/hooks/useKunjungan'
@@ -13,22 +15,37 @@ import {
   MdAccessTime,
   MdImage,
   MdChevronRight,
+  MdArrowBack,
 } from 'react-icons/md'
-import {
-  MASTER_WILAYAH,
-  type KecamatanData,
-} from '@/utils/masterWilayah'
 import type { Kunjungan, Kegiatan } from '@/types'
 
-export default function KunjunganListPage(): React.ReactNode {
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+interface KecamatanItem {
+  id: string
+  nama: string
+  kelurahan: { id: string; nama: string }[]
+}
+
+export default function KunjunganListPage() {
   const t = useTranslations('Kunjungan')
-  const { data: kunjunganList, isLoading } = useKunjunganList()
+  const searchParams = useSearchParams()
+  const kota = searchParams.get('kota')
+
+  const { data: kunjunganList, isLoading: kunjunganLoading } = useKunjunganList()
+  const { data: kecamatanData } = useSWR<KecamatanItem[]>(
+    kota ? `/api/kecamatan?kota=${encodeURIComponent(kota)}` : null,
+    fetcher
+  )
+
   const [selectedKecamatan, setSelectedKecamatan] = useState<string | null>(null)
   const [selectedKelurahan, setSelectedKelurahan] = useState<string | null>(null)
   const { data: kegiatanList } = useKegiatanByKelurahan(selectedKelurahan)
 
+  const kecamatanList = kecamatanData ?? []
+
   const activeKecamatan = selectedKecamatan
-    ? MASTER_WILAYAH.find((k) => k.nama === selectedKecamatan) ?? null
+    ? kecamatanList.find((k) => k.nama === selectedKecamatan) ?? null
     : null
 
   const getKunjunganByKelurahan = (kelurahan: string): Kunjungan[] => {
@@ -37,9 +54,9 @@ export default function KunjunganListPage(): React.ReactNode {
     )
   }
 
-  const getKelurahanVisited = (kecamatan: KecamatanData): number => {
+  const getKelurahanVisited = (kec: KecamatanItem): number => {
     const visited = new Set<string>()
-    kecamatan.kelurahan.forEach((kel) => {
+    kec.kelurahan.forEach((kel) => {
       if (getKunjunganByKelurahan(kel.nama).length > 0) {
         visited.add(kel.nama)
       }
@@ -71,7 +88,17 @@ export default function KunjunganListPage(): React.ReactNode {
     return days[d.getDay()]
   }
 
-  if (isLoading) {
+  if (!kota) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Link href="/admin/kunjungan" className="text-[var(--color-primary)] hover:underline">
+          Pilih kota terlebih dahulu
+        </Link>
+      </div>
+    )
+  }
+
+  if (kunjunganLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-[var(--color-text-secondary)]">Memuat...</p>
@@ -83,17 +110,27 @@ export default function KunjunganListPage(): React.ReactNode {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Link
+          href="/admin/kunjungan"
+          className="inline-flex items-center gap-1 text-sm text-[var(--color-primary)] hover:underline"
+        >
+          <MdArrowBack size={16} />
+          Ganti Kota
+        </Link>
+      </div>
+
       <div>
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          {t('daftarKunjungan')}
+          {t('daftarKunjungan')} - {kota}
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)]">
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Daftar kunjungan yang telah diinput
         </p>
       </div>
 
       <div className="flex flex-wrap gap-2 border-b border-[var(--color-border)] pb-2">
-        {MASTER_WILAYAH.map((kec) => {
+        {kecamatanList.map((kec) => {
           const visited = getKelurahanVisited(kec)
           const isActive = selectedKecamatan === kec.nama
           return (
