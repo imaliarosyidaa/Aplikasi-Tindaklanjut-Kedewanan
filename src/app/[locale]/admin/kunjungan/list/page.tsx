@@ -1,6 +1,5 @@
 'use client'
 import React, { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import useSWR from 'swr'
 
 import { useTranslations } from 'next-intl'
@@ -15,7 +14,6 @@ import {
   MdAccessTime,
   MdImage,
   MdChevronRight,
-  MdArrowBack,
 } from 'react-icons/md'
 import type { Kunjungan, Kegiatan } from '@/types'
 
@@ -29,21 +27,14 @@ interface KecamatanItem {
 
 export default function KunjunganListPage() {
   const t = useTranslations('Kunjungan')
-  const searchParams = useSearchParams()
-  const kota = searchParams.get('kota')
-
   const { data: kunjunganList, isLoading: kunjunganLoading } = useKunjunganList()
-  const { data: kecamatanData } = useSWR<KecamatanItem[]>(
-    kota ? `/api/kecamatan?kota=${encodeURIComponent(kota)}` : null,
-    fetcher
-  )
+  const { data: kecamatanData } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
 
   const [selectedKecamatan, setSelectedKecamatan] = useState<string | null>(null)
   const [selectedKelurahan, setSelectedKelurahan] = useState<string | null>(null)
   const { data: kegiatanList } = useKegiatanByKelurahan(selectedKelurahan)
 
   const kecamatanList = kecamatanData ?? []
-
   const activeKecamatan = selectedKecamatan
     ? kecamatanList.find((k) => k.nama === selectedKecamatan) ?? null
     : null
@@ -88,16 +79,6 @@ export default function KunjunganListPage() {
     return days[d.getDay()]
   }
 
-  if (!kota) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Link href="/admin/kunjungan" className="text-[var(--color-primary)] hover:underline">
-          Pilih kota terlebih dahulu
-        </Link>
-      </div>
-    )
-  }
-
   if (kunjunganLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -110,19 +91,9 @@ export default function KunjunganListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link
-          href="/admin/kunjungan"
-          className="inline-flex items-center gap-1 text-sm text-[var(--color-primary)] hover:underline"
-        >
-          <MdArrowBack size={16} />
-          Ganti Kota
-        </Link>
-      </div>
-
       <div>
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          {t('daftarKunjungan')} - {kota}
+          {t('daftarKunjungan')}
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Daftar kunjungan yang telah diinput

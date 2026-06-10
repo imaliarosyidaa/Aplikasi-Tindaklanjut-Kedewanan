@@ -79,6 +79,10 @@ export const MASTER_WILAYAH: KecamatanData[] = [
   },
 ];
 
+export function getKotaOptions() {
+  return MASTER_WILAYAH.map((k) => ({ value: k.id, label: k.nama }))
+}
+
 export function getKecamatanOptions() {
   return MASTER_WILAYAH.map((k) => ({ value: k.id, label: k.nama }))
 }

@@ -3,12 +3,11 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const kotaNama = searchParams.get('kota')
+  const kotaId = searchParams.get('kota')
 
   const where: Record<string, unknown> = {}
-  if (kotaNama) {
-    const kota = await prisma.kota.findFirst({ where: { nama: kotaNama } })
-    if (kota) where.kota_id = kota.id
+  if (kotaId) {
+    where.kota_id = kotaId
   }
 
   const data = await prisma.kecamatan.findMany({

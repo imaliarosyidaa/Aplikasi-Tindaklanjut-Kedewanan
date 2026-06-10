@@ -1,16 +1,30 @@
 'use client'
 import React, { useState } from 'react'
+import useSWR from 'swr'
 
 import { useTranslations } from 'next-intl'
 import { useCreateKunjungan } from '@/hooks/useKunjungan'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import {
-  getKecamatanOptions,
-  getKelurahanByKecamatanId,
-} from '@/utils/masterWilayah'
 import { useRouter } from '@/routing'
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+interface KotaItem {
+  id: string
+  nama: string
+}
+
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 
 const JENIS_KEGIATAN_OPTIONS = [
   { value: 'reses', label: 'Kegiatan reses (serap aspirasi masyarakat)' },
@@ -27,12 +41,29 @@ export const FormKunjungan = (): React.ReactNode => {
   const [tanggal, setTanggal] = useState('')
   const [jam, setJam] = useState('')
   const [jalan, setJalan] = useState('')
-  const [kecamatan, setKecamatan] = useState('')
-  const [kelurahan, setKelurahan] = useState('')
+  const [kotaId, setKotaId] = useState('')
+  const [kecamatanId, setKecamatanId] = useState('')
+  const [kelurahanId, setKelurahanId] = useState('')
   const [linkGmaps, setLinkGmaps] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const kelurahanOptions = kecamatan ? getKelurahanByKecamatanId(kecamatan) : []
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
+    fetcher
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher
+  )
+
+  const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
+  const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
+  const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
+
+  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
@@ -40,8 +71,9 @@ export const FormKunjungan = (): React.ReactNode => {
     if (!tanggal) errs.tanggal = c('required')
     if (!jam) errs.jam = c('required')
     if (!jalan) errs.jalan = c('required')
-    if (!kecamatan) errs.kecamatan = c('required')
-    if (!kelurahan) errs.kelurahan = c('required')
+    if (!kotaId) errs.kota = c('required')
+    if (!kecamatanId) errs.kecamatan = c('required')
+    if (!kelurahanId) errs.kelurahan = c('required')
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -55,18 +87,24 @@ export const FormKunjungan = (): React.ReactNode => {
       tanggal,
       jam,
       jalan,
-      kelurahan: getKelurahanByKecamatanId(kecamatan).find((k) => k.value === kelurahan)?.label ?? kelurahan,
-      kecamatan: getKecamatanOptions().find((k) => k.value === kecamatan)?.label ?? kecamatan,
-      kota: 'Jakarta Selatan',
+      kelurahan: kelurahanMap[kelurahanId],
+      kecamatan: kecamatanMap[kecamatanId],
+      kota: kotaMap[kotaId],
       link_gmaps: linkGmaps,
     })
 
-    router.push('/kunjungan/list')
+    router.push('/admin/kunjungan/list')
+  }
+
+  const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setKotaId(e.target.value)
+    setKecamatanId('')
+    setKelurahanId('')
   }
 
   const handleKecamatanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setKecamatan(e.target.value)
-    setKelurahan('')
+    setKecamatanId(e.target.value)
+    setKelurahanId('')
   }
 
   return (
@@ -110,31 +148,35 @@ export const FormKunjungan = (): React.ReactNode => {
       />
 
       <Select
+        id="kota"
+        label={t('kota')}
+        placeholder="Pilih kota"
+        options={kotaOptions}
+        value={kotaId}
+        onChange={handleKotaChange}
+        error={errors.kota}
+      />
+
+      <Select
         id="kecamatan"
         label={t('kecamatan')}
-        placeholder="Pilih kecamatan"
-        options={getKecamatanOptions()}
-        value={kecamatan}
+        placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
+        options={kecamatanOptions}
+        value={kecamatanId}
         onChange={handleKecamatanChange}
         error={errors.kecamatan}
+        disabled={!kotaId}
       />
 
       <Select
         id="kelurahan"
         label={t('kelurahan')}
-        placeholder={kecamatan ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
+        placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
         options={kelurahanOptions}
-        value={kelurahan}
-        onChange={(e) => setKelurahan(e.target.value)}
+        value={kelurahanId}
+        onChange={(e) => setKelurahanId(e.target.value)}
         error={errors.kelurahan}
-        disabled={!kecamatan}
-      />
-
-      <Input
-        id="kota"
-        label={t('kota')}
-        value="Jakarta Selatan"
-        disabled
+        disabled={!kecamatanId}
       />
 
       <Input
