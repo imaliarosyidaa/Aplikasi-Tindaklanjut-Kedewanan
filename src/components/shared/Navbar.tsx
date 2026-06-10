@@ -6,6 +6,7 @@ import { usePathname } from '@/routing'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { Link } from '@/routing'
 import { MdMenu, MdClose, MdLogout } from 'react-icons/md'
+import { signOut } from 'next-auth/react'
 export const Navbar = (): React.ReactNode => {
   const t = useTranslations('Nav')
   const pathname = usePathname()
@@ -47,7 +48,13 @@ export const Navbar = (): React.ReactNode => {
 
         <div className="flex items-center gap-2">
           <ThemeSwitcher />
-          <button className="hidden rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:block">
+          <button
+            onClick={() => {
+              const locale = pathname.split('/')[1]
+              signOut({ callbackUrl: `/${locale}/login` })
+            }}
+            className="hidden rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:block"
+          >
             <MdLogout size={20} />
           </button>
           <button

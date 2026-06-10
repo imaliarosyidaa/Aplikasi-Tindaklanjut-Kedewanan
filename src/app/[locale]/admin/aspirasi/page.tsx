@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 
 import { useTranslations } from 'next-intl'
 import { useAspirasiList } from '@/hooks/useAspirasi'
@@ -8,13 +8,34 @@ import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
 import { Link } from '@/routing'
-import { MdVisibility } from 'react-icons/md'
+import { useSearchParams } from 'next/navigation'
+import { MdVisibility, MdFilterList } from 'react-icons/md'
 import type { Aspirasi } from '@/types'
 export default function AspirasiPage(): React.ReactNode {
   const t = useTranslations('Aspirasi')
   const s = useTranslations('Sumber')
   const { data: aspirasiList, isLoading, mutate } = useAspirasiList()
   const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
+  const searchParams = useSearchParams()
+  const sumberFilter = searchParams.get('sumber')
+  const statusFilter = searchParams.get('status')
+
+  const filteredList = useMemo(() => {
+    if (!aspirasiList) return []
+    let result = aspirasiList
+    if (sumberFilter) result = result.filter((a) => a.sumber === sumberFilter)
+    if (statusFilter) result = result.filter((a) => a.status === statusFilter)
+    return result
+  }, [aspirasiList, sumberFilter, statusFilter])
+
+  const hasFilter = sumberFilter || statusFilter
+
+  const filterDesc = [
+    sumberFilter ? `sumber: ${s(sumberFilter)}` : '',
+    statusFilter ? `status: ${t(statusFilter)}` : '',
+  ]
+    .filter(Boolean)
+    .join(', ')
 
   if (isLoading) {
     return (
@@ -26,13 +47,23 @@ export default function AspirasiPage(): React.ReactNode {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          {t('title')}
-        </h1>
-        <p className="text-sm text-[var(--color-text-secondary)]">
-          Lacak status tindak lanjut aspirasi
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">
+            {hasFilter ? `Aspirasi — ${filterDesc}` : t('title')}
+          </h1>
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            {hasFilter ? `Ditampilkan berdasarkan ${filterDesc}` : 'Lacak status tindak lanjut aspirasi'}
+          </p>
+        </div>
+        {hasFilter && (
+          <Link href="/admin/aspirasi">
+            <Button variant="outline" size="sm">
+              <MdFilterList size={16} className="mr-1" />
+              Tampilkan Semua
+            </Button>
+          </Link>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
@@ -57,17 +88,17 @@ export default function AspirasiPage(): React.ReactNode {
             </tr>
           </thead>
           <tbody>
-            {aspirasiList.length === 0 ? (
+            {filteredList.length === 0 ? (
               <tr>
                 <td
                   colSpan={5}
                   className="px-4 py-8 text-center text-[var(--color-text-secondary)]"
                 >
-                  Belum ada data aspirasi
+                  {hasFilter ? 'Tidak ada aspirasi dengan filter tersebut' : 'Belum ada data aspirasi'}
                 </td>
               </tr>
             ) : (
-              aspirasiList.map((aspirasi: Aspirasi) => (
+              filteredList.map((aspirasi: Aspirasi) => (
                 <tr
                   key={aspirasi.id}
                   className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"

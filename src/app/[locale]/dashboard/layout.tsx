@@ -1,6 +1,3 @@
-import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
-import { getLocale } from 'next-intl/server'
 import { UserSidebar } from '@/components/shared/UserSidebar'
 import type { ReactNode } from 'react'
 
@@ -11,12 +8,6 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const [session, locale] = await Promise.all([auth(), getLocale()])
-
-  if (!session) {
-    redirect(`/${locale}/login`)
-  }
-
   return (
     <div className="flex min-h-screen flex-col">
       <nav className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur-md">

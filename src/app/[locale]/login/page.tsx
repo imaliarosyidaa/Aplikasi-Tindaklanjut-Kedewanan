@@ -33,10 +33,7 @@ export default function LoginPage(): React.ReactNode {
       setError(t('loginError'))
       setLoading(false)
     } else {
-      const res = await fetch('/api/auth/session')
-      const session = await res.json()
-      const role = session?.user?.role
-      router.push(role === 'admin' ? '/admin/dashboard' : '/dashboard')
+      router.push('/admin/dashboard')
     }
   }
 

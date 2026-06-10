@@ -29,8 +29,9 @@ enum SumberAspirasi {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username  String     @unique
+  email     String?    @unique
   password  String
   name      String
   role      UserRole
@@ -41,37 +42,56 @@ model User {
   @@map("users")
 }
 
+model Kota {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nama       String      @unique
+  kecamatans Kecamatan[]
+  kelurahans Kelurahan[]
+  kunjungans Kunjungan[]
+  relawans Relawan[]
+  aspirasis Aspirasi[]
+
+  @@map("kotas")
+}
+
 model Kecamatan {
-  id         String      @id
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kota_id    String      @db.Uuid
   nama       String      @unique
   kelurahans Kelurahan[]
   kunjungans Kunjungan[]
+  kota       Kota        @relation(fields: [kota_id], references: [id])
+  relawans Relawan[]
+  aspirasis Aspirasi[]
 
   @@map("kecamatans")
 }
 
 model Kelurahan {
-  id           String      @id
-  kecamatan_id String
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kecamatan_id String   @db.Uuid
   nama         String
   kecamatan    Kecamatan   @relation(fields: [kecamatan_id], references: [id])
   kunjungans   Kunjungan[]
+  relawans Relawan[]
+  aspirasis Aspirasi[]
+  kotas Kota[]
 
   @@map("kelurahans")
 }
 
 model Kunjungan {
-  id             String    @id
-  jenis_kegiatan String    @default("")
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tanggal        DateTime
   jam            String
   jalan          String
-  kelurahan_id   String
-  kecamatan_id   String
-  kota           String
-  link_gmaps     String    @default("")
+  kelurahan_id   String  @db.Uuid
+  kecamatan_id   String  @db.Uuid
+  kota_id        String  @db.Uuid
+  link_gmaps     String?    @default("")
   kelurahan    Kelurahan @relation(fields: [kelurahan_id], references: [id])
   kecamatan    Kecamatan @relation(fields: [kecamatan_id], references: [id])
+  kota         Kota        @relation(fields: [kota_id], references: [id])
   kegiatans    Kegiatan[]
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
@@ -80,31 +100,34 @@ model Kunjungan {
 }
 
 model Aspirasi {
-  id                   String          @id
-  nik                  String          @default("")
+  id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nik                  String?          @default("")
   sumber               SumberAspirasi
   deskripsi            String
   status               AspirasiStatus
   pelapor_nama         String
-  pelapor_email        String
+  pelapor_email        String?    @default("")
   pelapor_telepon      String
-  lampiran             Json            @default("[]")
-  bukti_tindak_lanjut  Json            @default("[]")
-  catatan_tindak_lanjut String          @default("")
+  lampiran             Json?            @default("[]")
+  bukti_tindak_lanjut  Json?            @default("[]")
+  catatan_tindak_lanjut String?          @default("")
   kategori_usulan      String
   jenis_usulan         String
   jenis_reses          String
   tindak_lanjut        String
   tanggal_dibuat       DateTime
-  kota                 String          @default("")
-  kecamatan            String          @default("")
-  kelurahan            String          @default("")
-  lokasi               String          @default("")
-  user_id              String?
-  user                 User?           @relation(fields: [user_id], references: [id])
+  kota_id              String?         @db.Uuid
+  kecamatan_id         String?         @db.Uuid
+  kelurahan_id         String?         @db.Uuid
+  alamat               String?
+  user_id              String?         @db.Uuid
   created_at           DateTime        @default(now())
   updated_at           DateTime        @updatedAt
 
+  user                 User?           @relation(fields: [user_id], references: [id])
+  kota                 Kota?           @relation(fields: [kota_id], references: [id])
+  kecamatan            Kecamatan?      @relation(fields: [kecamatan_id], references: [id])
+  kelurahan            Kelurahan?      @relation(fields: [kelurahan_id], references: [id])
   @@map("aspirasis")
 }
 
@@ -125,37 +148,41 @@ enum PosisiRelawan {
 }
 
 model Relawan {
-  id             String        @id @default(cuid())
-  nik            String        @unique
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nik            String?        @unique
   nama           String
-  no_telepon     String
+  no_telepon     String?
   jenis_kelamin  JenisKelamin
-  kota_kabupaten String
-  kecamatan      String
-  kelurahan      String
   alamat         String
   posisi         PosisiRelawan
   created_at     DateTime      @default(now()) @map("created_at")
   updated_at     DateTime      @updatedAt @map("updated_at")
+  kota_id        String  @db.Uuid
+  kecamatan_id   String  @db.Uuid
+  kelurahan_id   String  @db.Uuid
 
+  kota           Kota        @relation(fields: [kota_id], references: [id])
+  kecamatan      Kecamatan   @relation(fields: [kecamatan_id], references: [id])
+  kelurahan      Kelurahan   @relation(fields: [kelurahan_id], references: [id])
   @@map("relawans")
 }
 
 model Kegiatan {
-  id             String    @id
-  kunjungan_id   String
-  isi            String
-  hari           String
-  tanggal        DateTime
-  lokasi         String
-  foto           String
-  jenis_kegiatan String
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  jenis_kegiatan String    @default("")
+  kunjungan_id   String  @db.Uuid
+  isi            String?
+  hari           String?
+  tanggal        DateTime?
+  foto           String?
   nama_kegiatan  String
-  link_gmaps     String
-  rt             String
-  rw             String
-  jumlah_peserta Int
-  catatan        String
+  link_gmaps     String?
+  tempat         String?
+  alamat         String?
+  rt             String?
+  rw             String?
+  jumlah_peserta Int?
+  catatan        String?
   kunjungan      Kunjungan @relation(fields: [kunjungan_id], references: [id])
 
   @@map("kegiatans")
