@@ -3,11 +3,11 @@ import React from 'react'
 
 import { use } from 'react'
 import { useTranslations } from 'next-intl'
+import { useKegiatan } from '@/hooks/useKegiatan'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Link } from '@/routing'
-import { dummyKegiatan, dummyKunjungan } from '@/data/dummy'
 import {
   MdArrowBack,
   MdCalendarToday,
@@ -27,11 +27,15 @@ export default function DetailKegiatanPage({
 }: DetailKegiatanProps): React.ReactNode {
   const { id } = use(params)
   const t = useTranslations('Kunjungan')
+  const { data: kegiatan, isLoading } = useKegiatan(id)
 
-  const kegiatan = dummyKegiatan.find((k) => k.id === id)
-  const parentKunjungan = kegiatan
-    ? dummyKunjungan.find((k) => k.id === kegiatan.kunjungan_id)
-    : undefined
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
+      </div>
+    )
+  }
 
   if (!kegiatan) {
     return (
@@ -58,8 +62,8 @@ export default function DetailKegiatanPage({
       value: kegiatan.link_gmaps,
       isLink: true,
     },
-    { label: 'Kecamatan', value: parentKunjungan?.kecamatan ?? '-' },
-    { label: 'Kelurahan', value: parentKunjungan?.kelurahan ?? '-' },
+    { label: 'Kecamatan', value: kegiatan.kecamatan ?? '-' },
+    { label: 'Kelurahan', value: kegiatan.kelurahan ?? '-' },
     { label: 'RT', value: kegiatan.rt },
     { label: 'RW', value: kegiatan.rw },
     { label: 'Jumlah Peserta', value: String(kegiatan.jumlah_peserta) },

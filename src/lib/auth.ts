@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { dummyUsers } from '@/data/dummyUsers'
-import type { UserRole } from '@/data/dummyUsers'
+import { prisma } from '@/lib/prisma'
+import type { UserRole } from '@/types'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
@@ -15,17 +15,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
-        const user = dummyUsers.find(
-          (u) =>
-            u.email === credentials.email &&
-            u.password === credentials.password
-        )
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        })
 
-        if (!user) return null
+        if (!user || user.password !== credentials.password) return null
 
         return {
           id: user.id,
-          email: user.email,
+          email: user.email ?? undefined,
           name: user.name,
           role: user.role,
         }

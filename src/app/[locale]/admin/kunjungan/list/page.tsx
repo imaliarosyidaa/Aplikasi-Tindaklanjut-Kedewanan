@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 
 import { useTranslations } from 'next-intl'
 import { useKunjunganList } from '@/hooks/useKunjungan'
+import { useKegiatanByKelurahan } from '@/hooks/useKegiatan'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Link } from '@/routing'
@@ -17,14 +18,14 @@ import {
   MASTER_WILAYAH,
   type KecamatanData,
 } from '@/utils/masterWilayah'
-import { dummyKegiatan, dummyKunjungan } from '@/data/dummy'
 import type { Kunjungan, Kegiatan } from '@/types'
+
 export default function KunjunganListPage(): React.ReactNode {
   const t = useTranslations('Kunjungan')
   const { data: kunjunganList, isLoading } = useKunjunganList()
-
   const [selectedKecamatan, setSelectedKecamatan] = useState<string | null>(null)
   const [selectedKelurahan, setSelectedKelurahan] = useState<string | null>(null)
+  const { data: kegiatanList } = useKegiatanByKelurahan(selectedKelurahan)
 
   const activeKecamatan = selectedKecamatan
     ? MASTER_WILAYAH.find((k) => k.nama === selectedKecamatan) ?? null
@@ -64,13 +65,6 @@ export default function KunjunganListPage(): React.ReactNode {
     }
   }
 
-  const getKegiatanByKelurahan = (kelurahan: string): Kegiatan[] => {
-    const kunjunganIds = dummyKunjungan
-      .filter((k) => k.kelurahan === kelurahan)
-      .map((k) => k.id)
-    return dummyKegiatan.filter((kg) => kunjunganIds.includes(kg.kunjungan_id))
-  }
-
   const getHari = (tanggal: string): string => {
     const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
     const d = new Date(tanggal)
@@ -84,6 +78,8 @@ export default function KunjunganListPage(): React.ReactNode {
       </div>
     )
   }
+
+  const displayedKegiatan = kegiatanList ?? []
 
   return (
     <div className="space-y-6">
@@ -124,7 +120,6 @@ export default function KunjunganListPage(): React.ReactNode {
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {activeKecamatan.kelurahan.map((kel) => {
               const visits = getKunjunganByKelurahan(kel.nama).length
-              const kegiatanCount = getKegiatanByKelurahan(kel.nama).length
               const isKelSelected = selectedKelurahan === kel.nama
               return (
                 <button
@@ -152,7 +147,7 @@ export default function KunjunganListPage(): React.ReactNode {
               <h3 className="text-base font-semibold text-[var(--color-text)]">
                 Kegiatan di {selectedKelurahan}
               </h3>
-              {getKegiatanByKelurahan(selectedKelurahan).length === 0 ? (
+              {displayedKegiatan.length === 0 ? (
                 <Card>
                   <p className="text-center text-[var(--color-text-secondary)] py-4">
                     Belum ada data kegiatan
@@ -160,7 +155,7 @@ export default function KunjunganListPage(): React.ReactNode {
                 </Card>
               ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {getKegiatanByKelurahan(selectedKelurahan).map((kegiatan: Kegiatan) => (
+                  {displayedKegiatan.map((kegiatan: Kegiatan) => (
                     <Link
                       key={kegiatan.id}
                       href={`/admin/kunjungan/kegiatan/${kegiatan.id}`}

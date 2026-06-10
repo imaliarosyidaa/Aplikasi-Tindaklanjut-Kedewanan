@@ -1,26 +1,74 @@
 import { NextResponse } from 'next/server'
-import { dummyRelawan } from '@/data/dummyRelawan'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  return NextResponse.json(dummyRelawan)
+  const data = await prisma.relawan.findMany({
+    orderBy: { created_at: 'desc' },
+    include: {
+      kota: true,
+      kecamatan: true,
+      kelurahan: true,
+    },
+  })
+
+  const result = data.map((r) => ({
+    id: r.id,
+    nik: r.nik ?? '',
+    nama: r.nama,
+    no_telepon: r.no_telepon ?? '',
+    jenis_kelamin: r.jenis_kelamin,
+    kota_kabupaten: r.kota.nama,
+    kecamatan: r.kecamatan.nama,
+    kelurahan: r.kelurahan.nama,
+    alamat: r.alamat,
+    posisi: r.posisi,
+    created_at: r.created_at.toISOString(),
+    updated_at: r.updated_at.toISOString(),
+  }))
+
+  return NextResponse.json(result)
 }
 
 export async function POST(request: Request) {
-  try {
-    const body = await request.json()
+  const body = await request.json()
 
-    const newRelawan = {
-      id: `r-${Date.now()}`,
-      ...body,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }
+  const [kota, kecamatan, kelurahan] = await Promise.all([
+    prisma.kota.findFirstOrThrow({ where: { nama: body.kota_kabupaten } }),
+    prisma.kecamatan.findFirstOrThrow({ where: { nama: body.kecamatan } }),
+    prisma.kelurahan.findFirstOrThrow({ where: { nama: body.kelurahan } }),
+  ])
 
-    return NextResponse.json(newRelawan, { status: 201 })
-  } catch {
-    return NextResponse.json(
-      { message: 'Failed to create relawan' },
-      { status: 500 }
-    )
-  }
+  const created = await prisma.relawan.create({
+    data: {
+      nik: body.nik,
+      nama: body.nama,
+      no_telepon: body.no_telepon,
+      jenis_kelamin: body.jenis_kelamin,
+      alamat: body.alamat,
+      posisi: body.posisi,
+      kota_id: kota.id,
+      kecamatan_id: kecamatan.id,
+      kelurahan_id: kelurahan.id,
+    },
+    include: {
+      kota: true,
+      kecamatan: true,
+      kelurahan: true,
+    },
+  })
+
+  return NextResponse.json({
+    id: created.id,
+    nik: created.nik ?? '',
+    nama: created.nama,
+    no_telepon: created.no_telepon ?? '',
+    jenis_kelamin: created.jenis_kelamin,
+    kota_kabupaten: created.kota.nama,
+    kecamatan: created.kecamatan.nama,
+    kelurahan: created.kelurahan.nama,
+    alamat: created.alamat,
+    posisi: created.posisi,
+    created_at: created.created_at.toISOString(),
+    updated_at: created.updated_at.toISOString(),
+  }, { status: 201 })
 }

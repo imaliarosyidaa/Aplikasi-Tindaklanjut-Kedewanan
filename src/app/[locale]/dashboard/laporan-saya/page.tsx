@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Link } from '@/routing'
-import { dummyAspirasi } from '@/data/dummy'
+import { useAspirasiList } from '@/hooks/useAspirasi'
 import { useTranslations } from 'next-intl'
 import type { Aspirasi } from '@/types'
 import { getKecamatanOptions, getKelurahanByKecamatanId } from '@/utils/masterWilayah'
@@ -20,6 +20,7 @@ import {
 
 export default function LaporanSayaPage(): React.ReactNode {
   const s = useTranslations('Sumber')
+  const { data: allAspirasi } = useAspirasiList()
   const [kota] = useState('Jakarta Selatan')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
@@ -36,7 +37,7 @@ export default function LaporanSayaPage(): React.ReactNode {
     const kelurahanOptions = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
     const kelurahanNama = kelurahanOptions.find(k => k.value === kelurahanId)?.label ?? ''
 
-    const filtered = dummyAspirasi.filter((a) => {
+    const filtered = allAspirasi.filter((a) => {
       if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
       if (!q) return true
