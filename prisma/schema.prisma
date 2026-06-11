@@ -155,6 +155,7 @@ model Relawan {
   jenis_kelamin  JenisKelamin
   alamat         String
   posisi         PosisiRelawan
+  foto           String?
   created_at     DateTime      @default(now()) @map("created_at")
   updated_at     DateTime      @updatedAt @map("updated_at")
   kota_id        String  @db.Uuid

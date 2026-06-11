@@ -10,18 +10,36 @@ import { Link } from '@/routing'
 import { useAspirasiList } from '@/hooks/useAspirasi'
 import { useTranslations } from 'next-intl'
 import type { Aspirasi } from '@/types'
-import { getKecamatanOptions, getKelurahanByKecamatanId } from '@/utils/masterWilayah'
 import {
   MdSearch,
   MdArrowBack,
   MdPhone,
   MdPerson,
 } from 'react-icons/md'
+import useSWR from 'swr'
+import { getKelurahanByKecamatanId } from '@/utils/masterWilayah'
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+interface KotaItem {
+  id: string
+  nama: string
+}
+
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 
 export default function LaporanSayaPage(): React.ReactNode {
   const s = useTranslations('Sumber')
   const { data: allAspirasi } = useAspirasiList()
-  const [kota] = useState('Jakarta Selatan')
+  const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
@@ -29,7 +47,23 @@ export default function LaporanSayaPage(): React.ReactNode {
   const [results, setResults] = useState<Aspirasi[]>([])
   const [selected, setSelected] = useState<Aspirasi | null>(null)
 
-  const kecamatanOptions = getKecamatanOptions()
+    const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
+    fetcher
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher
+  )
+
+  const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
+  const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
+  const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
+
+  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   const handleSearch = () => {
     const q = query.toLowerCase().trim()
@@ -51,7 +85,7 @@ export default function LaporanSayaPage(): React.ReactNode {
     setSelected(null)
   }
 
-  const hasFilter = kota || kecamatanId || kelurahanId || query.trim()
+  const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim()
 
   return (
     <div className="space-y-6">
@@ -77,11 +111,17 @@ export default function LaporanSayaPage(): React.ReactNode {
           <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian Laporan</p>
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
-              <Input
+              <Select
                 id="kota"
                 label="Kota"
-                value={kota}
-                disabled
+                placeholder="Semua Kota"
+                options={kotaOptions}
+                value={kotaId}
+                onChange={(e) => {
+                  setKotaId(e.target.value)
+                  setKecamatanId('')
+                  setKelurahanId('')
+                }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -101,11 +141,10 @@ export default function LaporanSayaPage(): React.ReactNode {
               <Select
                 id="kelurahan"
                 label="Kelurahan"
-                placeholder={kecamatanId ? 'Semua Kelurahan' : 'Pilih Kecamatan dulu'}
-                options={kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []}
+                placeholder="Semua Kelurahan"
+                options={kelurahanOptions}
                 value={kelurahanId}
                 onChange={(e) => setKelurahanId(e.target.value)}
-                disabled={!kecamatanId}
               />
             </div>
           </div>

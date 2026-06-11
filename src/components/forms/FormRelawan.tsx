@@ -6,10 +6,24 @@ import { useCreateRelawan } from '@/hooks/useRelawan'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import {
-  getKecamatanOptions,
-  getKelurahanByKecamatanId,
-} from '@/utils/masterWilayah'
+import useSWR from 'swr'
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+interface KotaItem {
+  id: string
+  nama: string
+}
+
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 
 const JENIS_KELAMIN_OPTIONS = [
   { value: 'LAKI_LAKI', label: 'Laki-laki' },
@@ -35,17 +49,55 @@ export const FormRelawan = (): React.ReactNode => {
   const [nama, setNama] = useState('')
   const [noTelepon, setNoTelepon] = useState('')
   const [jenisKelamin, setJenisKelamin] = useState('')
-  const [kota, setKota] = useState('Jakarta Selatan')
-  const [kecamatan, setKecamatan] = useState('')
-  const [kelurahan, setKelurahan] = useState('')
+  const [kotaId, setKotaId] = useState('')
+  const [kecamatanId, setKecamatanId] = useState('')
+  const [kelurahanId, setKelurahanId] = useState('')
   const [jalan, setJalan] = useState('')
   const [rt, setRt] = useState('')
   const [rw, setRw] = useState('')
   const [posisi, setPosisi] = useState('')
+  const [fotoBase64, setFotoBase64] = useState('')
+  const [fotoName, setFotoName] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const kecamatanOptions = getKecamatanOptions()
-  const kelurahanOptions = kecamatan ? getKelurahanByKecamatanId(kecamatan) : []
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
+    fetcher
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher
+  )
+
+  const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
+  const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
+  const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
+
+  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const allowed = ['image/png', 'image/jpeg', 'image/jpg']
+    if (!allowed.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, foto: 'Hanya file PNG/JPG/JPEG' }))
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      setFotoBase64(reader.result as string)
+      setFotoName(file.name)
+      setErrors((prev) => {
+        const next = { ...prev }
+        delete next.foto
+        return next
+      })
+    }
+    reader.readAsDataURL(file)
+  }
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
@@ -53,8 +105,8 @@ export const FormRelawan = (): React.ReactNode => {
     if (!nama) errs.nama = 'Wajib diisi'
     if (!noTelepon) errs.noTelepon = 'Wajib diisi'
     if (!jenisKelamin) errs.jenisKelamin = 'Wajib diisi'
-    if (!kecamatan) errs.kecamatan = 'Wajib diisi'
-    if (!kelurahan) errs.kelurahan = 'Wajib diisi'
+    if (!kecamatanId) errs.kecamatan = 'Wajib diisi'
+    if (!kelurahanId) errs.kelurahan = 'Wajib diisi'
     if (!posisi) errs.posisi = 'Wajib diisi'
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -69,11 +121,12 @@ export const FormRelawan = (): React.ReactNode => {
       nama,
       no_telepon: noTelepon,
       jenis_kelamin: jenisKelamin as any,
-      kota_kabupaten: kota,
-      kecamatan: kecamatanOptions.find((k) => k.value === kecamatan)?.label ?? kecamatan,
-      kelurahan: kelurahanOptions.find((k) => k.value === kelurahan)?.label ?? kelurahan,
+      kota_kabupaten: kotaMap[kotaId],
+      kecamatan: kecamatanMap[kecamatanId],
+      kelurahan: kelurahanMap[kelurahanId],
       alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
       posisi: posisi as any,
+      foto: fotoBase64 || undefined,
     })
 
     router.push('/admin/relawan')
@@ -124,33 +177,40 @@ export const FormRelawan = (): React.ReactNode => {
         onChange={(e) => setPosisi(e.target.value)}
         error={errors.posisi}
       />
-      <Input
+      <Select
         id="kota"
         label="Kota/Kabupaten"
-        value={kota}
-        onChange={(e) => setKota(e.target.value)}
+        placeholder="Pilih Kota/Kabupaten"
+        options={kotaOptions}
+        value={kotaId}
+        onChange={(e) => {
+          setKotaId(e.target.value)
+          setKecamatanId('')
+        }}
+        error={errors.kota}
       />
       <Select
         id="kecamatan"
         label="Kecamatan"
-        placeholder="Pilih kecamatan"
+        placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
         options={kecamatanOptions}
-        value={kecamatan}
+        value={kecamatanId}
         onChange={(e) => {
-          setKecamatan(e.target.value)
-          setKelurahan('')
+          setKecamatanId(e.target.value)
+          setKelurahanId('')
         }}
         error={errors.kecamatan}
+        disabled={!kotaId}
       />
       <Select
         id="kelurahan"
         label="Kelurahan"
-        placeholder={kecamatan ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
+        placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
         options={kelurahanOptions}
-        value={kelurahan}
-        onChange={(e) => setKelurahan(e.target.value)}
+        value={kelurahanId}
+        onChange={(e) => setKelurahanId(e.target.value)}
         error={errors.kelurahan}
-        disabled={!kecamatan}
+        disabled={!kecamatanId}
       />
       <Input
         id="jalan"
@@ -174,6 +234,23 @@ export const FormRelawan = (): React.ReactNode => {
           value={rw}
           onChange={(e) => setRw(e.target.value)}
         />
+      </div>
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-[var(--color-text)]">
+          Upload Foto
+        </label>
+        <input
+          id="foto"
+          type="file"
+          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+          onChange={handleFileChange}
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] file:mr-3 file:rounded file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-1 file:text-sm file:font-medium file:text-[var(--color-primary)]"
+        />
+        {fotoName && (
+          <p className="text-xs text-[var(--color-text-secondary)]">Terpilih: {fotoName}</p>
+        )}
+        {errors.foto && <p className="text-xs text-[var(--color-danger)]">{errors.foto}</p>}
       </div>
 
       <div className="flex justify-end gap-3 pt-4">

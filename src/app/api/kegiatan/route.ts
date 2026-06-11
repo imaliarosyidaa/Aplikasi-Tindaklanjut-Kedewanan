@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
     catatan: k.catatan ?? '',
     kelurahan: k.kunjungan.kelurahan.nama,
     kecamatan: k.kunjungan.kecamatan.nama,
+    kota: k.kunjungan.kota.nama,
   }))
 
   return NextResponse.json(result)

@@ -1,242 +1,92 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import useSWR from 'swr'
 
 import { useTranslations } from 'next-intl'
-import { useKunjunganList } from '@/hooks/useKunjungan'
-import { useKegiatanByKelurahan } from '@/hooks/useKegiatan'
+
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Link } from '@/routing'
-import {
-  MdLocationOn,
-  MdCalendarToday,
-  MdAccessTime,
-  MdImage,
-  MdChevronRight,
-} from 'react-icons/md'
-import type { Kunjungan, Kegiatan } from '@/types'
+import { MdVisibility } from 'react-icons/md'
+import type { Kegiatan } from '@/types'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-interface KecamatanItem {
-  id: string
-  nama: string
-  kelurahan: { id: string; nama: string }[]
-}
-
 export default function KunjunganListPage() {
   const t = useTranslations('Kunjungan')
-  const { data: kunjunganList, isLoading: kunjunganLoading } = useKunjunganList()
-  const { data: kecamatanData } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
+  const { data: kegiatanList, isLoading } = useSWR<Kegiatan[]>('/api/kegiatan', fetcher)
 
-  const [selectedKecamatan, setSelectedKecamatan] = useState<string | null>(null)
-  const [selectedKelurahan, setSelectedKelurahan] = useState<string | null>(null)
-  const { data: kegiatanList } = useKegiatanByKelurahan(selectedKelurahan)
-
-  const kecamatanList = kecamatanData ?? []
-  const activeKecamatan = selectedKecamatan
-    ? kecamatanList.find((k) => k.nama === selectedKecamatan) ?? null
-    : null
-
-  const getKunjunganByKelurahan = (kelurahan: string): Kunjungan[] => {
-    return (kunjunganList ?? []).filter(
-      (k: Kunjungan) => k.kelurahan === kelurahan
-    )
+  if (isLoading) {
+    return <p className="text-[var(--color-text-secondary)]">Memuat...</p>
   }
 
-  const getKelurahanVisited = (kec: KecamatanItem): number => {
-    const visited = new Set<string>()
-    kec.kelurahan.forEach((kel) => {
-      if (getKunjunganByKelurahan(kel.nama).length > 0) {
-        visited.add(kel.nama)
-      }
-    })
-    return visited.size
-  }
-
-  const handleKecamatanTab = (nama: string) => {
-    if (selectedKecamatan === nama) {
-      setSelectedKecamatan(null)
-      setSelectedKelurahan(null)
-    } else {
-      setSelectedKecamatan(nama)
-      setSelectedKelurahan(null)
-    }
-  }
-
-  const handleKelurahanClick = (kelurahan: string) => {
-    if (selectedKelurahan === kelurahan) {
-      setSelectedKelurahan(null)
-    } else {
-      setSelectedKelurahan(kelurahan)
-    }
-  }
-
-  const getHari = (tanggal: string): string => {
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+  const formatTanggal = (tanggal: string): string => {
+    if (!tanggal) return ''
     const d = new Date(tanggal)
-    return days[d.getDay()]
+    return d.toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
   }
 
-  if (kunjunganLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-      </div>
-    )
-  }
-
-  const displayedKegiatan = kegiatanList ?? []
+  const data = kegiatanList ?? []
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          {t('daftarKunjungan')}
-        </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Daftar kunjungan yang telah diinput
-        </p>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('daftarKunjungan')}</h1>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">Daftar kegiatan yang telah diinput</p>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b border-[var(--color-border)] pb-2">
-        {kecamatanList.map((kec) => {
-          const visited = getKelurahanVisited(kec)
-          const isActive = selectedKecamatan === kec.nama
-          return (
-            <button
-              key={kec.id}
-              onClick={() => handleKecamatanTab(kec.nama)}
-              className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-                isActive
-                  ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-secondary)]'
-              }`}
-            >
-              {kec.nama}
-              <span className="block text-xs font-normal mt-0.5">
-                {visited}/{kec.kelurahan.length} Kelurahan sudah dikunjungi
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
-      {selectedKecamatan && activeKecamatan && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-            {activeKecamatan.kelurahan.map((kel) => {
-              const visits = getKunjunganByKelurahan(kel.nama).length
-              const isKelSelected = selectedKelurahan === kel.nama
-              return (
-                <button
-                  key={kel.id}
-                  onClick={() => handleKelurahanClick(kel.nama)}
-                  className={`text-left rounded-lg border p-3 transition-colors ${
-                    isKelSelected
-                      ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
-                      : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-secondary)]'
-                  }`}
+      {data.length === 0 ? (
+        <Card>
+          <p className="text-center text-[var(--color-text-secondary)] py-8">Belum ada data kegiatan</p>
+        </Card>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-[var(--color-bg-secondary)]">
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Nama Kegiatan</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tanggal</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Lokasi</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kota</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
+                <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, i) => (
+                <tr
+                  key={item.id}
+                  className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
                 >
-                  <p className="text-sm font-medium text-[var(--color-text)]">
-                    {kel.nama}
-                  </p>
-                  <p className="text-xs text-[var(--color-text-secondary)]">
-                    {visits} kunjungan
-                  </p>
-                </button>
-              )
-            })}
-          </div>
-
-          {selectedKelurahan && (
-            <div className="space-y-4">
-              <h3 className="text-base font-semibold text-[var(--color-text)]">
-                Kegiatan di {selectedKelurahan}
-              </h3>
-              {displayedKegiatan.length === 0 ? (
-                <Card>
-                  <p className="text-center text-[var(--color-text-secondary)] py-4">
-                    Belum ada data kegiatan
-                  </p>
-                </Card>
-              ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {displayedKegiatan.map((kegiatan: Kegiatan) => (
+                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">{i + 1}</td>
+                  <td className="px-4 py-3 font-medium text-[var(--color-text)]">{item.nama_kegiatan || item.isi}</td>
+                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">
+                    {formatTanggal(item.tanggal)}
+                  </td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi}</td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kota}</td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan}</td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan}</td>
+                  <td className="px-4 py-3 text-center">
                     <Link
-                      key={kegiatan.id}
-                      href={`/admin/kunjungan/kegiatan/${kegiatan.id}`}
+                      href={`/admin/kunjungan/kegiatan/${item.id}`}
+                      className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
                     >
-                      <Card className="space-y-3 hover:border-[var(--color-primary)] transition-colors cursor-pointer">
-                        <div className="flex items-start justify-between">
-                          <p className="font-medium text-[var(--color-text)]">
-                            {kegiatan.isi}
-                          </p>
-                          <MdChevronRight
-                            size={20}
-                            className="text-[var(--color-text-secondary)] shrink-0 mt-0.5"
-                          />
-                        </div>
-                        <div className="space-y-1 text-sm text-[var(--color-text-secondary)]">
-                          <div className="flex items-center gap-2">
-                            <MdCalendarToday size={14} />
-                            <span>{getHari(kegiatan.tanggal)}, {kegiatan.tanggal}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MdLocationOn size={14} />
-                            <span>{kegiatan.lokasi}</span>
-                          </div>
-                        </div>
-                        {kegiatan.foto && (
-                          <div className="flex items-center gap-1 text-xs text-[var(--color-primary)]">
-                            <MdImage size={14} />
-                            <span>{kegiatan.foto}</span>
-                          </div>
-                        )}
-                      </Card>
+                      <MdVisibility size={16} />
+                      Detail
                     </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {!selectedKecamatan && (
-        kunjunganList.length === 0 ? (
-          <Card>
-            <p className="text-center text-[var(--color-text-secondary)] py-8">
-              Pilih tab wilayah kecamatan untuk melihat kegiatan
-            </p>
-          </Card>
-        ) : (
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-[var(--color-text)]">
-              Semua Kunjungan Terbaru
-            </h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {kunjunganList.map((kunjungan: Kunjungan) => (
-                <Card key={kunjungan.id} className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                    <MdCalendarToday size={14} />
-                    <span>{kunjungan.tanggal}</span>
-                    <MdAccessTime size={14} />
-                    <span>{kunjungan.jam}</span>
-                  </div>
-                  <p className="font-medium text-[var(--color-text)]">
-                    {kunjungan.jalan}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="info">{kunjungan.kelurahan}</Badge>
-                    <Badge variant="primary">{kunjungan.kecamatan}</Badge>
-                  </div>
-                </Card>
+                  </td>
+                </tr>
               ))}
-            </div>
-          </div>
-        )
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )

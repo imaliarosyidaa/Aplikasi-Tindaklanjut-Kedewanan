@@ -105,6 +105,7 @@ export interface Relawan {
   kelurahan: string
   alamat: string
   posisi: PosisiRelawan
+  foto?: string
   created_at: string
   updated_at: string
 }
@@ -126,4 +127,5 @@ export interface Kegiatan {
   catatan: string
   kecamatan?: string
   kelurahan?: string
+  kota?: string
 }

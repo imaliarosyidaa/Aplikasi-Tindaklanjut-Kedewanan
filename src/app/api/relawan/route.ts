@@ -22,6 +22,7 @@ export async function GET() {
     kelurahan: r.kelurahan.nama,
     alamat: r.alamat,
     posisi: r.posisi,
+    foto: r.foto ?? '',
     created_at: r.created_at.toISOString(),
     updated_at: r.updated_at.toISOString(),
   }))
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
       jenis_kelamin: body.jenis_kelamin,
       alamat: body.alamat,
       posisi: body.posisi,
+      foto: body.foto ?? '',
       kota_id: kota.id,
       kecamatan_id: kecamatan.id,
       kelurahan_id: kelurahan.id,
@@ -68,6 +70,7 @@ export async function POST(request: Request) {
     kelurahan: created.kelurahan.nama,
     alamat: created.alamat,
     posisi: created.posisi,
+    foto: created.foto ?? '',
     created_at: created.created_at.toISOString(),
     updated_at: created.updated_at.toISOString(),
   }, { status: 201 })
