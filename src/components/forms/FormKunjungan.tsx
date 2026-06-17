@@ -3,28 +3,17 @@ import React, { useState } from 'react'
 import useSWR from 'swr'
 
 import { useTranslations } from 'next-intl'
-import { useCreateKunjungan } from '@/hooks/useKunjungan'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
+import { Card } from '@/components/ui/card'
 import { useRouter } from '@/routing'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-interface KotaItem {
-  id: string
-  nama: string
-}
-
-interface KecamatanItem {
-  id: string
-  nama: string
-}
-
-interface KelurahanItem {
-  id: string
-  nama: string
-}
+interface KotaItem { id: string; nama: string }
+interface KecamatanItem { id: string; nama: string }
+interface KelurahanItem { id: string; nama: string }
 
 const JENIS_KEGIATAN_OPTIONS = [
   { value: 'reses', label: 'Kegiatan reses (serap aspirasi masyarakat)' },
@@ -35,9 +24,9 @@ export const FormKunjungan = (): React.ReactNode => {
   const t = useTranslations('Kunjungan')
   const c = useTranslations('Common')
   const router = useRouter()
-  const { trigger, isMutating } = useCreateKunjungan()
+  const [loading, setLoading] = useState(false)
 
-  const [jenisKegiatan, setJenisKegiatan] = useState('')
+  // Kunjungan fields
   const [tanggal, setTanggal] = useState('')
   const [jam, setJam] = useState('')
   const [jalan, setJalan] = useState('')
@@ -45,6 +34,17 @@ export const FormKunjungan = (): React.ReactNode => {
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [linkGmaps, setLinkGmaps] = useState('')
+
+  // Kegiatan fields
+  const [jenisKegiatan, setJenisKegiatan] = useState('')
+  const [namaKegiatan, setNamaKegiatan] = useState('')
+  const [isi, setIsi] = useState('')
+  const [tempat, setTempat] = useState('')
+  const [rt, setRt] = useState('')
+  const [rw, setRw] = useState('')
+  const [jumlahPeserta, setJumlahPeserta] = useState('')
+  const [catatan, setCatatan] = useState('')
+
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
@@ -70,10 +70,10 @@ export const FormKunjungan = (): React.ReactNode => {
     if (!jenisKegiatan) errs.jenisKegiatan = c('required')
     if (!tanggal) errs.tanggal = c('required')
     if (!jam) errs.jam = c('required')
-    if (!jalan) errs.jalan = c('required')
     if (!kotaId) errs.kota = c('required')
     if (!kecamatanId) errs.kecamatan = c('required')
     if (!kelurahanId) errs.kelurahan = c('required')
+    if (!namaKegiatan) errs.namaKegiatan = c('required')
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -81,118 +81,96 @@ export const FormKunjungan = (): React.ReactNode => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
+    setLoading(true)
 
-    await trigger({
-      jenis_kegiatan: jenisKegiatan,
-      tanggal,
-      jam,
-      jalan,
-      kelurahan: kelurahanMap[kelurahanId],
-      kecamatan: kecamatanMap[kecamatanId],
-      kota: kotaMap[kotaId],
-      link_gmaps: linkGmaps,
-    })
+    try {
+      const kunjunganRes = await fetch('/api/kunjungan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jenis_kegiatan: jenisKegiatan,
+          tanggal,
+          jam,
+          jalan,
+          kelurahan: kelurahanMap[kelurahanId],
+          kecamatan: kecamatanMap[kecamatanId],
+          kota: kotaMap[kotaId],
+          link_gmaps: linkGmaps,
+        }),
+      })
+      const kunjungan = await kunjunganRes.json()
 
-    router.push('/admin/kunjungan/list')
-  }
+      await fetch('/api/kegiatan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kunjungan_id: kunjungan.id,
+          jenis_kegiatan: jenisKegiatan,
+          nama_kegiatan: namaKegiatan,
+          isi,
+          tempat,
+          rt,
+          rw,
+          tanggal,
+          jumlah_peserta: jumlahPeserta,
+          catatan,
+          link_gmaps: linkGmaps,
+        }),
+      })
 
-  const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setKotaId(e.target.value)
-    setKecamatanId('')
-    setKelurahanId('')
-  }
-
-  const handleKecamatanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setKecamatanId(e.target.value)
-    setKelurahanId('')
+      router.push('/admin/kunjungan')
+    } catch {
+      alert('Gagal menyimpan data')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Select
-        id="jenis_kegiatan"
-        label="Jenis Kegiatan"
-        placeholder="Pilih jenis kegiatan"
-        options={JENIS_KEGIATAN_OPTIONS}
-        value={jenisKegiatan}
-        onChange={(e) => setJenisKegiatan(e.target.value)}
-        error={errors.jenisKegiatan}
-      />
+      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => setJenisKegiatan(e.target.value)} error={errors.jenisKegiatan} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input
-          id="tanggal"
-          label={t('tanggal')}
-          type="date"
-          value={tanggal}
-          onChange={(e) => setTanggal(e.target.value)}
-          error={errors.tanggal}
-        />
-        <Input
-          id="jam"
-          label={t('jam')}
-          type="time"
-          value={jam}
-          onChange={(e) => setJam(e.target.value)}
-          error={errors.jam}
-        />
+        <Input id="tanggal" label={t('tanggal')} type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} error={errors.tanggal} />
+        <Input id="jam" label={t('jam')} type="time" value={jam} onChange={(e) => setJam(e.target.value)} error={errors.jam} />
       </div>
 
-      <Input
-        id="jalan"
-        label={t('jalan')}
-        placeholder="Masukkan nama jalan"
-        value={jalan}
-        onChange={(e) => setJalan(e.target.value)}
-        error={errors.jalan}
-      />
+      <Input id="jalan" label={t('jalan')} placeholder="Masukkan nama jalan" value={jalan} onChange={(e) => setJalan(e.target.value)} />
 
-      <Select
-        id="kota"
-        label={t('kota')}
-        placeholder="Pilih kota"
-        options={kotaOptions}
-        value={kotaId}
-        onChange={handleKotaChange}
-        error={errors.kota}
-      />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Select id="kota" label={t('kota')} placeholder="Pilih kota" options={kotaOptions} value={kotaId} onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} error={errors.kota} />
+        <Select id="kecamatan" label={t('kecamatan')} placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'} options={kecamatanOptions} value={kecamatanId} onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} error={errors.kecamatan} disabled={!kotaId} />
+        <Select id="kelurahan" label={t('kelurahan')} placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'} options={kelurahanOptions} value={kelurahanId} onChange={(e) => setKelurahanId(e.target.value)} error={errors.kelurahan} disabled={!kecamatanId} />
+      </div>
 
-      <Select
-        id="kecamatan"
-        label={t('kecamatan')}
-        placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
-        options={kecamatanOptions}
-        value={kecamatanId}
-        onChange={handleKecamatanChange}
-        error={errors.kecamatan}
-        disabled={!kotaId}
-      />
+      <Input id="nama_kegiatan" label="Nama Kegiatan" placeholder="Masukkan nama kegiatan" value={namaKegiatan} onChange={(e) => setNamaKegiatan(e.target.value)} error={errors.namaKegiatan} required />
 
-      <Select
-        id="kelurahan"
-        label={t('kelurahan')}
-        placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
-        options={kelurahanOptions}
-        value={kelurahanId}
-        onChange={(e) => setKelurahanId(e.target.value)}
-        error={errors.kelurahan}
-        disabled={!kecamatanId}
-      />
+      <Input id="isi" label="Isi/Keterangan" placeholder="Deskripsi kegiatan" value={isi} onChange={(e) => setIsi(e.target.value)} />
 
-      <Input
-        id="link_gmaps"
-        label="Titik Lokasi (Google Maps)"
-        placeholder="https://maps.google.com/?q=..."
-        value={linkGmaps}
-        onChange={(e) => setLinkGmaps(e.target.value)}
-      />
+      <Input id="tempat" label="Tempat" placeholder="Lokasi kegiatan" value={tempat} onChange={(e) => setTempat(e.target.value)} />
+
+      <Input id="link_gmaps" label="Titik Lokasi (Google Maps)" placeholder="https://maps.google.com/?q=..." value={linkGmaps} onChange={(e) => setLinkGmaps(e.target.value)} />
+
+      <div className="grid grid-cols-2 gap-4">
+        <Input id="rt" label="RT" placeholder="001" value={rt} onChange={(e) => setRt(e.target.value)} />
+        <Input id="rw" label="RW" placeholder="005" value={rw} onChange={(e) => setRw(e.target.value)} />
+        <Input id="jumlah_peserta" label="Jumlah Peserta" type="number" placeholder="0" value={jumlahPeserta} onChange={(e) => setJumlahPeserta(e.target.value)} />
+      </div>
+
+      <div>
+        <label htmlFor="catatan" className="block text-sm font-medium text-[var(--color-text)] mb-1">Catatan</label>
+        <textarea id="catatan" value={catatan} onChange={(e) => setCatatan(e.target.value)} rows={3}
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)]"
+          placeholder="Catatan tambahan..."
+        />
+      </div>
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={() => router.back()}>
           {c('cancel')}
         </Button>
-        <Button type="submit" disabled={isMutating}>
-          {isMutating ? c('loading') : c('save')}
+        <Button type="submit" disabled={loading}>
+          {loading ? c('loading') : c('save')}
         </Button>
       </div>
     </form>

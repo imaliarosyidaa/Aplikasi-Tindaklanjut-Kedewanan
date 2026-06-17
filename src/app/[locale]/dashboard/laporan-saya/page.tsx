@@ -20,7 +20,7 @@ import {
   MdCheckCircle,
   MdHourglassEmpty,
   MdCancel,
-  MdImage,
+  MdSource,
 } from 'react-icons/md'
 import useSWR from 'swr'
 import { getKelurahanByKecamatanId } from '@/utils/masterWilayah'
@@ -34,12 +34,21 @@ interface KelurahanItem { id: string; nama: string }
 const STATUS_FLOW: { status: Aspirasi['status']; label: string; icon: React.ReactNode }[] = [
   { status: 'BELUM_DITINDAKLANJUTI', label: 'Laporan Diterima', icon: <MdHourglassEmpty size={20} /> },
   { status: 'SEDANG_DITINDAKLANJUTI', label: 'Sedang Diproses', icon: <MdSearch size={20} /> },
-  { status: 'SUDAH_DITINDAKLANJUTI', label: 'Selesai Ditindaklanjuti', icon: <MdCheckCircle size={20} /> },
-  { status: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Dapat Ditindaklanjuti', icon: <MdCancel size={20} /> },
 ]
 
-function TrackingTicket({ aspirasi, s }: { aspirasi: Aspirasi; s: (key: string) => string }) {
-  const currentIndex = STATUS_FLOW.findIndex((st) => st.status === aspirasi.status)
+function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
+  const isRejected = aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+  const isProcessing = aspirasi.status === 'SEDANG_DITINDAKLANJUTI'
+  const isCompleted = aspirasi.status === 'SUDAH_DITINDAKLANJUTI'
+  const showStep2 = aspirasi.status !== 'BELUM_DITINDAKLANJUTI'
+
+  const steps = [
+    { label: 'Laporan Diterima', icon: <MdHourglassEmpty size={20} /> },
+    {
+      label: isRejected ? 'Tidak Dapat Ditindaklanjuti' : aspirasi.status === 'BELUM_DITINDAKLANJUTI' ? 'Menunggu Diproses' : 'Sedang Diproses',
+      icon: isRejected ? <MdCancel size={20} /> : <MdSearch size={20} />,
+    },
+  ]
 
   return (
     <Card className="p-5 space-y-4">
@@ -62,13 +71,33 @@ function TrackingTicket({ aspirasi, s }: { aspirasi: Aspirasi; s: (key: string) 
           <MdPhone size={16} className="text-[var(--color-text-secondary)] shrink-0" />
           <span className="text-[var(--color-text)]">{aspirasi.pelapor_telepon}</span>
         </div>
-        <div className="flex items-center gap-2 col-span-2">
+        <div className="flex items-center gap-2">
           <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text)]">
-            {[aspirasi.kota, aspirasi.kecamatan, aspirasi.kelurahan].filter(Boolean).join(', ')}
-            {aspirasi.lokasi ? ` - ${aspirasi.lokasi}` : ''}
-          </span>
+          <span className="text-[var(--color-text-secondary)]">Kota:</span>
+          <span className="text-[var(--color-text)]">{aspirasi.kota || '-'}</span>
         </div>
+        <div className="flex items-center gap-2">
+          <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+          <span className="text-[var(--color-text-secondary)]">Kec.:</span>
+          <span className="text-[var(--color-text)]">{aspirasi.kecamatan || '-'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+          <span className="text-[var(--color-text-secondary)]">Kel.:</span>
+          <span className="text-[var(--color-text)]">{aspirasi.kelurahan || '-'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <MdSource size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+          <span className="text-[var(--color-text-secondary)]">Sumber:</span>
+          <span className="text-[var(--color-text)]">{aspirasi.sumber.replace(/_/g, ' ')}</span>
+        </div>
+        {aspirasi.lokasi && (
+          <div className="flex items-center gap-2 col-span-2">
+            <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+            <span className="text-[var(--color-text-secondary)]">Lokasi:</span>
+            <span className="text-[var(--color-text)]">{aspirasi.lokasi}</span>
+          </div>
+        )}
         <div className="flex items-start gap-2 col-span-2">
           <MdDescription size={16} className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" />
           <span className="text-[var(--color-text)]">{aspirasi.deskripsi}</span>
@@ -76,42 +105,43 @@ function TrackingTicket({ aspirasi, s }: { aspirasi: Aspirasi; s: (key: string) 
       </div>
 
       <div className="relative pt-2">
-        {STATUS_FLOW.map((step, i) => {
-          const showActive = aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
-            ? i <= currentIndex || i === STATUS_FLOW.length - 1
-            : i <= currentIndex
-          const isCurrent = i === currentIndex
-          const isLast = i === STATUS_FLOW.length - 1
+        {steps.map((step, i) => {
+          const active = i === 0 || showStep2
+          const isLast = i === steps.length - 1
 
           return (
-            <div key={step.status} className="flex gap-3">
+            <div key={i} className="flex gap-3">
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors ${
-                  showActive
-                    ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                  active
+                    ? isRejected && isLast
+                      ? 'bg-red-100 text-red-600'
+                      : 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
                     : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'
                 }`}>
                   {step.icon}
                 </div>
                 {!isLast && (
                   <div className={`w-0.5 h-6 transition-colors ${
-                    showActive && aspirasi.status !== 'TIDAK_BISA_DITINDAKLANJUTI'
+                    showStep2 && !isRejected
                       ? 'bg-[var(--color-primary)]'
+                      : isRejected
+                      ? 'bg-red-200'
                       : 'bg-[var(--color-border)]'
                   }`} />
                 )}
               </div>
               <div className={`pb-4 ${isLast ? 'pb-0' : ''}`}>
                 <p className={`text-sm font-medium ${
-                  isCurrent
-                    ? 'text-[var(--color-primary)]'
-                    : showActive
-                    ? 'text-[var(--color-text)]'
+                  active
+                    ? isRejected && isLast
+                      ? 'text-red-600'
+                      : 'text-[var(--color-text)]'
                     : 'text-[var(--color-text-secondary)]'
                 }`}>
                   {step.label}
                 </p>
-                {aspirasi.bukti_tindak_lanjut && aspirasi.bukti_tindak_lanjut.length > 0 && isCurrent && (
+                {isLast && aspirasi.bukti_tindak_lanjut && aspirasi.bukti_tindak_lanjut.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {aspirasi.bukti_tindak_lanjut.map((url, idx) => (
                       <img
@@ -123,14 +153,16 @@ function TrackingTicket({ aspirasi, s }: { aspirasi: Aspirasi; s: (key: string) 
                     ))}
                   </div>
                 )}
-                {isCurrent && aspirasi.catatan_tindak_lanjut && (
+                {isLast && aspirasi.catatan_tindak_lanjut && (
                   <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">
                     "{aspirasi.catatan_tindak_lanjut}"
                   </p>
                 )}
-                {isCurrent && (
+                {active && (
                   <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-                    {new Date(aspirasi.updated_at).toLocaleDateString('id-ID', {
+                    {new Date(
+                      i === 0 ? aspirasi.tanggal_dibuat : aspirasi.updated_at
+                    ).toLocaleDateString('id-ID', {
                       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
                       hour: '2-digit', minute: '2-digit',
                     })}
@@ -292,7 +324,7 @@ export default function LaporanSayaPage(): React.ReactNode {
             </Card>
           ) : (
             results.map((aspirasi) => (
-              <TrackingTicket key={aspirasi.id} aspirasi={aspirasi} s={s} />
+              <TrackingTicket key={aspirasi.id} aspirasi={aspirasi} />
             ))
           )}
         </div>

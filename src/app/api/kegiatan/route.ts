@@ -62,3 +62,51 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(result)
 }
+
+export async function POST(request: Request) {
+  const body = await request.json()
+
+  const created = await prisma.kegiatan.create({
+    data: {
+      jenis_kegiatan: body.jenis_kegiatan ?? '',
+      kunjungan_id: body.kunjungan_id,
+      isi: body.isi ?? '',
+      hari: body.hari ?? '',
+      tanggal: body.tanggal ? new Date(body.tanggal) : null,
+      foto: body.foto ?? '',
+      nama_kegiatan: body.nama_kegiatan,
+      link_gmaps: body.link_gmaps ?? '',
+      tempat: body.tempat ?? '',
+      alamat: body.alamat ?? '',
+      rt: body.rt ?? '',
+      rw: body.rw ?? '',
+      jumlah_peserta: body.jumlah_peserta ? parseInt(body.jumlah_peserta) : null,
+      catatan: body.catatan ?? '',
+    },
+    include: {
+      kunjungan: {
+        include: { kelurahan: true, kecamatan: true, kota: true },
+      },
+    },
+  })
+
+  return NextResponse.json({
+    id: created.id,
+    jenis_kegiatan: created.jenis_kegiatan,
+    kunjungan_id: created.kunjungan_id,
+    isi: created.isi ?? '',
+    hari: created.hari ?? '',
+    tanggal: created.tanggal?.toISOString() ?? '',
+    foto: created.foto ?? '',
+    nama_kegiatan: created.nama_kegiatan,
+    link_gmaps: created.link_gmaps ?? '',
+    lokasi: created.tempat ?? '',
+    rt: created.rt ?? '',
+    rw: created.rw ?? '',
+    jumlah_peserta: created.jumlah_peserta ?? 0,
+    catatan: created.catatan ?? '',
+    kelurahan: created.kunjungan.kelurahan.nama,
+    kecamatan: created.kunjungan.kecamatan.nama,
+    kota: created.kunjungan.kota.nama,
+  }, { status: 201 })
+}
