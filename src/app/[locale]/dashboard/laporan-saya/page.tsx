@@ -31,11 +31,6 @@ interface KotaItem { id: string; nama: string }
 interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
 
-const STATUS_FLOW: { status: Aspirasi['status']; label: string; icon: React.ReactNode }[] = [
-  { status: 'BELUM_DITINDAKLANJUTI', label: 'Laporan Diterima', icon: <MdHourglassEmpty size={20} /> },
-  { status: 'SEDANG_DITINDAKLANJUTI', label: 'Sedang Diproses', icon: <MdSearch size={20} /> },
-]
-
 function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const isRejected = aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
   const isProcessing = aspirasi.status === 'SEDANG_DITINDAKLANJUTI'
@@ -43,12 +38,15 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const showStep2 = aspirasi.status !== 'BELUM_DITINDAKLANJUTI'
 
   const steps = [
-    { label: 'Laporan Diterima', icon: <MdHourglassEmpty size={20} /> },
+    { label: 'Laporan Anda Diterima', icon: <MdHourglassEmpty size={20} /> },
     {
-      label: isRejected ? 'Tidak Dapat Ditindaklanjuti' : aspirasi.status === 'BELUM_DITINDAKLANJUTI' ? 'Menunggu Diproses' : 'Sedang Diproses',
+      label: isRejected ? 'Tidak Dapat Ditindaklanjuti' : isCompleted ? 'Laporan Anda Sudah Diproses' : isProcessing ? 'Laporan Anda Sedang Diproses' : 'Menunggu Diproses',
       icon: isRejected ? <MdCancel size={20} /> : <MdSearch size={20} />,
     },
   ]
+  if (isCompleted) {
+    steps.push({ label: 'Laporan Anda Sudah Ditindak Lanjuti', icon: <MdCheckCircle size={20} /> })
+  }
 
   return (
     <Card className="p-5 space-y-4">
