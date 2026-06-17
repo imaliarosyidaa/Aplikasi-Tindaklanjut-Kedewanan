@@ -13,6 +13,7 @@ export async function GET() {
 
   const result = data.map((a) => ({
     id: a.id,
+    id_laporan: a.id_laporan ?? '',
     nik: a.nik ?? '',
     sumber: a.sumber,
     deskripsi: a.deskripsi,
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
       kategori_usulan: body.kategori_usulan ?? '',
       jenis_usulan: body.jenis_usulan ?? '',
       jenis_reses: body.jenis_reses ?? '',
+      id_laporan: body.id_laporan ?? '',
       tindak_lanjut: 'Belum ditindaklanjuti',
       tanggal_dibuat: new Date(),
       kota_id: kotaId,
@@ -90,6 +92,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     id: created.id,
+    id_laporan: created.id_laporan ?? '',
     nik: created.nik ?? '',
     sumber: created.sumber,
     deskripsi: created.deskripsi,

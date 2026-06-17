@@ -28,6 +28,7 @@ export interface Kunjungan {
 
 export interface Aspirasi {
   id: string
+  id_laporan?: string
   nik?: string
   sumber: SumberAspirasi
   deskripsi: string

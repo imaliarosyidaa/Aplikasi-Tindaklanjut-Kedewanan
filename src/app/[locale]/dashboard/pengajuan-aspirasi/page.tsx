@@ -41,6 +41,11 @@ interface UploadedFile {
 
 export default function PengajuanAspirasiPage(): React.ReactNode {
   const t = useTranslations('Kunjungan')
+  const [idLaporan] = useState(() =>
+    'LAP-' + Array.from({ length: 10 }, () =>
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
+    ).join('')
+  )
   const [nik, setNik] = useState('')
   const [nama, setNama] = useState('')
   const [kotaId, setKotaId] = useState('')
@@ -84,6 +89,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        id_laporan: idLaporan,
         nik,
         sumber: 'CALL_CENTER',
         deskripsi: pengaduan,
@@ -157,6 +163,13 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
 
       <Card className="p-6 w-full mx-auto bg-blue-50 border-blue-200">
         <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            id="id_laporan"
+            label="ID Laporan"
+            value={idLaporan}
+            disabled
+            className="bg-gray-100 text-gray-500"
+          />
           <Input
             id="nik"
             label="Nomor Induk Kependudukan (NIK)"

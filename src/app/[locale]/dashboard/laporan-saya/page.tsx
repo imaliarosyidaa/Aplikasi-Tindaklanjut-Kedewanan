@@ -43,6 +43,7 @@ export default function LaporanSayaPage(): React.ReactNode {
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
+  const [queryId, setQueryId] = useState('')
   const [searched, setSearched] = useState(false)
   const [results, setResults] = useState<Aspirasi[]>([])
   const [selected, setSelected] = useState<Aspirasi | null>(null)
@@ -67,6 +68,7 @@ export default function LaporanSayaPage(): React.ReactNode {
 
   const handleSearch = () => {
     const q = query.toLowerCase().trim()
+    const qId = queryId.trim().toUpperCase()
     const kecamatanNama = kecamatanOptions.find(k => k.value === kecamatanId)?.label ?? ''
     const kelurahanOptions = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
     const kelurahanNama = kelurahanOptions.find(k => k.value === kelurahanId)?.label ?? ''
@@ -74,6 +76,7 @@ export default function LaporanSayaPage(): React.ReactNode {
     const filtered = allAspirasi.filter((a) => {
       if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
+      if (qId && (a.id_laporan ?? '').toUpperCase() !== qId) return false
       if (!q) return true
       return (
         a.pelapor_nama.toLowerCase().includes(q) ||
@@ -85,7 +88,7 @@ export default function LaporanSayaPage(): React.ReactNode {
     setSelected(null)
   }
 
-  const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim()
+  const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim() || queryId.trim()
 
   return (
     <div className="space-y-6">
@@ -156,6 +159,18 @@ export default function LaporanSayaPage(): React.ReactNode {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Contoh: Siti atau 081234567890"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
+              />
+            </div>
+          </div>
+          <div className="flex gap-3 items-end">
+            <div className="flex-1">
+              <Input
+                id="queryId"
+                label="ID Laporan"
+                value={queryId}
+                onChange={(e) => setQueryId(e.target.value)}
+                placeholder="Contoh: LAP-A7B3K9X2P1"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
               />
             </div>

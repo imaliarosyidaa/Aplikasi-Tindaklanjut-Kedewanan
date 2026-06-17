@@ -101,6 +101,7 @@ model Kunjungan {
 
 model Aspirasi {
   id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_laporan           String?         @default("")
   nik                  String?          @default("")
   sumber               SumberAspirasi
   deskripsi            String
