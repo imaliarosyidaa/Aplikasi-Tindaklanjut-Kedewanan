@@ -15,25 +15,134 @@ import {
   MdArrowBack,
   MdPhone,
   MdPerson,
+  MdLocationOn,
+  MdDescription,
+  MdCheckCircle,
+  MdHourglassEmpty,
+  MdCancel,
+  MdImage,
 } from 'react-icons/md'
 import useSWR from 'swr'
 import { getKelurahanByKecamatanId } from '@/utils/masterWilayah'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-interface KotaItem {
-  id: string
-  nama: string
-}
+interface KotaItem { id: string; nama: string }
+interface KecamatanItem { id: string; nama: string }
+interface KelurahanItem { id: string; nama: string }
 
-interface KecamatanItem {
-  id: string
-  nama: string
-}
+const STATUS_FLOW: { status: Aspirasi['status']; label: string; icon: React.ReactNode }[] = [
+  { status: 'BELUM_DITINDAKLANJUTI', label: 'Laporan Diterima', icon: <MdHourglassEmpty size={20} /> },
+  { status: 'SEDANG_DITINDAKLANJUTI', label: 'Sedang Diproses', icon: <MdSearch size={20} /> },
+  { status: 'SUDAH_DITINDAKLANJUTI', label: 'Selesai Ditindaklanjuti', icon: <MdCheckCircle size={20} /> },
+  { status: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Dapat Ditindaklanjuti', icon: <MdCancel size={20} /> },
+]
 
-interface KelurahanItem {
-  id: string
-  nama: string
+function TrackingTicket({ aspirasi, s }: { aspirasi: Aspirasi; s: (key: string) => string }) {
+  const currentIndex = STATUS_FLOW.findIndex((st) => st.status === aspirasi.status)
+
+  return (
+    <Card className="p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs text-[var(--color-text-secondary)]">ID Laporan</p>
+          <p className="font-mono font-bold text-[var(--color-text)]">{aspirasi.id_laporan}</p>
+        </div>
+        <Badge status={aspirasi.status}>
+          {aspirasi.status.replace(/_/g, ' ')}
+        </Badge>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 text-sm">
+        <div className="flex items-center gap-2">
+          <MdPerson size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+          <span className="text-[var(--color-text)]">{aspirasi.pelapor_nama}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <MdPhone size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+          <span className="text-[var(--color-text)]">{aspirasi.pelapor_telepon}</span>
+        </div>
+        <div className="flex items-center gap-2 col-span-2">
+          <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+          <span className="text-[var(--color-text)]">
+            {[aspirasi.kota, aspirasi.kecamatan, aspirasi.kelurahan].filter(Boolean).join(', ')}
+            {aspirasi.lokasi ? ` - ${aspirasi.lokasi}` : ''}
+          </span>
+        </div>
+        <div className="flex items-start gap-2 col-span-2">
+          <MdDescription size={16} className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" />
+          <span className="text-[var(--color-text)]">{aspirasi.deskripsi}</span>
+        </div>
+      </div>
+
+      <div className="relative pt-2">
+        {STATUS_FLOW.map((step, i) => {
+          const showActive = aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+            ? i <= currentIndex || i === STATUS_FLOW.length - 1
+            : i <= currentIndex
+          const isCurrent = i === currentIndex
+          const isLast = i === STATUS_FLOW.length - 1
+
+          return (
+            <div key={step.status} className="flex gap-3">
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors ${
+                  showActive
+                    ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                    : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'
+                }`}>
+                  {step.icon}
+                </div>
+                {!isLast && (
+                  <div className={`w-0.5 h-6 transition-colors ${
+                    showActive && aspirasi.status !== 'TIDAK_BISA_DITINDAKLANJUTI'
+                      ? 'bg-[var(--color-primary)]'
+                      : 'bg-[var(--color-border)]'
+                  }`} />
+                )}
+              </div>
+              <div className={`pb-4 ${isLast ? 'pb-0' : ''}`}>
+                <p className={`text-sm font-medium ${
+                  isCurrent
+                    ? 'text-[var(--color-primary)]'
+                    : showActive
+                    ? 'text-[var(--color-text)]'
+                    : 'text-[var(--color-text-secondary)]'
+                }`}>
+                  {step.label}
+                </p>
+                {aspirasi.bukti_tindak_lanjut && aspirasi.bukti_tindak_lanjut.length > 0 && isCurrent && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {aspirasi.bukti_tindak_lanjut.map((url, idx) => (
+                      <img
+                        key={idx}
+                        src={url}
+                        alt={`Bukti ${idx + 1}`}
+                        className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]"
+                      />
+                    ))}
+                  </div>
+                )}
+                {isCurrent && aspirasi.catatan_tindak_lanjut && (
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">
+                    "{aspirasi.catatan_tindak_lanjut}"
+                  </p>
+                )}
+                {isCurrent && (
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                    {new Date(aspirasi.updated_at).toLocaleDateString('id-ID', {
+                      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                      hour: '2-digit', minute: '2-digit',
+                    })}
+                  </p>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </Card>
+  )
 }
 
 export default function LaporanSayaPage(): React.ReactNode {
@@ -46,9 +155,8 @@ export default function LaporanSayaPage(): React.ReactNode {
   const [queryId, setQueryId] = useState('')
   const [searched, setSearched] = useState(false)
   const [results, setResults] = useState<Aspirasi[]>([])
-  const [selected, setSelected] = useState<Aspirasi | null>(null)
 
-    const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
     kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
     fetcher
@@ -70,10 +178,10 @@ export default function LaporanSayaPage(): React.ReactNode {
     const q = query.toLowerCase().trim()
     const qId = queryId.trim().toUpperCase()
     const kecamatanNama = kecamatanOptions.find(k => k.value === kecamatanId)?.label ?? ''
-    const kelurahanOptions = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
-    const kelurahanNama = kelurahanOptions.find(k => k.value === kelurahanId)?.label ?? ''
+    const kelurahanOpts = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
+    const kelurahanNama = kelurahanOpts.find(k => k.value === kelurahanId)?.label ?? ''
 
-    const filtered = allAspirasi.filter((a) => {
+    const filtered = (allAspirasi ?? []).filter((a) => {
       if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
       if (qId && (a.id_laporan ?? '').toUpperCase() !== qId) return false
@@ -85,7 +193,6 @@ export default function LaporanSayaPage(): React.ReactNode {
     })
     setResults(filtered)
     setSearched(true)
-    setSelected(null)
   }
 
   const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim() || queryId.trim()
@@ -120,11 +227,7 @@ export default function LaporanSayaPage(): React.ReactNode {
                 placeholder="Semua Kota"
                 options={kotaOptions}
                 value={kotaId}
-                onChange={(e) => {
-                  setKotaId(e.target.value)
-                  setKecamatanId('')
-                  setKelurahanId('')
-                }}
+                onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -134,10 +237,7 @@ export default function LaporanSayaPage(): React.ReactNode {
                 placeholder="Semua Kecamatan"
                 options={kecamatanOptions}
                 value={kecamatanId}
-                onChange={(e) => {
-                  setKecamatanId(e.target.value)
-                  setKelurahanId('')
-                }}
+                onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -183,99 +283,19 @@ export default function LaporanSayaPage(): React.ReactNode {
       </Card>
 
       {searched && (
-        <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[var(--color-bg-secondary)]">
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Nama Pelapor</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No. Telepon</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Deskripsi</th>
-                <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Status</th>
-                <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Tanggal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
-                    Tidak ditemukan aspirasi dengan kata kunci tersebut
-                  </td>
-                </tr>
-              ) : (
-                results.map((aspirasi, i) => (
-                  <tr
-                    key={aspirasi.id}
-                    className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50 cursor-pointer"
-                    onClick={() => setSelected(selected?.id === aspirasi.id ? null : aspirasi)}
-                  >
-                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">{i + 1}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <MdPerson size={14} className="text-[var(--color-text-secondary)]" />
-                        {aspirasi.pelapor_nama}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <MdPhone size={14} className="text-[var(--color-text-secondary)]" />
-                        {aspirasi.pelapor_telepon}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 max-w-xs truncate">{aspirasi.deskripsi}</td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge status={aspirasi.status}>{aspirasi.status.replace(/_/g, ' ')}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-center text-[var(--color-text-secondary)]">
-                      {aspirasi.tanggal_dibuat}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {selected && (
-        <Card className="p-4 space-y-3 max-w-lg mx-auto">
-          <div className="flex items-start justify-between">
-            <p className="font-medium text-[var(--color-text)]">
-              {selected.deskripsi}
-            </p>
-            <Badge status={selected.status}>
-              {selected.status.replace(/_/g, ' ')}
-            </Badge>
-          </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <p className="text-[var(--color-text-secondary)]">Sumber</p>
-              <p className="text-[var(--color-text)]">{s(selected.sumber)}</p>
-            </div>
-            <div>
-              <p className="text-[var(--color-text-secondary)]">Nama Pelapor</p>
-              <p className="text-[var(--color-text)]">{selected.pelapor_nama}</p>
-            </div>
-            <div>
-              <p className="text-[var(--color-text-secondary)]">No. Telepon</p>
-              <p className="text-[var(--color-text)]">{selected.pelapor_telepon}</p>
-            </div>
-            <div>
-              <p className="text-[var(--color-text-secondary)]">Tanggal</p>
-              <p className="text-[var(--color-text)]">{selected.tanggal_dibuat}</p>
-            </div>
-          </div>
-          {selected.catatan_tindak_lanjut && (
-            <div className="rounded-lg bg-[var(--color-bg-secondary)] p-3 text-sm">
-              <p className="text-[var(--color-text-secondary)] font-medium mb-1">
-                Catatan Tindak Lanjut:
+        <div className="space-y-4">
+          {results.length === 0 ? (
+            <Card>
+              <p className="text-center text-[var(--color-text-secondary)] py-8">
+                Tidak ditemukan aspirasi dengan kata kunci tersebut
               </p>
-              <p className="text-[var(--color-text)]">
-                {selected.catatan_tindak_lanjut}
-              </p>
-            </div>
+            </Card>
+          ) : (
+            results.map((aspirasi) => (
+              <TrackingTicket key={aspirasi.id} aspirasi={aspirasi} s={s} />
+            ))
           )}
-        </Card>
+        </div>
       )}
     </div>
   )
