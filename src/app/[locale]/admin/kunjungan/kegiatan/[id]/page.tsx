@@ -51,12 +51,24 @@ export default function DetailKegiatanPage({
     return days[d.getDay()]
   }
 
+  const formatTanggalJam = (dateString: string) => {
+  const date = new Date(dateString)
+
+  return `${date.toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })}, Jam ${date.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })}`
+}
   const fields = [
-    { label: 'ID', value: kegiatan.id },
-    { label: 'Tanggal', value: `${getHari(kegiatan.tanggal)}, ${kegiatan.tanggal}` },
+    { label: 'Tanggal', value: formatTanggalJam(kegiatan.tanggal) },
     { label: 'Jenis Kegiatan', value: kegiatan.jenis_kegiatan },
-    { label: 'Nama Kegiatan', value: kegiatan.nama_kegiatan },
-    { label: 'Lokasi', value: kegiatan.lokasi },
+    { label: 'Catatan Kegiatan', value: kegiatan.catatan },
+    { label: 'Lokasi Kegiatan', value: kegiatan.lokasi },
     {
       label: 'Link GMaps',
       value: kegiatan.link_gmaps,
@@ -67,7 +79,6 @@ export default function DetailKegiatanPage({
     { label: 'RT', value: kegiatan.rt },
     { label: 'RW', value: kegiatan.rw },
     { label: 'Jumlah Peserta', value: String(kegiatan.jumlah_peserta) },
-    { label: 'Catatan', value: kegiatan.catatan },
   ]
 
   return (
@@ -81,7 +92,7 @@ export default function DetailKegiatanPage({
 
       <div>
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Detail Kegiatan
+          Detail Kegiatan Kedewanan
         </h1>
       </div>
 

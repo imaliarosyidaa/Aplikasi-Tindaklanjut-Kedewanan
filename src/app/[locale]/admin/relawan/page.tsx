@@ -192,7 +192,7 @@ export default function RelawanPage(): React.ReactNode {
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Jenis Kelamin</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Posisi</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Posisi Kewilayahan</th>
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               </tr>
             </thead>
