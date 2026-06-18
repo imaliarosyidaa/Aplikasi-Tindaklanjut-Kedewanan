@@ -32,20 +32,23 @@ interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
 
 function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
-  const isRejected = aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
-  const isProcessing = aspirasi.status === 'SEDANG_DITINDAKLANJUTI'
-  const isCompleted = aspirasi.status === 'SUDAH_DITINDAKLANJUTI'
-  const showStep2 = aspirasi.status !== 'BELUM_DITINDAKLANJUTI'
+  const trackings = aspirasi.trackings ?? []
 
-  const steps = [
-    { label: 'Laporan Anda Diterima', icon: <MdHourglassEmpty size={20} /> },
-    {
-      label: isRejected ? 'Tidak Dapat Ditindaklanjuti' : isCompleted ? 'Laporan Anda Sudah Diproses' : isProcessing ? 'Laporan Anda Sedang Diproses' : 'Menunggu Diproses',
-      icon: isRejected ? <MdCancel size={20} /> : <MdSearch size={20} />,
-    },
-  ]
-  if (isCompleted) {
-    steps.push({ label: 'Laporan Anda Sudah Ditindak Lanjuti', icon: <MdCheckCircle size={20} /> })
+  const statusLabelMap: Record<string, string> = {
+    BELUM_DITINDAKLANJUTI: 'Laporan Anda Diterima',
+    SEDANG_DITINDAKLANJUTI: 'Laporan Anda Sedang Diproses',
+    SUDAH_DITINDAKLANJUTI: 'Laporan Anda Sudah Ditindak Lanjuti',
+    TIDAK_BISA_DITINDAKLANJUTI: 'Tidak Dapat Ditindaklanjuti',
+  }
+
+  const getIcon = (status: string) => {
+    switch (status) {
+      case 'BELUM_DITINDAKLANJUTI': return <MdHourglassEmpty size={20} />
+      case 'SEDANG_DITINDAKLANJUTI': return <MdSearch size={20} />
+      case 'SUDAH_DITINDAKLANJUTI': return <MdCheckCircle size={20} />
+      case 'TIDAK_BISA_DITINDAKLANJUTI': return <MdCancel size={20} />
+      default: return <MdHourglassEmpty size={20} />
+    }
   }
 
   return (
@@ -103,45 +106,49 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
       </div>
 
       <div className="relative pt-2">
-        {steps.map((step, i) => {
-          const active = i === 0 || showStep2
-          const isLast = i === steps.length - 1
-
+        {trackings.length === 0 && (
+          <div className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]">
+                <MdHourglassEmpty size={20} />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-[var(--color-text-secondary)]">Laporan Anda Diterima</p>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                {new Date(aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
+                  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                  hour: '2-digit', minute: '2-digit',
+                })}
+              </p>
+            </div>
+          </div>
+        )}
+        {trackings.map((t, i) => {
+          const isLast = i === trackings.length - 1
           return (
-            <div key={i} className="flex gap-3">
+            <div key={t.id} className="flex gap-3">
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors ${
-                  active
-                    ? isRejected && isLast
-                      ? 'bg-red-100 text-red-600'
-                      : 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
-                    : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'
+                  t.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+                    ? 'bg-red-100 text-red-600'
+                    : 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
                 }`}>
-                  {step.icon}
+                  {getIcon(t.status)}
                 </div>
-                {!isLast && (
-                  <div className={`w-0.5 h-6 transition-colors ${
-                    showStep2 && !isRejected
-                      ? 'bg-[var(--color-primary)]'
-                      : isRejected
-                      ? 'bg-red-200'
-                      : 'bg-[var(--color-border)]'
-                  }`} />
-                )}
+                {!isLast && <div className="w-0.5 h-6 bg-[var(--color-primary)]" />}
               </div>
-              <div className={`pb-4 ${isLast ? 'pb-0' : ''}`}>
+              <div className={`${isLast ? '' : 'pb-4'}`}>
                 <p className={`text-sm font-medium ${
-                  active
-                    ? isRejected && isLast
-                      ? 'text-red-600'
-                      : 'text-[var(--color-text)]'
-                    : 'text-[var(--color-text-secondary)]'
+                  t.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+                    ? 'text-red-600'
+                    : 'text-[var(--color-text)]'
                 }`}>
-                  {step.label}
+                  {statusLabelMap[t.status] ?? t.status.replace(/_/g, ' ')}
                 </p>
-                {isLast && aspirasi.bukti_tindak_lanjut && aspirasi.bukti_tindak_lanjut.length > 0 && (
+                {t.lampiran && t.lampiran.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {aspirasi.bukti_tindak_lanjut.map((url, idx) => (
+                    {t.lampiran.map((url, idx) => (
                       <img
                         key={idx}
                         src={url}
@@ -151,21 +158,15 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                     ))}
                   </div>
                 )}
-                {isLast && aspirasi.catatan_tindak_lanjut && (
-                  <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">
-                    "{aspirasi.catatan_tindak_lanjut}"
-                  </p>
+                {t.catatan && (
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{t.catatan}"</p>
                 )}
-                {active && (
-                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-                    {new Date(
-                      i === 0 ? aspirasi.tanggal_dibuat : aspirasi.updated_at
-                    ).toLocaleDateString('id-ID', {
-                      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                      hour: '2-digit', minute: '2-digit',
-                    })}
-                  </p>
-                )}
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                  {new Date(t.created_at).toLocaleDateString('id-ID', {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit',
+                  })}
+                </p>
               </div>
             </div>
           )

@@ -7,7 +7,7 @@ export async function GET() {
     prisma.kunjungan.findMany({
       include: { kelurahan: { include: { kecamatan: true } } },
     }),
-    prisma.aspirasi.findMany(),
+    prisma.aspirasis.findMany(),
     prisma.kecamatan.findMany(),
     prisma.kelurahan.findMany(),
   ])

@@ -28,7 +28,8 @@ async function main() {
   console.log('Seeding...')
 
   await prisma.kegiatan.deleteMany()
-  await prisma.aspirasi.deleteMany()
+  await prisma.trackingAspirasi.deleteMany()
+  await prisma.aspirasis.deleteMany()
   await prisma.relawan.deleteMany()
   await prisma.kunjungan.deleteMany()
   await prisma.kelurahan.deleteMany()
@@ -136,8 +137,8 @@ async function main() {
   ]
 
   await Promise.all(
-    aspirasiData.map(({ kecamatan, kelurahan, alamat, ...a }) =>
-      prisma.aspirasi.create({
+    aspirasiData.map(({ kecamatan, kelurahan, alamat, catatan_tindak_lanjut, ...a }) =>
+      prisma.aspirasis.create({
         data: {
           ...a,
           kota_id: kotaMap.get('Jakarta Selatan')!,
@@ -149,6 +150,30 @@ async function main() {
     )
   )
   console.log(`  ${aspirasiData.length} aspirasi created`)
+
+  // ──────────────────────────────────────────────
+  // 4b. Tracking Aspirasi
+  // ──────────────────────────────────────────────
+  const trackingData: { aspirasi_id: string; status: string; catatan?: string }[] = []
+  for (const a of aspirasiData) {
+    if (a.status === 'BELUM_DITINDAKLANJUTI') {
+      trackingData.push({ aspirasi_id: a.id, status: 'BELUM_DITINDAKLANJUTI' })
+    } else if (a.status === 'SEDANG_DITINDAKLANJUTI') {
+      trackingData.push({ aspirasi_id: a.id, status: 'BELUM_DITINDAKLANJUTI' })
+      trackingData.push({ aspirasi_id: a.id, status: 'SEDANG_DITINDAKLANJUTI', catatan: a.catatan_tindak_lanjut })
+    } else if (a.status === 'SUDAH_DITINDAKLANJUTI') {
+      trackingData.push({ aspirasi_id: a.id, status: 'BELUM_DITINDAKLANJUTI' })
+      trackingData.push({ aspirasi_id: a.id, status: 'SEDANG_DITINDAKLANJUTI', catatan: a.catatan_tindak_lanjut })
+      trackingData.push({ aspirasi_id: a.id, status: 'SUDAH_DITINDAKLANJUTI', catatan: a.catatan_tindak_lanjut })
+    } else if (a.status === 'TIDAK_BISA_DITINDAKLANJUTI') {
+      trackingData.push({ aspirasi_id: a.id, status: 'BELUM_DITINDAKLANJUTI' })
+      trackingData.push({ aspirasi_id: a.id, status: 'SEDANG_DITINDAKLANJUTI' })
+      trackingData.push({ aspirasi_id: a.id, status: 'TIDAK_BISA_DITINDAKLANJUTI', catatan: a.catatan_tindak_lanjut })
+    }
+  }
+
+  await prisma.trackingAspirasi.createMany({ data: trackingData })
+  console.log(`  ${trackingData.length} tracking aspirasi created`)
 
   // ──────────────────────────────────────────────
   // 5. Relawan

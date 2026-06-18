@@ -37,8 +37,6 @@ export interface Aspirasi {
   pelapor_email: string
   pelapor_telepon: string
   lampiran: string[]
-  bukti_tindak_lanjut: string[]
-  catatan_tindak_lanjut: string
   kategori_usulan: string
   jenis_usulan: string
   jenis_reses: string
@@ -50,6 +48,16 @@ export interface Aspirasi {
   kecamatan?: string
   kelurahan?: string
   lokasi?: string
+  trackings?: TrackingAspirasi[]
+}
+
+export interface TrackingAspirasi {
+  id: string
+  aspirasi_id: string
+  status: AspirasiStatus
+  catatan?: string
+  lampiran: string[]
+  created_at: string
 }
 
 export interface MasterKecamatan {

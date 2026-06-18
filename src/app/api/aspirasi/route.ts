@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const data = await prisma.aspirasi.findMany({
+  const data = await prisma.aspirasis.findMany({
     orderBy: { created_at: 'desc' },
     include: {
       kota: true,
       kecamatan: true,
       kelurahan: true,
+      trackings: { orderBy: { created_at: 'asc' } },
     },
   })
 
@@ -22,8 +23,6 @@ export async function GET() {
     pelapor_email: a.pelapor_email ?? '',
     pelapor_telepon: a.pelapor_telepon,
     lampiran: a.lampiran as string[] ?? [],
-    bukti_tindak_lanjut: a.bukti_tindak_lanjut as string[] ?? [],
-    catatan_tindak_lanjut: a.catatan_tindak_lanjut ?? '',
     kategori_usulan: a.kategori_usulan,
     jenis_usulan: a.jenis_usulan,
     jenis_reses: a.jenis_reses,
@@ -35,6 +34,14 @@ export async function GET() {
     kecamatan: a.kecamatan?.nama ?? '',
     kelurahan: a.kelurahan?.nama ?? '',
     lokasi: a.alamat ?? '',
+    trackings: a.trackings.map((t) => ({
+      id: t.id,
+      aspirasi_id: t.aspirasi_id,
+      status: t.status,
+      catatan: t.catatan ?? '',
+      lampiran: t.lampiran as string[] ?? [],
+      created_at: t.created_at.toISOString(),
+    })),
   }))
 
   return NextResponse.json(result)
@@ -60,7 +67,7 @@ export async function POST(request: Request) {
     if (kel) kelurahanId = kel.id
   }
 
-  const created = await prisma.aspirasi.create({
+  const created = await prisma.aspirasis.create({
     data: {
       nik: body.nik ?? '',
       sumber: body.sumber,
@@ -70,8 +77,6 @@ export async function POST(request: Request) {
       pelapor_email: body.pelapor_email ?? '',
       pelapor_telepon: body.pelapor_telepon ?? '',
       lampiran: body.lampiran ?? [],
-      bukti_tindak_lanjut: [],
-      catatan_tindak_lanjut: '',
       kategori_usulan: body.kategori_usulan ?? '',
       jenis_usulan: body.jenis_usulan ?? '',
       jenis_reses: body.jenis_reses ?? '',
@@ -83,10 +88,12 @@ export async function POST(request: Request) {
       kelurahan_id: kelurahanId,
       alamat: body.lokasi ?? body.alamat ?? '',
     },
-    include: {
-      kota: true,
-      kecamatan: true,
-      kelurahan: true,
+  })
+
+  await prisma.trackingAspirasi.create({
+    data: {
+      aspirasi_id: created.id,
+      status: 'BELUM_DITINDAKLANJUTI',
     },
   })
 
@@ -101,8 +108,6 @@ export async function POST(request: Request) {
     pelapor_email: created.pelapor_email ?? '',
     pelapor_telepon: created.pelapor_telepon,
     lampiran: created.lampiran as string[] ?? [],
-    bukti_tindak_lanjut: created.bukti_tindak_lanjut as string[] ?? [],
-    catatan_tindak_lanjut: created.catatan_tindak_lanjut ?? '',
     kategori_usulan: created.kategori_usulan,
     jenis_usulan: created.jenis_usulan,
     jenis_reses: created.jenis_reses,
@@ -110,9 +115,5 @@ export async function POST(request: Request) {
     tanggal_dibuat: created.tanggal_dibuat.toISOString(),
     created_at: created.created_at.toISOString(),
     updated_at: created.updated_at.toISOString(),
-    kota: created.kota?.nama ?? '',
-    kecamatan: created.kecamatan?.nama ?? '',
-    kelurahan: created.kelurahan?.nama ?? '',
-    lokasi: created.alamat ?? '',
   }, { status: 201 })
 }

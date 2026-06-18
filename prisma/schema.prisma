@@ -35,7 +35,7 @@ model User {
   password  String
   name      String
   role      UserRole
-  aspirasis Aspirasi[]
+  aspirasis Aspirasis[]
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
 
@@ -49,7 +49,7 @@ model Kota {
   kelurahans Kelurahan[]
   kunjungans Kunjungan[]
   relawans Relawan[]
-  aspirasis Aspirasi[]
+  aspirasis Aspirasis[]
 
   @@map("kotas")
 }
@@ -62,7 +62,7 @@ model Kecamatan {
   kunjungans Kunjungan[]
   kota       Kota        @relation(fields: [kota_id], references: [id])
   relawans Relawan[]
-  aspirasis Aspirasi[]
+  aspirasis Aspirasis[]
 
   @@map("kecamatans")
 }
@@ -74,7 +74,7 @@ model Kelurahan {
   kecamatan    Kecamatan   @relation(fields: [kecamatan_id], references: [id])
   kunjungans   Kunjungan[]
   relawans Relawan[]
-  aspirasis Aspirasi[]
+  aspirasis Aspirasis[]
   kotas Kota[]
 
   @@map("kelurahans")
@@ -99,7 +99,7 @@ model Kunjungan {
   @@map("kunjungans")
 }
 
-model Aspirasi {
+model Aspirasis {
   id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id_laporan           String?         @default("")
   nik                  String?          @default("")
@@ -110,8 +110,6 @@ model Aspirasi {
   pelapor_email        String?    @default("")
   pelapor_telepon      String
   lampiran             Json?            @default("[]")
-  bukti_tindak_lanjut  Json?            @default("[]")
-  catatan_tindak_lanjut String?          @default("")
   kategori_usulan      String
   jenis_usulan         String
   jenis_reses          String
@@ -129,7 +127,20 @@ model Aspirasi {
   kota                 Kota?           @relation(fields: [kota_id], references: [id])
   kecamatan            Kecamatan?      @relation(fields: [kecamatan_id], references: [id])
   kelurahan            Kelurahan?      @relation(fields: [kelurahan_id], references: [id])
+  trackings            TrackingAspirasi[]
   @@map("aspirasis")
+}
+
+model TrackingAspirasi {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aspirasi_id    String         @db.Uuid
+  status         AspirasiStatus
+  catatan        String?
+  lampiran       Json?          @default("[]")
+  created_at     DateTime       @default(now())
+
+  aspirasi       Aspirasis      @relation(fields: [aspirasi_id], references: [id], onDelete: Cascade)
+  @@map("tracking_aspirasis")
 }
 
 enum JenisKelamin {

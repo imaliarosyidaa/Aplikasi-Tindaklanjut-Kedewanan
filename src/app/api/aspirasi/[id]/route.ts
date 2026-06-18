@@ -7,12 +7,13 @@ export async function GET(
 ) {
   const { id } = await params
 
-  const a = await prisma.aspirasi.findUnique({
+  const a = await prisma.aspirasis.findUnique({
     where: { id },
     include: {
       kota: true,
       kecamatan: true,
       kelurahan: true,
+      trackings: { orderBy: { created_at: 'asc' } },
     },
   })
 
@@ -30,8 +31,6 @@ export async function GET(
     pelapor_email: a.pelapor_email ?? '',
     pelapor_telepon: a.pelapor_telepon,
     lampiran: a.lampiran as string[] ?? [],
-    bukti_tindak_lanjut: a.bukti_tindak_lanjut as string[] ?? [],
-    catatan_tindak_lanjut: a.catatan_tindak_lanjut ?? '',
     kategori_usulan: a.kategori_usulan,
     jenis_usulan: a.jenis_usulan,
     jenis_reses: a.jenis_reses,
@@ -43,6 +42,14 @@ export async function GET(
     kecamatan: a.kecamatan?.nama ?? '',
     kelurahan: a.kelurahan?.nama ?? '',
     lokasi: a.alamat ?? '',
+    trackings: a.trackings.map((t) => ({
+      id: t.id,
+      aspirasi_id: t.aspirasi_id,
+      status: t.status,
+      catatan: t.catatan ?? '',
+      lampiran: t.lampiran as string[] ?? [],
+      created_at: t.created_at.toISOString(),
+    })),
   })
 }
 
@@ -53,22 +60,30 @@ export async function PATCH(
   const { id } = await params
   const body = await request.json()
 
-  const updateData: Record<string, unknown> = {}
-  if (body.status) updateData.status = body.status
-  if (body.catatan_tindak_lanjut !== undefined)
-    updateData.catatan_tindak_lanjut = body.catatan_tindak_lanjut
-  if (body.bukti_tindak_lanjut !== undefined)
-    updateData.bukti_tindak_lanjut = body.bukti_tindak_lanjut
+  if (body.status) {
+    await prisma.aspirasis.update({
+      where: { id },
+      data: { status: body.status },
+    })
 
-  const updated = await prisma.aspirasi.update({
+    await prisma.trackingAspirasi.create({
+      data: {
+        aspirasi_id: id,
+        status: body.status,
+        catatan: body.catatan ?? '',
+        lampiran: body.lampiran ?? [],
+      },
+    })
+  }
+
+  const updated = await prisma.aspirasis.findUnique({
     where: { id },
-    data: updateData,
-    include: {
-      kota: true,
-      kecamatan: true,
-      kelurahan: true,
-    },
+    include: { kota: true, kecamatan: true, kelurahan: true },
   })
+
+  if (!updated) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 
   return NextResponse.json({
     id: updated.id,
@@ -80,8 +95,6 @@ export async function PATCH(
     pelapor_email: updated.pelapor_email ?? '',
     pelapor_telepon: updated.pelapor_telepon,
     lampiran: updated.lampiran as string[] ?? [],
-    bukti_tindak_lanjut: updated.bukti_tindak_lanjut as string[] ?? [],
-    catatan_tindak_lanjut: updated.catatan_tindak_lanjut ?? '',
     kategori_usulan: updated.kategori_usulan,
     jenis_usulan: updated.jenis_usulan,
     jenis_reses: updated.jenis_reses,

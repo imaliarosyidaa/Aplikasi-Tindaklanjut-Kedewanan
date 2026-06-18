@@ -35,8 +35,8 @@ export const FormUpdateAspirasi = ({
   const { trigger, isMutating } = useUpdateStatus(aspirasi.id)
 
   const [status, setStatus] = useState<AspirasiStatus>(aspirasi.status)
-  const [catatan, setCatatan] = useState(aspirasi.catatan_tindak_lanjut ?? '')
-  const [buktiFiles, setBuktiFiles] = useState<UploadedFile[]>([])
+  const [catatan, setCatatan] = useState('')
+  const [lampiranFiles, setLampiranFiles] = useState<UploadedFile[]>([])
   const [kirimEmail, setKirimEmail] = useState(!!aspirasi.pelapor_email)
   const [kirimTelepon, setKirimTelepon] = useState(!!aspirasi.pelapor_telepon)
 
@@ -44,8 +44,8 @@ export const FormUpdateAspirasi = ({
     e.preventDefault()
     await trigger({
       status: status as AspirasiStatus,
-      catatan_tindak_lanjut: catatan,
-      bukti_tindak_lanjut: buktiFiles.map((f) => f.base64),
+      catatan: catatan,
+      lampiran: lampiranFiles.map((f) => f.base64),
       kirim_email: kirimEmail && !!aspirasi.pelapor_email,
       kirim_telepon: kirimTelepon && !!aspirasi.pelapor_telepon,
       pelapor_email: aspirasi.pelapor_email,
@@ -86,8 +86,8 @@ export const FormUpdateAspirasi = ({
 
       <FileUpload
         label={t('buktiTindakLanjut')}
-        value={buktiFiles}
-        onChange={setBuktiFiles}
+        value={lampiranFiles}
+        onChange={setLampiranFiles}
       />
 
       {status === 'SUDAH_DITINDAKLANJUTI' && (
