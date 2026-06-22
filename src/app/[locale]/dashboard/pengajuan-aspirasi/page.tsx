@@ -113,7 +113,7 @@ function TicketLaporan({
           <tr><td class="label">Alamat</td><td class="value">${data.alamat}</td></tr>
           <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal}</td></tr>
           <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan}</td></tr>
-          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map(f => `<img src="${f.base64}" class="lampiran-img" alt="${f.name}" />`).join('')}</td></tr>` : ''}
+          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map(f => f.base64.startsWith('data:application/pdf') ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF — ${f.name}</span>` : `<img src="${f.base64}" class="lampiran-img" alt="${f.name}" />`).join('')}</td></tr>` : ''}
         </table>
         <div class="footer">
           Dokumen ini dicetak pada ${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}<br/>
@@ -200,7 +200,23 @@ function TicketLaporan({
                 <span className="w-28 text-[var(--color-text-secondary)]">Lampiran</span>
                 <div className="flex flex-wrap gap-2">
                   {data.lampiran.map((f, i) => (
-                    <img key={i} src={f.base64} alt={f.name} className="w-20 h-20 object-cover rounded border border-[var(--color-border)]" />
+                    f.base64.startsWith('data:application/pdf') ? (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          fetch(f.base64).then(r => r.blob()).then(blob => {
+                            window.open(URL.createObjectURL(blob), '_blank')
+                          })
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+                      >
+                        <MdDescription size={14} />
+                        Detail
+                      </button>
+                    ) : (
+                      <img key={i} src={f.base64} alt={f.name} className="w-20 h-20 object-cover rounded border border-[var(--color-border)]" />
+                    )
                   ))}
                 </div>
               </div>

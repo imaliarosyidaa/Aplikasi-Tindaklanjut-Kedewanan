@@ -149,12 +149,28 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                 {t.lampiran && t.lampiran.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {t.lampiran.map((url, idx) => (
-                      <img
-                        key={idx}
-                        src={url}
-                        alt={`Bukti ${idx + 1}`}
-                        className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]"
-                      />
+                      url.startsWith('data:application/pdf') ? (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            fetch(url).then(r => r.blob()).then(blob => {
+                              window.open(URL.createObjectURL(blob), '_blank')
+                            })
+                          }}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+                        >
+                          <MdDescription size={14} />
+                          Detail
+                        </button>
+                      ) : (
+                        <img
+                          key={idx}
+                          src={url}
+                          alt={`Bukti ${idx + 1}`}
+                          className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]"
+                        />
+                      )
                     ))}
                   </div>
                 )}

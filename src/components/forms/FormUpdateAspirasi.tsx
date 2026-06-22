@@ -6,7 +6,6 @@ import { useUpdateStatus } from '@/hooks/useAspirasi'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { FileUpload } from '@/components/ui/file-upload'
-import { Input } from '@/components/ui/input'
 import type { AspirasiStatus, Aspirasi } from '@/types'
 interface UploadedFile {
   name: string
@@ -37,8 +36,6 @@ export const FormUpdateAspirasi = ({
   const [status, setStatus] = useState<AspirasiStatus>(aspirasi.status)
   const [catatan, setCatatan] = useState('')
   const [lampiranFiles, setLampiranFiles] = useState<UploadedFile[]>([])
-  const [kirimEmail, setKirimEmail] = useState(!!aspirasi.pelapor_email)
-  const [kirimTelepon, setKirimTelepon] = useState(!!aspirasi.pelapor_telepon)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,8 +43,8 @@ export const FormUpdateAspirasi = ({
       status: status as AspirasiStatus,
       catatan: catatan,
       lampiran: lampiranFiles.map((f) => f.base64),
-      kirim_email: kirimEmail && !!aspirasi.pelapor_email,
-      kirim_telepon: kirimTelepon && !!aspirasi.pelapor_telepon,
+      kirim_email: false,
+      kirim_telepon: false,
       pelapor_email: aspirasi.pelapor_email,
       pelapor_telepon: aspirasi.pelapor_telepon,
     })
@@ -89,42 +86,6 @@ export const FormUpdateAspirasi = ({
         value={lampiranFiles}
         onChange={setLampiranFiles}
       />
-
-      {status === 'SUDAH_DITINDAKLANJUTI' && (
-        <div className="rounded-lg border border-[var(--color-border)] p-4 space-y-3 bg-[var(--color-bg-secondary)]">
-          <p className="text-sm font-medium text-[var(--color-text)]">
-            Kirim notifikasi kepada warga
-          </p>
-          <div className="space-y-2">
-            {aspirasi.pelapor_email && (
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={kirimEmail}
-                  onChange={(e) => setKirimEmail(e.target.checked)}
-                  className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
-                />
-                <span className="text-sm text-[var(--color-text)]">
-                  Kirim ke email: {aspirasi.pelapor_email}
-                </span>
-              </label>
-            )}
-            {aspirasi.pelapor_telepon && (
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={kirimTelepon}
-                  onChange={(e) => setKirimTelepon(e.target.checked)}
-                  className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
-                />
-                <span className="text-sm text-[var(--color-text)]">
-                  Kirim ke telepon: {aspirasi.pelapor_telepon}
-                </span>
-              </label>
-            )}
-          </div>
-        </div>
-      )}
 
       <div className="flex justify-end gap-3 pt-2">
         <Button type="submit" disabled={isMutating}>
