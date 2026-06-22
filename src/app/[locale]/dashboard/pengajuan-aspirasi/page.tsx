@@ -1,16 +1,23 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { FileUpload } from '@/components/ui/file-upload'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Link } from '@/routing'
 import {
   MdSend,
   MdCheckCircle,
   MdArrowBack,
+  MdPrint,
+  MdPerson,
+  MdPhone,
+  MdLocationOn,
+  MdDescription,
+  MdSource,
 } from 'react-icons/md'
 import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
@@ -39,6 +46,185 @@ interface UploadedFile {
   base64: string
 }
 
+function TicketLaporan({
+  data,
+  onReset,
+}: {
+  data: {
+    idLaporan: string
+    nik: string
+    nama: string
+    kota: string
+    kecamatan: string
+    kelurahan: string
+    alamat: string
+    telepon: string
+    pengaduan: string
+    lampiran: UploadedFile[]
+    tanggal: string
+  }
+  onReset: () => void
+}) {
+  const ticketRef = useRef<HTMLDivElement>(null)
+
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Laporan ${data.idLaporan}</title>
+        <style>
+          @page { margin: 20mm; size: A4; }
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a2e; padding: 40px; }
+          .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #dc2626; padding-bottom: 20px; }
+          .header h1 { font-size: 20px; color: #dc2626; margin-bottom: 4px; }
+          .header p { font-size: 12px; color: #666; }
+          .id-laporan { text-align: center; margin: 20px 0; }
+          .id-laporan .label { font-size: 11px; color: #888; }
+          .id-laporan .value { font-size: 22px; font-weight: bold; font-family: monospace; letter-spacing: 2px; color: #1a1a2e; }
+          .status-badge { display: inline-block; background: #fef3c7; color: #92400e; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 6px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; font-size: 13px; vertical-align: top; }
+          td.label { width: 140px; color: #666; font-weight: 500; }
+          td.value { color: #1a1a2e; }
+          .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #888; }
+          .lampiran-img { max-width: 120px; max-height: 120px; margin: 4px; border: 1px solid #e5e7eb; border-radius: 4px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>LAPORAN ASPIRASI WARGA</h1>
+          <p>DPRD Kota Administrasi Jakarta Selatan</p>
+        </div>
+        <div class="id-laporan">
+          <div class="label">ID Laporan</div>
+          <div class="value">${data.idLaporan}</div>
+          <div class="status-badge">BELUM DITINDAKLANJUTI</div>
+        </div>
+        <table>
+          <tr><td class="label">Nama Pelapor</td><td class="value">${data.nama}</td></tr>
+          <tr><td class="label">NIK</td><td class="value">${data.nik || '-'}</td></tr>
+          <tr><td class="label">No. Telepon</td><td class="value">${data.telepon}</td></tr>
+          <tr><td class="label">Kota</td><td class="value">${data.kota}</td></tr>
+          <tr><td class="label">Kecamatan</td><td class="value">${data.kecamatan}</td></tr>
+          <tr><td class="label">Kelurahan</td><td class="value">${data.kelurahan}</td></tr>
+          <tr><td class="label">Alamat</td><td class="value">${data.alamat}</td></tr>
+          <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal}</td></tr>
+          <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan}</td></tr>
+          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map(f => `<img src="${f.base64}" class="lampiran-img" alt="${f.name}" />`).join('')}</td></tr>` : ''}
+        </table>
+        <div class="footer">
+          Dokumen ini dicetak pada ${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}<br/>
+          DPRD Kota Administrasi Jakarta Selatan
+        </div>
+      </body>
+      </html>
+    `)
+    printWindow.document.close()
+    printWindow.focus()
+    setTimeout(() => printWindow.print(), 500)
+  }
+
+  return (
+    <>
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          #ticket-area, #ticket-area * { visibility: visible; }
+          #ticket-area { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+      `}</style>
+      <div ref={ticketRef} id="ticket-area">
+        <Card className="p-6 max-w-2xl mx-auto">
+          <div className="text-center mb-6 border-b-2 border-red-600 pb-4">
+            <h1 className="text-lg font-bold text-red-600">LAPORAN ASPIRASI WARGA</h1>
+            <p className="text-xs text-[var(--color-text-secondary)]">DPRD Kota Administrasi Jakarta Selatan</p>
+          </div>
+
+          <div className="text-center mb-6">
+            <p className="text-xs text-[var(--color-text-secondary)]">ID Laporan</p>
+            <p className="text-2xl font-bold font-mono tracking-wider text-[var(--color-text)]">{data.idLaporan}</p>
+          </div>
+
+          <div className="space-y-3 text-sm">
+            <div className="flex gap-2">
+              <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Nama Pelapor</span>
+              <span className="text-[var(--color-text)]">{data.nama}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">NIK</span>
+              <span className="text-[var(--color-text)]">{data.nik || '-'}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdPhone size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">No. Telepon</span>
+              <span className="text-[var(--color-text)]">{data.telepon}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Kota</span>
+              <span className="text-[var(--color-text)]">{data.kota}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Kecamatan</span>
+              <span className="text-[var(--color-text)]">{data.kecamatan}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Kelurahan</span>
+              <span className="text-[var(--color-text)]">{data.kelurahan}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Alamat</span>
+              <span className="text-[var(--color-text)]">{data.alamat}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdSource size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Tanggal</span>
+              <span className="text-[var(--color-text)]">{data.tanggal}</span>
+            </div>
+            <div className="flex gap-2 pt-2 border-t border-[var(--color-border)]">
+              <MdDescription size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Pengaduan</span>
+              <span className="text-[var(--color-text)]">{data.pengaduan}</span>
+            </div>
+            {data.lampiran.length > 0 && (
+              <div className="flex gap-2 pt-2 border-t border-[var(--color-border)]">
+                <MdDescription size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+                <span className="w-28 text-[var(--color-text-secondary)]">Lampiran</span>
+                <div className="flex flex-wrap gap-2">
+                  {data.lampiran.map((f, i) => (
+                    <img key={i} src={f.base64} alt={f.name} className="w-20 h-20 object-cover rounded border border-[var(--color-border)]" />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 mt-8 pt-4 border-t border-[var(--color-border)]">
+            <Button onClick={handlePrint} className="flex-1">
+              <MdPrint size={18} className="mr-1" />
+              Cetak / Download PDF
+            </Button>
+            <Button onClick={onReset} variant="outline" className="flex-1">
+              Ajukan Lagi
+            </Button>
+            <Link href="/dashboard/laporan-saya" className="flex-1">
+              <Button variant="outline" className="w-full">Cek Laporan Saya</Button>
+            </Link>
+          </div>
+        </Card>
+      </div>
+    </>
+  )
+}
+
 export default function PengajuanAspirasiPage(): React.ReactNode {
   const t = useTranslations('Kunjungan')
   const [idLaporan] = useState(() =>
@@ -58,6 +244,19 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [ticketData, setTicketData] = useState<{
+    idLaporan: string
+    nik: string
+    nama: string
+    kota: string
+    kecamatan: string
+    kelurahan: string
+    alamat: string
+    telepon: string
+    pengaduan: string
+    lampiran: UploadedFile[]
+    tanggal: string
+  } | null>(null)
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
@@ -104,31 +303,27 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       }),
     })
     setLoading(false)
+    setTicketData({
+      idLaporan,
+      nik,
+      nama,
+      kota,
+      kecamatan,
+      kelurahan,
+      alamat,
+      telepon,
+      pengaduan,
+      lampiran,
+      tanggal: new Date().toLocaleDateString('id-ID', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      }),
+    })
     setSubmitted(true)
   }
 
-  if (submitted) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Card className="w-full max-w-md p-8 text-center">
-          <MdCheckCircle size={48} className="mx-auto text-[var(--color-success)] mb-4" />
-          <h1 className="text-xl font-bold text-[var(--color-text)] mb-2">
-            Aspirasi Terkirim
-          </h1>
-          <p className="text-[var(--color-text-secondary)] mb-4">
-            Terima kasih, aspirasi Anda sudah kami terima.
-          </p>
-          <div className="flex gap-3 justify-center">
-            <Button onClick={() => setSubmitted(false)} variant="outline">
-              Ajukan Lagi
-            </Button>
-            <Link href="/dashboard/laporan-saya">
-              <Button>Cek Laporan Saya</Button>
-            </Link>
-          </div>
-        </Card>
-      </div>
-    )
+  if (submitted && ticketData) {
+    return <TicketLaporan data={ticketData} onReset={() => { setSubmitted(false); setTicketData(null) }} />
   }
 
   const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
