@@ -5,7 +5,7 @@ interface DashboardLayoutProps {
   children: ReactNode
 }
 
-export default async function DashboardLayout({
+export default async function UserLayout({
   children,
 }: DashboardLayoutProps) {
   return (

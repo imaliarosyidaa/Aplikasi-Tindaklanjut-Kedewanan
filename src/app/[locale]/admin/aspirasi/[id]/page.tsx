@@ -120,32 +120,6 @@ export default function AspirasiDetailPage({
                 </p>
               </div>
             ))}
-
-            {aspirasi.trackings && aspirasi.trackings.length > 1 && (
-              <div>
-                <p className="text-sm text-[var(--color-text-secondary)] mb-2">
-                  Riwayat Tindak Lanjut
-                </p>
-                <div className="space-y-3">
-                  {aspirasi.trackings.filter((_, i) => i > 0).map((t) => (
-                    <div key={t.id} className="border-l-2 border-[var(--color-primary)] pl-3 py-1">
-                      <Badge status={t.status}>{t.status.replace(/_/g, ' ')}</Badge>
-                      {t.catatan && (
-                        <p className="text-[var(--color-text)] text-sm mt-1 whitespace-pre-wrap">
-                          {t.catatan}
-                        </p>
-                      )}
-                      <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-                        {new Date(t.created_at).toLocaleDateString('id-ID', {
-                          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                          hour: '2-digit', minute: '2-digit',
-                        })}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </Card>
         </div>
       </div>

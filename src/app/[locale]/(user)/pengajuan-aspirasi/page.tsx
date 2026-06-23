@@ -231,7 +231,7 @@ function TicketLaporan({
             <Button onClick={onReset} variant="outline" className="flex-1">
               Ajukan Lagi
             </Button>
-            <Link href="/dashboard/laporan-saya" className="flex-1">
+            <Link href="/laporan-saya" className="flex-1">
               <Button variant="outline" className="w-full">Cek Laporan Saya</Button>
             </Link>
           </div>
@@ -356,7 +356,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   return (
     <div className="space-y-6">
       <Link
-        href="/dashboard"
+        href="/"
         className="inline-flex items-center gap-1 text-sm text-[var(--color-primary)] hover:underline"
       >
         <MdArrowBack size={16} />

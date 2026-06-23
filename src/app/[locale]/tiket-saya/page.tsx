@@ -6,5 +6,5 @@ export default async function OldTiketSayaRedirect({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  redirect(`/${locale}/dashboard/laporan-saya`)
+  redirect(`/${locale}/laporan-saya`)
 }

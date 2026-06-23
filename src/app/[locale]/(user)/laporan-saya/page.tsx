@@ -250,7 +250,7 @@ export default function LaporanSayaPage(): React.ReactNode {
   return (
     <div className="space-y-6">
       <Link
-        href="/dashboard"
+        href="/"
         className="inline-flex items-center gap-1 text-sm text-[var(--color-primary)] hover:underline"
       >
         <MdArrowBack size={16} />

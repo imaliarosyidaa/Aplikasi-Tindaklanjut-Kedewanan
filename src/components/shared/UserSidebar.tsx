@@ -22,9 +22,9 @@ export const UserSidebar = (): React.ReactNode => {
   const pathname = usePathname()
 
   const items: SidebarItem[] = [
-    { href: '/dashboard', label: 'Beranda', icon: <MdDashboard size={20} /> },
-    { href: '/dashboard/pengajuan-aspirasi', label: 'Pengajuan Aspirasi', icon: <MdAdd size={20} /> },
-    { href: '/dashboard/laporan-saya', label: 'Laporan Saya', icon: <MdTrackChanges size={20} /> },
+    { href: '/', label: 'Beranda', icon: <MdDashboard size={20} /> },
+    { href: '/pengajuan-aspirasi', label: 'Pengajuan Aspirasi', icon: <MdAdd size={20} /> },
+    { href: '/laporan-saya', label: 'Laporan Saya', icon: <MdTrackChanges size={20} /> },
   ]
 
   return (
