@@ -150,12 +150,21 @@ export default function DetailKegiatanPage({
               <span>{kegiatan.jumlah_peserta} peserta</span>
             </div>
             {kegiatan.foto && (
-              <div>
-                <div className="flex items-center gap-1 text-xs text-[var(--color-primary)] mb-2">
-                  <MdImage size={14} />
-                  <span>{kegiatan.foto}</span>
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  fetch(`/${kegiatan.foto}`).then(r => {
+                    if (!r.ok) throw new Error('Not found');
+                    return r.blob()
+                  }).then(blob => {
+                    window.open(URL.createObjectURL(blob), '_blank')
+                  }).catch(() => {})
+                }}
+                className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
+              >
+                <MdImage size={14} />
+                {kegiatan.foto}
+              </button>
             )}
             <div className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdNotes size={16} className="mt-0.5" />
