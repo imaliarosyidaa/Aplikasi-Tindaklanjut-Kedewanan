@@ -32,7 +32,15 @@ interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
 
 function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
-  const trackings = aspirasi.trackings ?? []
+  const rawTrackings = aspirasi.trackings ?? []
+  const trackings = Object.values(
+    rawTrackings.reduce((acc, t) => {
+      if (!acc[t.status] || new Date(t.created_at) > new Date(acc[t.status].created_at)) {
+        acc[t.status] = t
+      }
+      return acc
+    }, {} as Record<string, (typeof rawTrackings)[number]>)
+  ).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
 
   const statusLabelMap: Record<string, string> = {
     BELUM_DITINDAKLANJUTI: 'Laporan Anda Diterima',
