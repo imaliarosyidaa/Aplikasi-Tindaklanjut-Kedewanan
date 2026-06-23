@@ -66,9 +66,6 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
           <p className="text-xs text-[var(--color-text-secondary)]">ID Laporan</p>
           <p className="font-mono font-bold text-[var(--color-text)]">{aspirasi.id_laporan}</p>
         </div>
-        <Badge status={aspirasi.status}>
-          {aspirasi.status.replace(/_/g, ' ')}
-        </Badge>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-sm">
@@ -82,31 +79,17 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
         </div>
         <div className="flex items-center gap-2">
           <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text-secondary)]">Kota:</span>
+          <span className="text-[var(--color-text-secondary)]">Alamat:</span>
+          <span className="text-[var(--color-text)]">{aspirasi.lokasi || '-'}</span>
+          <span className="text-[var(--color-text)]">{aspirasi.kelurahan || '-'},</span>
+          <span className="text-[var(--color-text)]">{aspirasi.kecamatan || '-'},</span>
           <span className="text-[var(--color-text)]">{aspirasi.kota || '-'}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text-secondary)]">Kec.:</span>
-          <span className="text-[var(--color-text)]">{aspirasi.kecamatan || '-'}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text-secondary)]">Kel.:</span>
-          <span className="text-[var(--color-text)]">{aspirasi.kelurahan || '-'}</span>
         </div>
         <div className="flex items-center gap-2">
           <MdSource size={16} className="text-[var(--color-text-secondary)] shrink-0" />
           <span className="text-[var(--color-text-secondary)]">Sumber:</span>
           <span className="text-[var(--color-text)]">{aspirasi.sumber.replace(/_/g, ' ')}</span>
         </div>
-        {aspirasi.lokasi && (
-          <div className="flex items-center gap-2 col-span-2">
-            <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-            <span className="text-[var(--color-text-secondary)]">Lokasi:</span>
-            <span className="text-[var(--color-text)]">{aspirasi.lokasi}</span>
-          </div>
-        )}
         <div className="flex items-start gap-2 col-span-2">
           <MdDescription size={16} className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" />
           <span className="text-[var(--color-text)]">{aspirasi.deskripsi}</span>
@@ -133,7 +116,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
           </div>
         )}
         {trackings.map((t, i) => {
-          const isLast = i === trackings.length - 1
+          const isLast = i === trackings.length - 1 && !['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI'].includes(t.status)
           return (
             <div key={t.id} className="flex gap-3">
               <div className="flex flex-col items-center">
@@ -144,7 +127,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                 }`}>
                   {getIcon(t.status)}
                 </div>
-                {!isLast && <div className="w-0.5 h-6 bg-[var(--color-primary)]" />}
+                {!isLast && <div className="w-0.5 flex-1 bg-[var(--color-primary)]" />}
               </div>
               <div className={`${isLast ? '' : 'pb-4'}`}>
                 <p className={`text-sm font-medium ${
@@ -166,10 +149,10 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                               window.open(URL.createObjectURL(blob), '_blank')
                             })
                           }}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+                          className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-100 transition-colors"
                         >
                           <MdDescription size={14} />
-                          Detail
+                          Klik untuk Melihat Detail
                         </button>
                       ) : (
                         <img
@@ -195,6 +178,18 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
             </div>
           )
         })}
+        {trackings.length > 0 && ['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI'].includes(trackings[trackings.length - 1].status) && (
+          <div className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-green-100 text-green-600">
+                <MdCheckCircle size={20} />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-green-600">Selesai</p>
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   )
