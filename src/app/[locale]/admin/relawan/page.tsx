@@ -239,7 +239,7 @@ export default function RelawanPage(): React.ReactNode {
                 <img
                   src={preview.foto}
                   alt="Foto"
-                  className="w-32 h-32 object-cover rounded-full border-4 border-[var(--color-primary-light)]"
+                  className="w-64 h-64 object-cover rounded-full border-4 border-[var(--color-primary-light)]"
                 />
               </div>
             )}

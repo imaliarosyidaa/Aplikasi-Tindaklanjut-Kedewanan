@@ -62,7 +62,7 @@ export default function DetailKegiatanPage({
   })}, Jam ${date.toLocaleTimeString('id-ID', {
     hour: '2-digit',
     minute: '2-digit',
-  })}`
+  })} WIB`
 }
   const fields = [
     { label: 'Tanggal', value: formatTanggalJam(kegiatan.tanggal) },
@@ -139,7 +139,7 @@ export default function DetailKegiatanPage({
             <p className="font-medium text-[var(--color-text)]">Informasi Kegiatan</p>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdCalendarToday size={16} />
-              <span>{getHari(kegiatan.tanggal)}, {kegiatan.tanggal}</span>
+              <span>{formatTanggalJam(kegiatan.tanggal)}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdLocationOn size={16} />

@@ -140,7 +140,6 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                 {t.lampiran && t.lampiran.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {t.lampiran.map((url, idx) => (
-                      url.startsWith('data:application/pdf') ? (
                         <button
                           key={idx}
                           type="button"
@@ -149,20 +148,13 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                               window.open(URL.createObjectURL(blob), '_blank')
                             })
                           }}
-                          className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-100 transition-colors"
+                          className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
                         >
                           <MdDescription size={14} />
                           Klik untuk Melihat Detail
                         </button>
-                      ) : (
-                        <img
-                          key={idx}
-                          src={url}
-                          alt={`Bukti ${idx + 1}`}
-                          className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border)]"
-                        />
                       )
-                    ))}
+                    )}
                   </div>
                 )}
                 {t.catatan && (
