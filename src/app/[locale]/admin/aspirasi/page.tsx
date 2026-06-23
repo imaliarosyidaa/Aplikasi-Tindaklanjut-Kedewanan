@@ -9,7 +9,7 @@ import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
 import { Link } from '@/routing'
 import { useSearchParams } from 'next/navigation'
-import { MdVisibility, MdFilterList } from 'react-icons/md'
+import { MdVisibility, MdFilterList, MdDelete } from 'react-icons/md'
 import type { Aspirasi } from '@/types'
 export default function AspirasiPage(): React.ReactNode {
   const t = useTranslations('Aspirasi')
@@ -116,7 +116,7 @@ export default function AspirasiPage(): React.ReactNode {
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Link href={`/admin/aspirasi/${aspirasi.id}`}>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className='cursor-pointer text-[var(--color-primary)]'>
                           <MdVisibility size={16} />
                         </Button>
                       </Link>
@@ -124,8 +124,22 @@ export default function AspirasiPage(): React.ReactNode {
                         variant="outline"
                         size="sm"
                         onClick={() => setSelectedAspirasi(aspirasi)}
+                        className='cursor-pointer'
                       >
                         {t('updateStatus')}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={async () => {
+                          if (window.confirm('Hapus aspirasi ini?')) {
+                            await fetch(`/api/aspirasi/${aspirasi.id}`, { method: 'DELETE' })
+                            mutate()
+                          }
+                        }}
+                        className='cursor-pointer text-[var(--color-danger)]'
+                      >
+                        <MdDelete size={16} />
                       </Button>
                     </div>
                   </td>

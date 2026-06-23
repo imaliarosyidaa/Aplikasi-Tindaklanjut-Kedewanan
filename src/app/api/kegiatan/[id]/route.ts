@@ -43,3 +43,46 @@ export async function GET(
     kecamatan: k.kunjungan.kecamatan.nama,
   })
 }
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const body = await request.json()
+
+  const updated = await prisma.kegiatan.update({
+    where: { id },
+    data: {
+      nama_kegiatan: body.nama_kegiatan,
+      tempat: body.lokasi,
+      catatan: body.catatan,
+      rt: body.rt,
+      rw: body.rw,
+      jumlah_peserta: body.jumlah_peserta ? Number(body.jumlah_peserta) : undefined,
+      link_gmaps: body.link_gmaps,
+      tanggal: body.tanggal ? new Date(body.tanggal) : undefined,
+    },
+    include: {
+      kunjungan: {
+        include: { kelurahan: true, kecamatan: true, kota: true },
+      },
+    },
+  })
+
+  return NextResponse.json({
+    id: updated.id,
+    nama_kegiatan: updated.nama_kegiatan,
+    lokasi: updated.tempat ?? '',
+    catatan: updated.catatan ?? '',
+  })
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  await prisma.kegiatan.delete({ where: { id } })
+  return NextResponse.json({ success: true })
+}

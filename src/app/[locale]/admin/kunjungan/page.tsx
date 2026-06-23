@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Link } from '@/routing'
-import { MdVisibility, MdSearch } from 'react-icons/md'
+import { MdVisibility, MdSearch, MdEdit, MdDelete, MdClose } from 'react-icons/md'
 import type { Kegiatan } from '@/types'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -19,13 +19,16 @@ interface KelurahanItem { id: string; nama: string }
 
 export default function KunjunganPage() {
   const t = useTranslations('Kunjungan')
-  const { data: allKegiatan, isLoading } = useSWR<Kegiatan[]>('/api/kegiatan', fetcher)
+  const { data: allKegiatan, isLoading, mutate } = useSWR<Kegiatan[]>('/api/kegiatan', fetcher)
 
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
   const [searched, setSearched] = useState(false)
+
+  const [editingItem, setEditingItem] = useState<Kegiatan | null>(null)
+  const [editForm, setEditForm] = useState({ nama_kegiatan: '', lokasi: '', catatan: '' })
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
@@ -73,6 +76,32 @@ export default function KunjunganPage() {
     return d.toLocaleDateString('id-ID', {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
     })
+  }
+
+  const openEdit = (item: Kegiatan) => {
+    setEditingItem(item)
+    setEditForm({
+      nama_kegiatan: item.nama_kegiatan || '',
+      lokasi: item.lokasi || '',
+      catatan: item.catatan || '',
+    })
+  }
+
+  const handleEditSave = async () => {
+    if (!editingItem) return
+    await fetch(`/api/kegiatan/${editingItem.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editForm),
+    })
+    setEditingItem(null)
+    mutate()
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Yakin ingin menghapus kegiatan ini?')) return
+    await fetch(`/api/kegiatan/${id}`, { method: 'DELETE' })
+    mutate()
   }
 
   if (isLoading) {
@@ -174,18 +203,69 @@ export default function KunjunganPage() {
                   <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan}</td>
                   <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan}</td>
                   <td className="px-4 py-3 text-center">
-                    <Link
-                      href={`/admin/kunjungan/kegiatan/${item.id}`}
-                      className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
-                    >
-                      <MdVisibility size={16} />
-                      Detail
-                    </Link>
+                    <div className="inline-flex items-center gap-2">
+                      <Link
+                        href={`/admin/kunjungan/kegiatan/${item.id}`}
+                        className="text-[var(--color-primary)] hover:underline cursor-pointer inline-flex items-center"
+                      >
+                        <MdVisibility size={16} />
+                      </Link>
+                      <button
+                        onClick={() => openEdit(item)}
+                        className="text-[var(--color-warning)] cursor-pointer hover:underline inline-flex items-center"
+                      >
+                        <MdEdit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="text-[var(--color-danger)] hover:underline cursor-pointer inline-flex items-center"
+                      >
+                        <MdDelete size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {editingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setEditingItem(null)}>
+          <Card className="relative w-full max-w-lg mx-4 p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setEditingItem(null)}
+              className="absolute top-4 right-4 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+            >
+              <MdClose size={20} />
+            </button>
+            <h2 className="text-lg font-bold text-[var(--color-text)]">Edit Kegiatan</h2>
+            <div className="space-y-3">
+              <Input
+                id="edit-nama"
+                label="Nama Kegiatan"
+                value={editForm.nama_kegiatan}
+                onChange={(e) => setEditForm({ ...editForm, nama_kegiatan: e.target.value })}
+              />
+              <Input
+                id="edit-lokasi"
+                label="Lokasi"
+                value={editForm.lokasi}
+                onChange={(e) => setEditForm({ ...editForm, lokasi: e.target.value })}
+              />
+              <Input
+                id="edit-catatan"
+                label="Catatan"
+                value={editForm.catatan}
+                onChange={(e) => setEditForm({ ...editForm, catatan: e.target.value })}
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setEditingItem(null)}>Batal</Button>
+              <Button onClick={handleEditSave}>Simpan</Button>
+            </div>
+          </Card>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useMemo } from 'react'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,6 +20,8 @@ import {
   MdWc,
   MdBadge,
   MdSearch,
+  MdEdit,
+  MdDelete,
 } from 'react-icons/md'
 import type { Relawan } from '@/types'
 
@@ -47,7 +49,10 @@ const POSISI_LABEL: Record<string, string> = {
 
 export default function RelawanPage(): React.ReactNode {
   const { data: allRelawans, isLoading } = useRelawanList()
+  const { mutate } = useSWRConfig()
   const [preview, setPreview] = useState<Relawan | null>(null)
+  const [edit, setEdit] = useState<Relawan | null>(null)
+  const [saving, setSaving] = useState(false)
 
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
@@ -208,12 +213,33 @@ export default function RelawanPage(): React.ReactNode {
                   <td className="px-4 py-3">{r.kelurahan}</td>
                   <td className="px-4 py-3"><Badge variant="primary">{POSISI_LABEL[r.posisi] || r.posisi}</Badge></td>
                   <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={() => setPreview(preview?.id === r.id ? null : r)}
-                      className="text-[var(--color-primary)] hover:underline inline-flex items-center gap-1"
-                    >
-                      <MdVisibility size={18} />
-                    </button>
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => setPreview(preview?.id === r.id ? null : r)}
+                        className="text-[var(--color-primary)] cursor-pointer hover:text-[var(--color-primary-dark)]"
+                        title="Lihat detail"
+                      >
+                        <MdVisibility size={18} />
+                      </button>
+                      <button
+                        onClick={() => setEdit(r)}
+                        className="text-[var(--color-warning)] cursor-pointer hover:text-[var(--color-warning-dark)]"
+                        title="Edit"
+                      >
+                        <MdEdit size={18} />
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!window.confirm(`Yakin ingin menghapus relawan "${r.nama}"?`)) return
+                          await fetch(`/api/relawan/${r.id}`, { method: 'DELETE' })
+                          mutate('/api/relawan')
+                        }}
+                        className="text-[var(--color-danger)] cursor-pointer hover:text-[var(--color-danger-dark)]"
+                        title="Hapus"
+                      >
+                        <MdDelete size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -283,6 +309,83 @@ export default function RelawanPage(): React.ReactNode {
                 </span>
               </div>
             </div>
+          </Card>
+        </div>
+      )}
+
+      {edit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setEdit(null)}>
+          <Card className="relative w-full max-w-lg mx-4 p-6 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setEdit(null)}
+              className="absolute top-4 right-4 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+            >
+              <MdClose size={20} />
+            </button>
+
+            <h2 className="text-lg font-bold text-[var(--color-text)]">Edit Relawan</h2>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault()
+              setSaving(true)
+              const form = e.currentTarget
+              const data = {
+                nama: (form.elements.namedItem('nama') as HTMLInputElement).value,
+                nik: (form.elements.namedItem('nik') as HTMLInputElement).value,
+                no_telepon: (form.elements.namedItem('no_telepon') as HTMLInputElement).value,
+                jenis_kelamin: (form.elements.namedItem('jenis_kelamin') as HTMLSelectElement).value,
+                posisi: (form.elements.namedItem('posisi') as HTMLSelectElement).value,
+                alamat: (form.elements.namedItem('alamat') as HTMLInputElement).value,
+              }
+              await fetch(`/api/relawan/${edit.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+              })
+              setSaving(false)
+              setEdit(null)
+              mutate('/api/relawan')
+            }}>
+              <Input id="edit-nama" name="nama" label="Nama Lengkap" defaultValue={edit.nama} required />
+              <Input id="edit-nik" name="nik" label="NIK" defaultValue={edit.nik} required />
+              <Input id="edit-no_telepon" name="no_telepon" label="No. Telepon" type="tel" defaultValue={edit.no_telepon} required />
+              <Select
+                id="edit-jenis_kelamin"
+                name="jenis_kelamin"
+                label="Jenis Kelamin"
+                options={[
+                  { value: 'LAKI_LAKI', label: 'Laki-laki' },
+                  { value: 'PEREMPUAN', label: 'Perempuan' },
+                ]}
+                defaultValue={edit.jenis_kelamin}
+              />
+              <Select
+                id="edit-posisi"
+                name="posisi"
+                label="Posisi"
+                options={[
+                  { value: 'KOORDINATOR_RW', label: 'Koordinator RW' },
+                  { value: 'KOORDINATOR_RT', label: 'Koordinator RT' },
+                  { value: 'KOORDINATOR_KELURAHAN', label: 'Koordinator Kelurahan' },
+                  { value: 'KOORDINATOR_KECAMATAN', label: 'Koordinator Kecamatan' },
+                  { value: 'FKDM', label: 'FKDM' },
+                  { value: 'LMK', label: 'LMK' },
+                  { value: 'TOKOH_MASYARAKAT', label: 'Tokoh Masyarakat' },
+                  { value: 'PROFESIONAL', label: 'Profesional' },
+                ]}
+                defaultValue={edit.posisi}
+              />
+              <Input id="edit-alamat" name="alamat" label="Alamat" defaultValue={edit.alamat} />
+
+              <div className="flex justify-end gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={() => setEdit(null)}>
+                  Batal
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  {saving ? 'Menyimpan...' : 'Simpan'}
+                </Button>
+              </div>
+            </form>
           </Card>
         </div>
       )}

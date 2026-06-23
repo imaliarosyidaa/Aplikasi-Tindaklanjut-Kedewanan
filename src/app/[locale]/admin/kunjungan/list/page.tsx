@@ -1,19 +1,21 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import useSWR from 'swr'
 
 import { useTranslations } from 'next-intl'
 
 import { Card } from '@/components/ui/card'
 import { Link } from '@/routing'
-import { MdVisibility } from 'react-icons/md'
+import { MdVisibility, MdEdit, MdDelete } from 'react-icons/md'
 import type { Kegiatan } from '@/types'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export default function KunjunganListPage() {
   const t = useTranslations('Kunjungan')
-  const { data: kegiatanList, isLoading } = useSWR<Kegiatan[]>('/api/kegiatan', fetcher)
+  const { data: kegiatanList, isLoading, mutate } = useSWR<Kegiatan[]>('/api/kegiatan', fetcher)
+  const [editingItem, setEditingItem] = useState<Kegiatan | null>(null)
+  const [saving, setSaving] = useState(false)
 
   if (isLoading) {
     return <p className="text-[var(--color-text-secondary)]">Memuat...</p>
@@ -28,6 +30,43 @@ export default function KunjunganListPage() {
       month: 'long',
       year: 'numeric',
     })
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Yakin ingin menghapus kegiatan ini?')) return
+    try {
+      const res = await fetch(`/api/kegiatan/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Gagal menghapus')
+      await mutate()
+    } catch {
+      alert('Gagal menghapus kegiatan')
+    }
+  }
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!editingItem) return
+    setSaving(true)
+    try {
+      const form = new FormData(e.currentTarget)
+      const body = {
+        nama_kegiatan: form.get('nama_kegiatan') as string,
+        lokasi: form.get('lokasi') as string,
+        catatan: form.get('catatan') as string,
+      }
+      const res = await fetch(`/api/kegiatan/${editingItem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) throw new Error('Gagal menyimpan')
+      setEditingItem(null)
+      await mutate()
+    } catch {
+      alert('Gagal menyimpan perubahan')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const data = kegiatanList ?? []
@@ -74,18 +113,86 @@ export default function KunjunganListPage() {
                   <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan}</td>
                   <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan}</td>
                   <td className="px-4 py-3 text-center">
-                    <Link
-                      href={`/admin/kunjungan/kegiatan/${item.id}`}
-                      className="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
-                    >
-                      <MdVisibility size={16} />
-                      Detail
-                    </Link>
+                    <div className="inline-flex items-center gap-2">
+                      <Link
+                        href={`/admin/kunjungan/kegiatan/${item.id}`}
+                        className="text-[var(--color-primary)] cursor-pointer hover:underline inline-flex items-center"
+                      >
+                        <MdVisibility size={18} />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setEditingItem(item)}
+                        className="text-[var(--color-warning)] cursor-pointer hover:underline inline-flex items-center"
+                      >
+                        <MdEdit size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(item.id)}
+                        className="text-red-500 hover:text-red-700 cursor-pointer inline-flex items-center"
+                      >
+                        <MdDelete size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {editingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 p-6">
+            <h2 className="text-lg font-semibold mb-4">Edit Kegiatan</h2>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kegiatan</label>
+                <input
+                  name="nama_kegiatan"
+                  defaultValue={editingItem.nama_kegiatan || editingItem.isi}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
+                <input
+                  name="lokasi"
+                  defaultValue={editingItem.lokasi}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
+                <textarea
+                  name="catatan"
+                  defaultValue={editingItem.catatan}
+                  rows={3}
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingItem(null)}
+                  className="px-4 py-2 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="px-4 py-2 text-sm rounded bg-[var(--color-primary)] text-white hover:opacity-90 disabled:opacity-50"
+                >
+                  {saving ? 'Menyimpan...' : 'Simpan'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

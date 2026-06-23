@@ -108,3 +108,13 @@ export async function PATCH(
     lokasi: updated.alamat ?? '',
   })
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  await prisma.trackingAspirasi.deleteMany({ where: { aspirasi_id: id } })
+  await prisma.aspirasis.delete({ where: { id } })
+  return NextResponse.json({ success: true })
+}
