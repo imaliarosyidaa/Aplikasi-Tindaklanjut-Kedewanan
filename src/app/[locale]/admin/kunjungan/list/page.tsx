@@ -120,13 +120,12 @@ export default function KunjunganListPage() {
                       >
                         <MdVisibility size={18} />
                       </Link>
-                      <button
-                        type="button"
-                        onClick={() => setEditingItem(item)}
+                      <Link
+                        href={`/admin/kunjungan/edit/${item.id}`}
                         className="text-[var(--color-warning)] cursor-pointer hover:underline inline-flex items-center"
                       >
                         <MdEdit size={18} />
-                      </button>
+                      </Link>
                       <button
                         type="button"
                         onClick={() => handleDelete(item.id)}

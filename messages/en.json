@@ -71,7 +71,8 @@
     "login": "Login",
     "email": "Email",
     "password": "Password",
-    "loginError": "Invalid email or password"
+    "loginError": "Invalid email or password",
+    "visitorLogin": "Visitor Login"
   },
   "Sumber": {
     "LEMBAR_ASPIRASI_RESES": "Reses Aspiration Sheet",

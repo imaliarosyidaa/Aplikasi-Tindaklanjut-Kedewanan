@@ -31,16 +31,24 @@ export async function GET(
     isi: k.isi ?? '',
     hari: k.hari ?? '',
     tanggal: k.tanggal?.toISOString() ?? '',
+    jam: k.kunjungan.jam ?? '',
     foto: k.foto ?? '',
     nama_kegiatan: k.nama_kegiatan,
     link_gmaps: k.link_gmaps ?? '',
-    lokasi: k.tempat ?? '',
+    tempat: k.tempat ?? '',
     rt: k.rt ?? '',
     rw: k.rw ?? '',
     jumlah_peserta: k.jumlah_peserta ?? 0,
     catatan: k.catatan ?? '',
     kelurahan: k.kunjungan.kelurahan.nama,
     kecamatan: k.kunjungan.kecamatan.nama,
+    kunjungan: {
+      jalan: k.kunjungan.jalan ?? '',
+      kota_id: k.kunjungan.kota_id,
+      kecamatan_id: k.kunjungan.kecamatan_id,
+      kelurahan_id: k.kunjungan.kelurahan_id,
+      link_gmaps: k.kunjungan.link_gmaps ?? '',
+    },
   })
 }
 

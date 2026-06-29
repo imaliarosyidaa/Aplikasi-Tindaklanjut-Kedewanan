@@ -153,7 +153,8 @@ export default function DetailKegiatanPage({
               <button
                 type="button"
                 onClick={() => {
-                  fetch(`/${kegiatan.foto}`).then(r => {
+                  const url = kegiatan.foto.startsWith('data:') ? kegiatan.foto : `/${kegiatan.foto}`
+                  fetch(url).then(r => {
                     if (!r.ok) throw new Error('Not found');
                     return r.blob()
                   }).then(blob => {
@@ -163,7 +164,7 @@ export default function DetailKegiatanPage({
                 className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
               >
                 <MdImage size={14} />
-                {kegiatan.foto}
+                {kegiatan.foto.startsWith('data:') ? 'Lihat Foto' : kegiatan.foto}
               </button>
             )}
             <div className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">

@@ -46,7 +46,7 @@ export const Sidebar = (): React.ReactNode => {
             href={item.href}
             className={cn(
               'flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors',
-              pathname.startsWith(item.href)
+              pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
                 ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
                 : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'
             )}

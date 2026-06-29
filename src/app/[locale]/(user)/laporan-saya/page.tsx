@@ -138,7 +138,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                   {statusLabelMap[t.status] ?? t.status.replace(/_/g, ' ')}
                 </p>
                 {t.lampiran && t.lampiran.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-col gap-2 mt-2">
                     {t.lampiran.map((url, idx) => (
                         <button
                           key={idx}

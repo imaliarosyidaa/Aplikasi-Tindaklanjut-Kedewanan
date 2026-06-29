@@ -71,7 +71,8 @@
     "login": "Masuk",
     "email": "Email",
     "password": "Kata Sandi",
-    "loginError": "Email atau kata sandi salah"
+    "loginError": "Email atau kata sandi salah",
+    "visitorLogin": "Masuk sebagai Pengunjung"
   },
   "Sumber": {
     "LEMBAR_ASPIRASI_RESES": "Lembar Aspirasi Reses",

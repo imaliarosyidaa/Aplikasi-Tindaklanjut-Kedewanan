@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import useSWR from 'swr'
 
 import { useTranslations } from 'next-intl'
@@ -8,42 +8,78 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Card } from '@/components/ui/card'
 import { useRouter } from '@/routing'
+import { FileUpload } from '../ui/file-upload'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 interface KotaItem { id: string; nama: string }
 interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
+interface UploadedFile {
+  name: string
+  size: number
+  type: string
+  base64: string
+}
+
+interface FormKunjunganInitialData {
+  id: string
+  jenis_kegiatan: string
+  nama_kegiatan: string
+  tanggal: string
+  jam: string
+  isi: string
+  tempat: string
+  rt: string
+  rw: string
+  jumlah_peserta: number
+  catatan: string
+  link_gmaps: string
+  foto: string
+  kunjungan: {
+    jalan: string
+    kota_id: string
+    kecamatan_id: string
+    kelurahan_id: string
+    link_gmaps: string
+  }
+}
 
 const JENIS_KEGIATAN_OPTIONS = [
   { value: 'reses', label: 'Kegiatan reses (serap aspirasi masyarakat)' },
   { value: 'sosperda', label: 'Sosperda (fungsi pengawasan produk hukum daerah DKI Jakarta)' },
 ]
 
-export const FormKunjungan = (): React.ReactNode => {
+export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInitialData }): React.ReactNode => {
   const t = useTranslations('Kunjungan')
   const c = useTranslations('Common')
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const isEdit = !!initialData
 
   // Kunjungan fields
-  const [tanggal, setTanggal] = useState('')
-  const [jam, setJam] = useState('')
-  const [jalan, setJalan] = useState('')
-  const [kotaId, setKotaId] = useState('')
-  const [kecamatanId, setKecamatanId] = useState('')
-  const [kelurahanId, setKelurahanId] = useState('')
-  const [linkGmaps, setLinkGmaps] = useState('')
+  const [tanggal, setTanggal] = useState(initialData?.tanggal ?? '')
+  const [jam, setJam] = useState(initialData?.jam ?? '')
+  const [jalan, setJalan] = useState(initialData?.kunjungan.jalan ?? '')
+  const [kotaId, setKotaId] = useState(initialData?.kunjungan.kota_id ?? '')
+  const [kecamatanId, setKecamatanId] = useState(initialData?.kunjungan.kecamatan_id ?? '')
+  const [kelurahanId, setKelurahanId] = useState(initialData?.kunjungan.kelurahan_id ?? '')
+  const [linkGmaps, setLinkGmaps] = useState(initialData?.link_gmaps ?? '')
 
   // Kegiatan fields
-  const [jenisKegiatan, setJenisKegiatan] = useState('')
-  const [namaKegiatan, setNamaKegiatan] = useState('')
-  const [isi, setIsi] = useState('')
-  const [tempat, setTempat] = useState('')
-  const [rt, setRt] = useState('')
-  const [rw, setRw] = useState('')
-  const [jumlahPeserta, setJumlahPeserta] = useState('')
-  const [catatan, setCatatan] = useState('')
+  const [jenisKegiatan, setJenisKegiatan] = useState(initialData?.jenis_kegiatan ?? '')
+  const [namaKegiatan, setNamaKegiatan] = useState(initialData?.nama_kegiatan ?? '')
+  const [isi, setIsi] = useState(initialData?.isi ?? '')
+  const [tempat, setTempat] = useState(initialData?.tempat ?? '')
+  const [rt, setRt] = useState(initialData?.rt ?? '')
+  const [rw, setRw] = useState(initialData?.rw ?? '')
+  const [jumlahPeserta, setJumlahPeserta] = useState(initialData?.jumlah_peserta ? String(initialData.jumlah_peserta) : '')
+  const [catatan, setCatatan] = useState(initialData?.catatan ?? '')
+  const [lampiran, setLampiran] = useState<UploadedFile[]>(
+    initialData?.foto && initialData.foto.startsWith('data:')
+      ? [{ name: 'foto-existing', size: 0, type: 'image/png', base64: initialData.foto }]
+      : []
+  )
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -84,41 +120,60 @@ export const FormKunjungan = (): React.ReactNode => {
     setLoading(true)
 
     try {
-      const kunjunganRes = await fetch('/api/kunjungan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jenis_kegiatan: jenisKegiatan,
-          tanggal,
-          jam,
-          jalan,
-          kelurahan: kelurahanMap[kelurahanId],
-          kecamatan: kecamatanMap[kecamatanId],
-          kota: kotaMap[kotaId],
-          link_gmaps: linkGmaps,
-        }),
-      })
-      const kunjungan = await kunjunganRes.json()
+      if (isEdit && initialData) {
+        await fetch(`/api/kegiatan/${initialData.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nama_kegiatan: namaKegiatan,
+            lokasi: tempat,
+            catatan,
+            rt,
+            rw,
+            jumlah_peserta: jumlahPeserta,
+            link_gmaps: linkGmaps,
+            tanggal,
+          }),
+        })
+        router.push('/admin/kunjungan')
+      } else {
+        const kunjunganRes = await fetch('/api/kunjungan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jenis_kegiatan: jenisKegiatan,
+            tanggal,
+            jam,
+            jalan,
+            kelurahan: kelurahanMap[kelurahanId],
+            kecamatan: kecamatanMap[kecamatanId],
+            kota: kotaMap[kotaId],
+            link_gmaps: linkGmaps,
+          }),
+        })
+        const kunjungan = await kunjunganRes.json()
 
-      await fetch('/api/kegiatan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          kunjungan_id: kunjungan.id,
-          jenis_kegiatan: jenisKegiatan,
-          nama_kegiatan: namaKegiatan,
-          isi,
-          tempat,
-          rt,
-          rw,
-          tanggal,
-          jumlah_peserta: jumlahPeserta,
-          catatan,
-          link_gmaps: linkGmaps,
-        }),
-      })
+        await fetch('/api/kegiatan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            kunjungan_id: kunjungan.id,
+            jenis_kegiatan: jenisKegiatan,
+            nama_kegiatan: namaKegiatan,
+            isi,
+            tempat,
+            rt,
+            rw,
+            tanggal,
+            jumlah_peserta: jumlahPeserta,
+            catatan,
+            link_gmaps: linkGmaps,
+            foto: lampiran.length > 0 ? lampiran[0].base64 : '',
+          }),
+        })
 
-      router.push('/admin/kunjungan')
+        router.push('/admin/kunjungan')
+      }
     } catch {
       alert('Gagal menyimpan data')
     } finally {
@@ -128,7 +183,7 @@ export const FormKunjungan = (): React.ReactNode => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => setJenisKegiatan(e.target.value)} error={errors.jenisKegiatan} />
+      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => setJenisKegiatan(e.target.value)} error={errors.jenisKegiatan} disabled={isEdit} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input id="tanggal" label={t('tanggal')} type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} error={errors.tanggal} />
@@ -164,13 +219,20 @@ export const FormKunjungan = (): React.ReactNode => {
           placeholder="Catatan tambahan..."
         />
       </div>
+      <div>
+        <FileUpload
+          label="Upload Foto"
+          value={lampiran}
+          onChange={setLampiran}
+        />
+      </div>
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={() => router.back()}>
           {c('cancel')}
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? c('loading') : c('save')}
+          {loading ? c('loading') : isEdit ? 'Update' : c('save')}
         </Button>
       </div>
     </form>

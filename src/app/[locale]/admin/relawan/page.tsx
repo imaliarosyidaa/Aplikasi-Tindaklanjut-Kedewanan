@@ -221,13 +221,13 @@ export default function RelawanPage(): React.ReactNode {
                       >
                         <MdVisibility size={18} />
                       </button>
-                      <button
-                        onClick={() => setEdit(r)}
+                      <Link
+                        href={`/admin/relawan/edit/${r.id}`}
                         className="text-[var(--color-warning)] cursor-pointer hover:text-[var(--color-warning-dark)]"
                         title="Edit"
                       >
                         <MdEdit size={18} />
-                      </button>
+                      </Link>
                       <button
                         onClick={async () => {
                           if (!window.confirm(`Yakin ingin menghapus relawan "${r.nama}"?`)) return

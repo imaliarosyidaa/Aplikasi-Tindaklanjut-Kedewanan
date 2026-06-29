@@ -22,13 +22,17 @@ export const Navbar = (): React.ReactNode => {
 
   return (
     <nav className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+      <div className="mx-auto flex h-16 items-center justify-between px-8">
+        <div className="flex items-center justify-center gap-3 py-2">
+        <img src="/Lambang_DPRD_Generik.png" alt="Logo" className="h-12 w-auto" />
+            <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo Text" className="h-12 w-auto" />
         <Link
           href="/admin/dashboard"
           className="text-lg font-bold text-[var(--color-primary)]"
         >
           {t('dashboard')}
         </Link>
+        </div>
 
         <div className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => (
@@ -36,7 +40,7 @@ export const Navbar = (): React.ReactNode => {
               key={item.href}
               href={item.href}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                pathname.startsWith(item.href)
+                pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
                   ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
                   : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'
               }`}
@@ -74,7 +78,7 @@ export const Navbar = (): React.ReactNode => {
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={`block rounded-lg px-3 py-2 text-sm font-medium ${
-                pathname.startsWith(item.href)
+                pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
                   ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
                   : 'text-[var(--color-text-secondary)]'
               }`}

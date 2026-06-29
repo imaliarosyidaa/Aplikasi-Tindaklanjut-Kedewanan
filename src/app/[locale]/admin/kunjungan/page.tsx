@@ -210,12 +210,12 @@ export default function KunjunganPage() {
                       >
                         <MdVisibility size={16} />
                       </Link>
-                      <button
-                        onClick={() => openEdit(item)}
+                      <Link
+                        href={`/admin/kunjungan/edit/${item.id}`}
                         className="text-[var(--color-warning)] cursor-pointer hover:underline inline-flex items-center"
                       >
                         <MdEdit size={16} />
-                      </button>
+                      </Link>
                       <button
                         onClick={() => handleDelete(item.id)}
                         className="text-[var(--color-danger)] hover:underline cursor-pointer inline-flex items-center"

@@ -77,6 +77,11 @@ export default function LoginPage(): React.ReactNode {
             {loading ? c('loading') : t('login')}
           </Button>
         </form>
+        <div className="mt-4 text-center">
+          <a href='/' className="text-sm text-[var(--color-primary)] hover:underline">
+            {t('visitorLogin')}
+          </a>
+        </div>
       </Card>
     </div>
   )

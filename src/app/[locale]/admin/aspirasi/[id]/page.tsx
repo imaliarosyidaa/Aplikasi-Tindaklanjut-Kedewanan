@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/routing'
-import { MdArrowBack, MdPerson } from 'react-icons/md'
+import { MdArrowBack, MdPerson, MdDescription } from 'react-icons/md'
 interface AspirasiDetailProps {
   params: Promise<{ id: string }>
 }
@@ -20,6 +20,19 @@ export default function AspirasiDetailPage({
   const t = useTranslations('Aspirasi')
   const s = useTranslations('Sumber')
   const { data: aspirasi, isLoading } = useAspirasi(id)
+  const formatTanggalJam = (dateString: string) => {
+  const date = new Date(dateString)
+
+  return `${date.toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })}, Jam ${date.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })} WIB`
+}
 
   if (isLoading) {
     return (
@@ -46,8 +59,10 @@ export default function AspirasiDetailPage({
     { label: 'Jenis Reses', value: aspirasi.jenis_reses },
     { label: 'Tindak Lanjut', value: aspirasi.tindak_lanjut },
     { label: t('sumber'), value: s(aspirasi.sumber) },
-    { label: 'Tanggal Dibuat', value: aspirasi.tanggal_dibuat },
+    { label: 'Tanggal Dibuat', value: formatTanggalJam(aspirasi.tanggal_dibuat) },
   ]
+
+  const rawTrackings = aspirasi.trackings ?? []
 
   return (
     <div className="space-y-6">
@@ -110,19 +125,44 @@ export default function AspirasiDetailPage({
               </div>
             </div>
 
-            {detailFields.map((field) => (
-              <div key={field.label}>
-                <p className="text-sm text-[var(--color-text-secondary)]">
-                  {field.label}
-                </p>
-                <p className="text-[var(--color-text)] whitespace-pre-wrap">
-                  {field.value}
-                </p>
-              </div>
-            ))}
-          </Card>
+              {detailFields.map((field) => (
+                <div key={field.label}>
+                  <p className="text-sm text-[var(--color-text-secondary)]">
+                    {field.label}
+                  </p>
+                  <p className="text-[var(--color-text)] whitespace-pre-wrap">
+                    {field.value}
+                  </p>
+                </div>
+              ))}
+            </Card>
+
+            {rawTrackings.some(t => t.lampiran && t.lampiran.length > 0) && (
+              <Card className="space-y-4 p-5">
+                <h2 className="text-lg font-semibold text-[var(--color-text)]">Bukti Tindak Lanjut</h2>
+                <div className="flex flex-col gap-3">
+                  {rawTrackings.filter(t => t.lampiran && t.lampiran.length > 0).map((t) =>
+                    t.lampiran.map((url: string, idx: number) => (
+                      <button
+                        key={`${t.id}-${idx}`}
+                        type="button"
+                        onClick={() => {
+                          fetch(url).then(r => r.blob()).then(blob => {
+                            window.open(URL.createObjectURL(blob), '_blank')
+                          })
+                        }}
+                        className="inline-flex items-center gap-2 py-2 px-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
+                      >
+                        <MdDescription size={18} />
+                        Klik untuk Melihat Detail
+                      </button>
+                    ))
+                  )}
+                </div>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }

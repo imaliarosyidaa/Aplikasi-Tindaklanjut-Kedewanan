@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useRouter } from '@/routing'
 import { useCreateRelawan } from '@/hooks/useRelawan'
@@ -25,6 +25,20 @@ interface KelurahanItem {
   nama: string
 }
 
+interface FormRelawanInitialData {
+  id: string
+  nik: string
+  nama: string
+  no_telepon: string
+  jenis_kelamin: string
+  posisi: string
+  alamat: string
+  foto: string
+  kota_kabupaten: string
+  kecamatan: string
+  kelurahan: string
+}
+
 const JENIS_KELAMIN_OPTIONS = [
   { value: 'LAKI_LAKI', label: 'Laki-laki' },
   { value: 'PEREMPUAN', label: 'Perempuan' },
@@ -41,23 +55,30 @@ const POSISI_OPTIONS = [
   { value: 'PROFESIONAL', label: 'Profesional' },
 ]
 
-export const FormRelawan = (): React.ReactNode => {
+function parseAlamat(alamat: string): { jalan: string; rt: string; rw: string } {
+  const match = alamat.match(/^(.+?)\s*RT\s+(\S+)\s+RW\s+(\S+)$/)
+  if (match) return { jalan: match[1].trim(), rt: match[2], rw: match[3] }
+  return { jalan: alamat, rt: '', rw: '' }
+}
+
+export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialData }): React.ReactNode => {
   const router = useRouter()
   const { trigger, isMutating } = useCreateRelawan()
+  const isEdit = !!initialData
 
-  const [nik, setNik] = useState('')
-  const [nama, setNama] = useState('')
-  const [noTelepon, setNoTelepon] = useState('')
-  const [jenisKelamin, setJenisKelamin] = useState('')
+  const [nik, setNik] = useState(initialData?.nik ?? '')
+  const [nama, setNama] = useState(initialData?.nama ?? '')
+  const [noTelepon, setNoTelepon] = useState(initialData?.no_telepon ?? '')
+  const [jenisKelamin, setJenisKelamin] = useState(initialData?.jenis_kelamin ?? '')
+  const [posisi, setPosisi] = useState(initialData?.posisi ?? '')
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [jalan, setJalan] = useState('')
   const [rt, setRt] = useState('')
   const [rw, setRw] = useState('')
-  const [posisi, setPosisi] = useState('')
-  const [fotoBase64, setFotoBase64] = useState('')
-  const [fotoName, setFotoName] = useState('')
+  const [fotoBase64, setFotoBase64] = useState(initialData?.foto ?? '')
+  const [fotoName, setFotoName] = useState(initialData?.foto ? 'foto-existing' : '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
@@ -75,8 +96,36 @@ export const FormRelawan = (): React.ReactNode => {
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
-  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
+
+  useEffect(() => {
+    if (initialData && kotaList.length > 0) {
+      const found = kotaList.find((k) => k.nama === initialData.kota_kabupaten)
+      if (found) setKotaId(found.id)
+    }
+  }, [initialData, kotaList])
+
+  useEffect(() => {
+    if (initialData && kecamatanList.length > 0) {
+      const found = kecamatanList.find((k) => k.nama === initialData.kecamatan)
+      if (found) setKecamatanId(found.id)
+    }
+  }, [initialData, kecamatanList])
+
+  useEffect(() => {
+    if (initialData && kelurahanList.length > 0) {
+      const found = kelurahanList.find((k) => k.nama === initialData.kelurahan)
+      if (found) setKelurahanId(found.id)
+    }
+  }, [initialData, kelurahanList])
+
+  useEffect(() => {
+    if (initialData) {
+      const parsed = parseAlamat(initialData.alamat)
+      setJalan(parsed.jalan)
+      setRt(parsed.rt)
+      setRw(parsed.rw)
+    }
+  }, [initialData])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -115,6 +164,26 @@ export const FormRelawan = (): React.ReactNode => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
+
+    if (isEdit && initialData) {
+      await fetch(`/api/relawan/${initialData.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nik,
+          nama,
+          no_telepon: noTelepon,
+          jenis_kelamin: jenisKelamin,
+          posisi,
+          alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
+          kota_kabupaten: kotaMap[kotaId],
+          kecamatan: kecamatanMap[kecamatanId],
+          kelurahan: kelurahanMap[kelurahanId],
+        }),
+      })
+      router.push('/admin/relawan')
+      return
+    }
 
     await trigger({
       nik,
@@ -193,7 +262,7 @@ export const FormRelawan = (): React.ReactNode => {
         id="kecamatan"
         label="Kecamatan"
         placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
-        options={kecamatanOptions}
+        options={kecamatanList.map((k) => ({ value: k.id, label: k.nama }))}
         value={kecamatanId}
         onChange={(e) => {
           setKecamatanId(e.target.value)
@@ -206,7 +275,7 @@ export const FormRelawan = (): React.ReactNode => {
         id="kelurahan"
         label="Kelurahan"
         placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
-        options={kelurahanOptions}
+        options={kelurahanList.map((k) => ({ value: k.id, label: k.nama }))}
         value={kelurahanId}
         onChange={(e) => setKelurahanId(e.target.value)}
         error={errors.kelurahan}
@@ -248,7 +317,9 @@ export const FormRelawan = (): React.ReactNode => {
           className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] file:mr-3 file:rounded file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-1 file:text-sm file:font-medium file:text-[var(--color-primary)]"
         />
         {fotoName && (
-          <p className="text-xs text-[var(--color-text-secondary)]">Terpilih: {fotoName}</p>
+          <p className="text-xs text-[var(--color-text-secondary)]">
+            {fotoBase64.startsWith('data:') ? 'Foto tersimpan' : `Terpilih: ${fotoName}`}
+          </p>
         )}
         {errors.foto && <p className="text-xs text-[var(--color-danger)]">{errors.foto}</p>}
       </div>
@@ -258,7 +329,7 @@ export const FormRelawan = (): React.ReactNode => {
           Batal
         </Button>
         <Button type="submit" disabled={isMutating}>
-          {isMutating ? 'Menyimpan...' : 'Simpan'}
+          {isMutating ? 'Menyimpan...' : isEdit ? 'Update' : 'Simpan'}
         </Button>
       </div>
     </form>
