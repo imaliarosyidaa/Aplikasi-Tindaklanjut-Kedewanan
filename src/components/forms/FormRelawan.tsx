@@ -54,6 +54,7 @@ const POSISI_OPTIONS = [
   { value: 'LMK', label: 'LMK' },
   { value: 'TOKOH_MASYARAKAT', label: 'Tokoh Masyarakat' },
   { value: 'PROFESIONAL', label: 'Profesional' },
+  { value: 'LAINNYA', label: 'Lainnya' },
 ]
 
 function parseAlamat(alamat: string): { jalan: string; rt: string; rw: string } {
@@ -72,6 +73,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const [noTelepon, setNoTelepon] = useState(initialData?.no_telepon ?? '')
   const [jenisKelamin, setJenisKelamin] = useState(initialData?.jenis_kelamin ?? '')
   const [posisi, setPosisi] = useState(initialData?.posisi ?? '')
+  const [posisiLainnya, setPosisiLainnya] = useState('')
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
@@ -167,6 +169,8 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
     e.preventDefault()
     if (!validate()) return
 
+    const posisiFinal = posisi === 'LAINNYA' ? posisiLainnya : posisi
+
     if (isEdit && initialData) {
       await fetch(`/api/relawan/${initialData.id}`, {
         method: 'PATCH',
@@ -176,7 +180,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           nama,
           no_telepon: noTelepon,
           jenis_kelamin: jenisKelamin,
-          posisi,
+          posisi: posisiFinal,
           alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
           domisili_sekarang: domisiliSekarang,
           kota_kabupaten: kotaMap[kotaId],
@@ -198,7 +202,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
       kelurahan: kelurahanMap[kelurahanId],
       alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
       domisili_sekarang: domisiliSekarang,
-      posisi: posisi as any,
+      posisi: posisiFinal as any,
       foto: fotoBase64 || undefined,
     })
 
@@ -257,9 +261,12 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         placeholder="Pilih posisi"
         options={POSISI_OPTIONS}
         value={posisi}
-        onChange={(e) => setPosisi(e.target.value)}
+        onChange={(e) => { setPosisi(e.target.value); if (e.target.value !== 'LAINNYA') setPosisiLainnya('') }}
         error={errors.posisi}
       />
+      {posisi === 'LAINNYA' && (
+        <Input id="posisi_lainnya" label="Posisi (Lainnya)" placeholder="Tuliskan posisi" value={posisiLainnya} onChange={(e) => setPosisiLainnya(e.target.value)} required />
+      )}
       <label className="block text-sm font-medium text-[var(--color-text)]">
         Kota/Kabupaten
       </label>
