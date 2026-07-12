@@ -48,6 +48,10 @@ interface FormKunjunganInitialData {
 const JENIS_KEGIATAN_OPTIONS = [
   { value: 'reses', label: 'Kegiatan reses (serap aspirasi masyarakat)' },
   { value: 'sosperda', label: 'Sosperda (fungsi pengawasan produk hukum daerah DKI Jakarta)' },
+  { value: 'pelatihan_masyarakat', label: 'Pelatihan Masyarakat' },
+  { value: 'rapat_kerja', label: 'Rapat Kerja' },
+  { value: 'rapat_komisi', label: 'Rapat Komisi' },
+  { value: 'lainya', label: 'Lainnya' },
 ]
 
 export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInitialData }): React.ReactNode => {
@@ -68,6 +72,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
   // Kegiatan fields
   const [jenisKegiatan, setJenisKegiatan] = useState(initialData?.jenis_kegiatan ?? '')
+  const [jenisKegiatanLainnya, setJenisKegiatanLainnya] = useState('')
   const [namaKegiatan, setNamaKegiatan] = useState(initialData?.nama_kegiatan ?? '')
   const [isi, setIsi] = useState(initialData?.isi ?? '')
   const [tempat, setTempat] = useState(initialData?.tempat ?? '')
@@ -120,11 +125,14 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
     setLoading(true)
 
     try {
+      const jenisKegiatanFinal = jenisKegiatan === 'lainya' ? jenisKegiatanLainnya : jenisKegiatan
+
       if (isEdit && initialData) {
         await fetch(`/api/kegiatan/${initialData.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            jenis_kegiatan: jenisKegiatanFinal,
             nama_kegiatan: namaKegiatan,
             lokasi: tempat,
             catatan,
@@ -141,7 +149,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            jenis_kegiatan: jenisKegiatan,
+            jenis_kegiatan: jenisKegiatanFinal,
             tanggal,
             jam,
             jalan,
@@ -158,7 +166,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             kunjungan_id: kunjungan.id,
-            jenis_kegiatan: jenisKegiatan,
+            jenis_kegiatan: jenisKegiatanFinal,
             nama_kegiatan: namaKegiatan,
             isi,
             tempat,
@@ -183,7 +191,10 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => setJenisKegiatan(e.target.value)} error={errors.jenisKegiatan} disabled={isEdit} />
+      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => { setJenisKegiatan(e.target.value); if (e.target.value !== 'lainya') setJenisKegiatanLainnya('') }} error={errors.jenisKegiatan} disabled={isEdit} />
+      {jenisKegiatan === 'lainya' && (
+        <Input id="jenis_kegiatan_lainnya" label="Jenis Kegiatan (Lainnya)" placeholder="Tuliskan jenis kegiatan" value={jenisKegiatanLainnya} onChange={(e) => setJenisKegiatanLainnya(e.target.value)} required />
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input id="tanggal" label={t('tanggal')} type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} error={errors.tanggal} />

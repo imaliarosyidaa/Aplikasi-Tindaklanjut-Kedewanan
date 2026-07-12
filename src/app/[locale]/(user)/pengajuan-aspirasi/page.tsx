@@ -255,6 +255,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [kelurahanId, setKelurahanId] = useState('')
   const [alamat, setAlamat] = useState('')
   const [telepon, setTelepon] = useState('')
+  const [sumber, setSumber] = useState('')
   const [pengaduan, setPengaduan] = useState('')
   const [lampiran, setLampiran] = useState<UploadedFile[]>([])
   const [submitted, setSubmitted] = useState(false)
@@ -306,7 +307,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       body: JSON.stringify({
         id_laporan: idLaporan,
         nik,
-        sumber: 'CALL_CENTER',
+        sumber,
         deskripsi: pengaduan,
         pelapor_nama: nama,
         pelapor_email: '',
@@ -440,6 +441,22 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             type="tel"
             value={telepon}
             onChange={(e) => setTelepon(e.target.value)}
+            required
+          />
+          <Select
+            id="sumber"
+            label="Sumber Aspirasi"
+            placeholder="Pilih sumber aspirasi"
+            options={[
+              { value: 'LEMBAR_ASPIRASI_RESES', label: 'Lembar Aspirasi Reses' },
+              { value: 'LEMBAR_ASPIRASI_SOSPERDA', label: 'Lembar Aspirasi Sosperda' },
+              { value: 'ASPIRASI_PROPOSAL_LANGSUNG', label: 'Aspirasi Proposal Langsung' },
+              { value: 'KOORDINASI_DINAS_TERKAIT', label: 'Koordinasi Dinas Terkait' },
+              { value: 'USULAN_MUSRENBANG_DEWAN', label: 'Usulan Musrenbang Dewan' },
+              { value: 'CALL_CENTER', label: 'Call Center' },
+            ]}
+            value={sumber}
+            onChange={(e) => setSumber(e.target.value)}
             required
           />
           <div>
