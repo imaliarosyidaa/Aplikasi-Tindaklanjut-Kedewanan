@@ -33,6 +33,7 @@ interface FormRelawanInitialData {
   jenis_kelamin: string
   posisi: string
   alamat: string
+  domisili_sekarang?: string
   foto: string
   kota_kabupaten: string
   kecamatan: string
@@ -79,6 +80,8 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const [rw, setRw] = useState('')
   const [fotoBase64, setFotoBase64] = useState(initialData?.foto ?? '')
   const [fotoName, setFotoName] = useState(initialData?.foto ? 'foto-existing' : '')
+  const [domisiliSesuaiKtp, setDomisiliSesuaiKtp] = useState('')
+  const [domisiliSekarang, setDomisiliSekarang] = useState(initialData?.domisili_sekarang ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
@@ -150,7 +153,6 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
-    if (!nik) errs.nik = 'Wajib diisi'
     if (!nama) errs.nama = 'Wajib diisi'
     if (!noTelepon) errs.noTelepon = 'Wajib diisi'
     if (!jenisKelamin) errs.jenisKelamin = 'Wajib diisi'
@@ -176,6 +178,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           jenis_kelamin: jenisKelamin,
           posisi,
           alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
+          domisili_sekarang: domisiliSekarang,
           kota_kabupaten: kotaMap[kotaId],
           kecamatan: kecamatanMap[kecamatanId],
           kelurahan: kelurahanMap[kelurahanId],
@@ -194,6 +197,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
       kecamatan: kecamatanMap[kecamatanId],
       kelurahan: kelurahanMap[kelurahanId],
       alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
+      domisili_sekarang: domisiliSekarang,
       posisi: posisi as any,
       foto: fotoBase64 || undefined,
     })
@@ -203,52 +207,64 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        NIK <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan)</span>
+      </label>
       <Input
         id="nik"
-        label="NIK"
         value={nik}
         onChange={(e) => setNik(e.target.value)}
         error={errors.nik}
         required
       />
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        Nama Lengkap
+      </label>
       <Input
         id="nama"
-        label="Nama Lengkap"
         value={nama}
         onChange={(e) => setNama(e.target.value)}
         error={errors.nama}
         required
       />
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        No. Telepon
+      </label>
       <Input
         id="no_telepon"
-        label="No. Telepon"
         type="tel"
         value={noTelepon}
         onChange={(e) => setNoTelepon(e.target.value)}
         error={errors.noTelepon}
         required
       />
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        Jenis Kelamin
+      </label>
       <Select
         id="jenis_kelamin"
-        label="Jenis Kelamin"
         placeholder="Pilih jenis kelamin"
         options={JENIS_KELAMIN_OPTIONS}
         value={jenisKelamin}
         onChange={(e) => setJenisKelamin(e.target.value)}
         error={errors.jenisKelamin}
       />
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        Posisi
+      </label>
       <Select
         id="posisi"
-        label="Posisi"
         placeholder="Pilih posisi"
         options={POSISI_OPTIONS}
         value={posisi}
         onChange={(e) => setPosisi(e.target.value)}
         error={errors.posisi}
       />
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        Kota/Kabupaten
+      </label>
       <Select
         id="kota"
-        label="Kota/Kabupaten"
         placeholder="Pilih Kota/Kabupaten"
         options={kotaOptions}
         value={kotaId}
@@ -258,9 +274,11 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         }}
         error={errors.kota}
       />
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        Kecamatan
+      </label>
       <Select
         id="kecamatan"
-        label="Kecamatan"
         placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
         options={kecamatanList.map((k) => ({ value: k.id, label: k.nama }))}
         value={kecamatanId}
@@ -271,9 +289,11 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         error={errors.kecamatan}
         disabled={!kotaId}
       />
+      <label className="block text-sm font-medium text-[var(--color-text)]">
+        Kelurahan
+      </label>
       <Select
         id="kelurahan"
-        label="Kelurahan"
         placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
         options={kelurahanList.map((k) => ({ value: k.id, label: k.nama }))}
         value={kelurahanId}
@@ -281,9 +301,33 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         error={errors.kelurahan}
         disabled={!kecamatanId}
       />
+
+      <div>
+        <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Domisili sesuai KTP?</label>
+        <div className="flex flex-col gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="domisili_ktp" value="Ya" checked={domisiliSesuaiKtp === 'Ya'} onChange={() => { setDomisiliSesuaiKtp('Ya'); setDomisiliSekarang('') }} className="accent-[var(--color-primary)]" />
+            <span className="text-sm text-[var(--color-text)]">Ya</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="domisili_ktp" value="Tidak" checked={domisiliSesuaiKtp === 'Tidak'} onChange={() => setDomisiliSesuaiKtp('Tidak')} className="accent-[var(--color-primary)]" />
+            <span className="text-sm text-[var(--color-text)]">Tidak</span>
+          </label>
+        </div>
+      </div>
+      {domisiliSesuaiKtp === 'Tidak' && (
+        <Input
+          id="domisili_sekarang"
+          label="Domisili Sekarang"
+          value={domisiliSekarang}
+          onChange={(e) => setDomisiliSekarang(e.target.value)}
+          placeholder="Masukkan domisili saat ini"
+        />
+      )}
+
       <Input
         id="jalan"
-        label="Alamat (Jalan)"
+        label="Alamat Sesuai KTP"
         placeholder="Masukkan nama jalan"
         value={jalan}
         onChange={(e) => setJalan(e.target.value)}
@@ -305,9 +349,9 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         />
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-2">
         <label className="block text-sm font-medium text-[var(--color-text)]">
-          Upload Foto
+          Upload Foto Diri <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan, format PNG/JPG/JPEG)</span>
         </label>
         <input
           id="foto"

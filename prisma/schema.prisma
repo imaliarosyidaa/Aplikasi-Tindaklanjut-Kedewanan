@@ -160,19 +160,20 @@ enum PosisiRelawan {
 }
 
 model Relawan {
-  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nik            String?        @unique
-  nama           String
-  no_telepon     String?
-  jenis_kelamin  JenisKelamin
-  alamat         String
-  posisi         PosisiRelawan
-  foto           String?
-  created_at     DateTime      @default(now()) @map("created_at")
-  updated_at     DateTime      @updatedAt @map("updated_at")
-  kota_id        String  @db.Uuid
-  kecamatan_id   String  @db.Uuid
-  kelurahan_id   String  @db.Uuid
+  id                   String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nik                  String?        @unique
+  nama                 String
+  no_telepon           String?
+  jenis_kelamin        JenisKelamin
+  alamat               String
+  domisili_sekarang    String?
+  posisi               PosisiRelawan
+  foto                 String?
+  created_at           DateTime      @default(now()) @map("created_at")
+  updated_at           DateTime      @updatedAt @map("updated_at")
+  kota_id              String  @db.Uuid
+  kecamatan_id         String  @db.Uuid
+  kelurahan_id         String  @db.Uuid
 
   kota           Kota        @relation(fields: [kota_id], references: [id])
   kecamatan      Kecamatan   @relation(fields: [kecamatan_id], references: [id])

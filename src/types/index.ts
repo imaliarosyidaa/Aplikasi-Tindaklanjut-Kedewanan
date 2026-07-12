@@ -113,6 +113,7 @@ export interface Relawan {
   kecamatan: string
   kelurahan: string
   alamat: string
+  domisili_sekarang?: string
   posisi: PosisiRelawan
   foto?: string
   created_at: string

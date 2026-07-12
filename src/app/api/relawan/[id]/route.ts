@@ -18,6 +18,7 @@ export async function GET(
     no_telepon: r.no_telepon ?? '',
     jenis_kelamin: r.jenis_kelamin,
     alamat: r.alamat,
+    domisili_sekarang: r.domisili_sekarang ?? '',
     posisi: r.posisi,
     foto: r.foto ?? '',
     kota_kabupaten: r.kota.nama,
@@ -40,6 +41,7 @@ export async function PATCH(
   if (body.jenis_kelamin !== undefined) updateData.jenis_kelamin = body.jenis_kelamin
   if (body.posisi !== undefined) updateData.posisi = body.posisi
   if (body.alamat !== undefined) updateData.alamat = body.alamat
+  if (body.domisili_sekarang !== undefined) updateData.domisili_sekarang = body.domisili_sekarang
 
   if (body.kota_kabupaten || body.kecamatan || body.kelurahan) {
     if (body.kota_kabupaten) {
