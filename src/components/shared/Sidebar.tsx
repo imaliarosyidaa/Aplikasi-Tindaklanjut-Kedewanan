@@ -34,7 +34,6 @@ export const Sidebar = (): React.ReactNode => {
   return (
     <aside className="hidden w-64 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bg)] lg:block">
       <Link href="/admin/dashboard" className="flex h-16 items-center px-6 border-b border-[var(--color-border)]">
-        <MdDirectionsWalk size={24} className="text-[var(--color-primary)] mr-2" />
         <span className="font-bold text-[var(--color-text)]">
           {t('dashboard')}
         </span>
