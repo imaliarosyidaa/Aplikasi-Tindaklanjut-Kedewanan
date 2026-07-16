@@ -11,7 +11,7 @@ import { Pagination } from '@/components/ui/pagination'
 import { MASTER_WILAYAH } from '@/utils/masterWilayah'
 import type { Kunjungan } from '@/types'
 export default function KelurahanDikunjungiPage(): React.ReactNode {
-  const { data: kunjunganList, isLoading } = useKunjunganList()
+  const { data: kunjunganList } = useKunjunganList()
 
   const allKelurahan = MASTER_WILAYAH.flatMap((kec) =>
     kec.kelurahan.map((kel) => ({

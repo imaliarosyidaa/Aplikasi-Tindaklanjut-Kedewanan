@@ -80,6 +80,7 @@ export interface KecamatanStat {
 
 export interface DashboardStats {
   total_kunjungan: number
+  total_kegiatan: number
   total_aspirasi: number
   kunjungan_per_bulan: { bulan: string; jumlah: number }[]
   aspirasi_per_bulan: { bulan: string; jumlah: number }[]

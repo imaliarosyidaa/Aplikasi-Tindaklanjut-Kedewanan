@@ -25,7 +25,7 @@ export default function DetailKegiatanPage({
   params,
 }: DetailKegiatanProps): React.ReactNode {
   const { id } = use(params)
-  const { data: kegiatan, isLoading } = useKegiatan(id)
+  const { data: kegiatan } = useKegiatan(id)
 
   if (!kegiatan) {
     return (

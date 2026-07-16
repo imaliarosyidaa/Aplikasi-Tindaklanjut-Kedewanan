@@ -4,8 +4,10 @@ import { prisma } from '@/lib/prisma'
 export async function GET() {
   const [
     total_kunjungan,
+    total_kegiatan,
     total_aspirasi,
     kunjungan_all,
+    kegiatan_all,
     aspirasi_all,
     kecamatans,
     kelurahans,
@@ -13,9 +15,13 @@ export async function GET() {
     sumberGroup,
   ] = await Promise.all([
     prisma.kunjungan.count(),
+    prisma.kegiatan.count(),
     prisma.aspirasis.count(),
     prisma.kunjungan.findMany({
       select: { tanggal: true, kelurahan_id: true },
+    }),
+    prisma.kegiatan.findMany({
+      select: { kunjungan: { select: { kelurahan_id: true } }, tanggal: true },
     }),
     prisma.aspirasis.findMany({
       select: { created_at: true, status: true, sumber: true },
@@ -29,7 +35,7 @@ export async function GET() {
   const total_kelurahan = kelurahans.length
 
   const kelurahan_dikunjungi = new Set(
-    kunjungan_all.map((k) => k.kelurahan_id)
+    kegiatan_all.map((k) => k.kunjungan.kelurahan_id)
   ).size
 
   const kelurahan_belum_dikunjungi = total_kelurahan - kelurahan_dikunjungi
@@ -41,7 +47,8 @@ export async function GET() {
 
   const kunjungan_per_bulan = bulanNames.map((bulan, i) => {
     const month = String(i + 1).padStart(2, '0')
-    const jumlah = kunjungan_all.filter((k) => {
+    const jumlah = kegiatan_all.filter((k) => {
+      if (!k.tanggal) return false
       const d = k.tanggal.toISOString()
       return d.startsWith(`2025-${month}`) || d.startsWith(`2026-${month}`)
     }).length
@@ -72,14 +79,14 @@ export async function GET() {
       .filter((kel) => kel.kecamatan_id === kec.id)
       .map((kel) => kel.id)
     const uniqueKel = new Set(
-      kunjungan_all
-        .filter((k) => kelIds.includes(k.kelurahan_id))
-        .map((k) => k.kelurahan_id)
+      kegiatan_all
+        .filter((k) => kelIds.includes(k.kunjungan.kelurahan_id))
+        .map((k) => k.kunjungan.kelurahan_id)
     )
     return {
       kecamatan: kec.nama,
-      jumlah_kunjungan: kunjungan_all.filter((k) =>
-        kelIds.includes(k.kelurahan_id)
+      jumlah_kunjungan: kegiatan_all.filter((k) =>
+        kelIds.includes(k.kunjungan.kelurahan_id)
       ).length,
       jumlah_kelurahan: kelIds.length,
       kelurahan_dikunjungi: uniqueKel.size,
@@ -88,6 +95,7 @@ export async function GET() {
 
   return NextResponse.json({
     total_kunjungan,
+    total_kegiatan,
     total_aspirasi,
     kunjungan_per_bulan,
     aspirasi_per_bulan,

@@ -30,7 +30,7 @@ export default function AspirasiDetailPage({
     SUDAH_DITINDAKLANJUTI: 'Sudah Ditindaklanjuti',
     TIDAK_BISA_DITINDAKLANJUTI: 'Tidak Bisa Ditindaklanjuti',
   }
-  const { data: aspirasi, isLoading } = useAspirasi(id)
+  const { data: aspirasi } = useAspirasi(id)
   const formatTanggalJam = (dateString: string) => {
   const date = new Date(dateString)
 

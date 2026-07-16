@@ -33,7 +33,7 @@ export default function KunjunganPage() {
   params.set('limit', String(PAGE_SIZE))
   if (searched && query.trim()) params.set('search', query.trim())
 
-  const { data: res, isLoading, mutate } = useSWR<{ data: Kegiatan[]; total: number }>(
+  const { data: res, mutate } = useSWR<{ data: Kegiatan[]; total: number }>(
     `/api/kegiatan?${params.toString()}`, fetcher
   )
   const allKegiatan = res?.data ?? []
@@ -132,8 +132,6 @@ export default function KunjunganPage() {
     mutate()
   }
 
-  if (isLoading) return null
-
   return (
     <div className="space-y-6">
       <div>
@@ -168,9 +166,6 @@ export default function KunjunganPage() {
         </div>
       </Card>
 
-      {filteredData.length === 0 ? (
-        <Card><p className="text-center text-[var(--color-text-secondary)] py-8">{searched ? 'Tidak ditemukan kegiatan dengan filter tersebut' : 'Belum ada data kegiatan'}</p></Card>
-      ) : (
         <div>
         <div className="flex items-center justify-end mb-2">
           {selectedIds.size > 0 && (
@@ -197,8 +192,14 @@ export default function KunjunganPage() {
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredData.map((item, i) => (
+            <tbody>            
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
+                    'Belum ada data kegiatan'
+                  </td>
+                </tr>
+              ) : (filteredData.map((item, i) => (
                 <tr key={item.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
                   <td className="px-4 py-3">
                     <input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleSelect(item.id)} className="cursor-pointer" />
@@ -218,15 +219,14 @@ export default function KunjunganPage() {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
         <div className="flex items-center justify-end mt-4">
           <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
         </div>
-        </div>
-      )}
+      </div>
 
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setEditingItem(null)}>

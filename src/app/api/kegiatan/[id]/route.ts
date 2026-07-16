@@ -91,6 +91,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  await prisma.kegiatan.delete({ where: { id } })
+  const kegiatan = await prisma.kegiatan.findUnique({ where: { id }, select: { kunjungan_id: true } })
+  if (!kegiatan) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  await prisma.$transaction([
+    prisma.kegiatan.delete({ where: { id } }),
+    prisma.kunjungan.delete({ where: { id: kegiatan.kunjungan_id } }),
+  ])
   return NextResponse.json({ success: true })
 }

@@ -6,15 +6,14 @@ import { StatCard } from '@/components/dashboard/StatCard'
 import { BarChart } from '@/components/dashboard/BarChart'
 import { PieChart } from '@/components/dashboard/PieChart'
 import { Modal } from '@/components/ui/modal'
-import { Badge } from '@/components/ui/badge'
 import { useRouter } from '@/routing'
 import {
   MdDirectionsWalk,
   MdTrackChanges,
   MdCheckCircle,
   MdPending,
-  MdLocationOn,
 } from 'react-icons/md'
+import { IoMdCloseCircle } from "react-icons/io";
 import type { KecamatanStat } from '@/types'
 import { Card } from '@/components/ui/card'
 
@@ -56,7 +55,11 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
               className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 bg-white"
             >
               <div className="flex items-center gap-3">
-              <MdCheckCircle size={24} color={visited ? 'var(--color-success)' : 'var(--color-danger)'} />
+                {visited ? (
+                  <MdCheckCircle size={24} color="var(--color-success)" />
+                ) : (
+                  <IoMdCloseCircle size={24} color="var(--color-danger)" />
+                )}
                 <div>
                   <p className="font-medium text-[var(--color-text)] text-sm">{k.kecamatan}</p>
                 </div>
@@ -73,7 +76,7 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
 }
 
 export default function AdminDashboardPage(): React.ReactNode {
-  const { data, isLoading } = useDashboardStats()
+  const { data } = useDashboardStats()
   const router = useRouter()
 
   const [modalType, setModalType] = useState<string | null>(null)
@@ -187,10 +190,10 @@ export default function AdminDashboardPage(): React.ReactNode {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Total Kegiatan"
-            value={data?.total_kunjungan ?? 0}
+            value={data?.total_kegiatan ?? 0}
             icon={<MdDirectionsWalk size={24} />}
             variant="info"
-            onClick={() => router.push('/admin/dashboard/kunjungan')}
+            onClick={() => router.push('/admin/kunjungan')}
           />
           <StatCard
             title="Total Aspirasi"

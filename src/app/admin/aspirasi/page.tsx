@@ -35,7 +35,7 @@ export default function AspirasiPage(): React.ReactNode {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
 
-  const { data: aspirasiList, total, isLoading, mutate } = useAspirasiList({
+  const { data: aspirasiList, total, mutate } = useAspirasiList({
     page: currentPage,
     limit: PAGE_SIZE,
     search: searchText || undefined,

@@ -61,7 +61,7 @@ export default function RelawanPage(): React.ReactNode {
   const [currentPage, setCurrentPage] = useState(1)
 
   const searchParam = searched && query.trim() ? query.trim() : undefined
-  const { data: allRelawans, total, isLoading, mutate: mutateRelawan } = useRelawanList(
+  const { data: allRelawans, total, mutate: mutateRelawan } = useRelawanList(
     searchParam ? { page: currentPage, limit: PAGE_SIZE, search: searchParam } : { page: currentPage, limit: PAGE_SIZE }
   )
   const { mutate } = useSWRConfig()
@@ -176,16 +176,6 @@ export default function RelawanPage(): React.ReactNode {
         </div>
       </Card>
 
-      {isLoading ? (
-        null
-      ) : !results || results.length === 0 ? (
-        <Card className="p-8 text-center">
-          <MdGroup size={48} className="mx-auto text-[var(--color-text-secondary)] mb-3" />
-          <p className="text-[var(--color-text-secondary)]">
-            {searched ? 'Tidak ditemukan relawan dengan filter tersebut' : 'Belum ada data relawan'}
-          </p>
-        </Card>
-      ) : (
         <div>
         <div className="flex items-center justify-end mb-2">
           {selectedIds.size > 0 && (
@@ -213,8 +203,13 @@ export default function RelawanPage(): React.ReactNode {
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               </tr>
             </thead>
-            <tbody>
-              {results.map((r, i) => (
+            <tbody>{results.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
+                  {hasFilter ? 'Tidak ada relawan dengan filter tersebut' : 'Belum ada data relawan'}
+                </td>
+              </tr>
+            ) : results.map((r, i) => (
                 <tr key={r.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
                   <td className="px-4 py-3">
                     <input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} className="cursor-pointer" />
@@ -254,8 +249,7 @@ export default function RelawanPage(): React.ReactNode {
           <div className="flex items-center justify-end mt-4">
             <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
           </div>
-        </div>
-      )}
+      </div>
 
       {preview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setPreview(null)}>

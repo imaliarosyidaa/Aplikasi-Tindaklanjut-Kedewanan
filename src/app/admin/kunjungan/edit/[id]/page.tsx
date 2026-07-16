@@ -14,9 +14,8 @@ export default function EditKegiatanPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const { data: kegiatan, isLoading } = useSWR(`/api/kegiatan/${id}`, fetcher)
+  const { data: kegiatan } = useSWR(`/api/kegiatan/${id}`, fetcher)
 
-  if (isLoading) return null
   if (!kegiatan) return <p className="text-[var(--color-text-secondary)]">Kegiatan tidak ditemukan</p>
 
   return (
