@@ -27,14 +27,6 @@ export default function DetailKegiatanPage({
   const { id } = use(params)
   const { data: kegiatan, isLoading } = useKegiatan(id)
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-      </div>
-    )
-  }
-
   if (!kegiatan) {
     return (
       <div className="flex items-center justify-center h-64">

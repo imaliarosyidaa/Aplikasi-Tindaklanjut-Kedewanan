@@ -27,33 +27,24 @@ export default function AspirasiPage(): React.ReactNode {
     SUDAH_DITINDAKLANJUTI: 'Sudah Ditindaklanjuti',
     TIDAK_BISA_DITINDAKLANJUTI: 'Tidak Bisa Ditindaklanjuti',
   }
-  const { data: aspirasiList, isLoading, mutate } = useAspirasiList()
-  const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
+  const PAGE_SIZE = 50
+  const [currentPage, setCurrentPage] = useState(1)
   const [searchText, setSearchText] = useState('')
   const [filterSumber, setFilterSumber] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
 
-  const filteredList = useMemo(() => {
-    if (!aspirasiList) return []
-    let result = aspirasiList
-    if (filterSumber) result = result.filter((a) => a.sumber === filterSumber)
-    if (filterStatus) result = result.filter((a) => a.status === filterStatus)
-    if (searchText.trim()) {
-      const q = searchText.trim().toLowerCase()
-      result = result.filter((a) =>
-        a.pelapor_nama.toLowerCase().includes(q) ||
-        a.pelapor_telepon.includes(q)
-      )
-    }
-    return result
-  }, [aspirasiList, filterSumber, filterStatus, searchText])
+  const { data: aspirasiList, total, isLoading, mutate } = useAspirasiList({
+    page: currentPage,
+    limit: PAGE_SIZE,
+    search: searchText || undefined,
+    sumber: filterSumber || undefined,
+    status: filterStatus || undefined,
+  })
+
+  const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
 
   const hasFilter = filterSumber || filterStatus || searchText.trim()
-
-  const PAGE_SIZE = 50
-  const [currentPage, setCurrentPage] = useState(1)
-  const paginatedData = filteredList.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-  useEffect(() => { setCurrentPage(1) }, [filteredList.length])
+  useEffect(() => { setCurrentPage(1) }, [filterSumber, filterStatus, searchText])
 
   const sumberOptions = [
     { value: 'LEMBAR_ASPIRASI_RESES', label: 'Lembar Aspirasi Reses' },
@@ -70,14 +61,6 @@ export default function AspirasiPage(): React.ReactNode {
     { value: 'SUDAH_DITINDAKLANJUTI', label: 'Sudah Ditindaklanjuti' },
     { value: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Bisa Ditindaklanjuti' },
   ]
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-      </div>
-    )
-  }
 
   return (
     <div className="space-y-6">
@@ -100,7 +83,7 @@ export default function AspirasiPage(): React.ReactNode {
             placeholder="Semua Sumber"
             options={sumberOptions}
             value={filterSumber}
-            onChange={(e) => setFilterSumber(e.target.value)}
+            onChange={(e) => { setFilterSumber(e.target.value); setCurrentPage(1) }}
           />
         </div>
         <div className="min-w-[160px] flex-1">
@@ -110,7 +93,7 @@ export default function AspirasiPage(): React.ReactNode {
             placeholder="Semua Status"
             options={statusOptions}
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
           />
         </div>
         <div className="min-w-[180px] flex-1">
@@ -118,12 +101,12 @@ export default function AspirasiPage(): React.ReactNode {
             id="search"
             label="Cari Nama atau No. Telepon"
             value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1) }}
             placeholder="Ketik nama atau telepon..."
           />
         </div>
         {hasFilter && (
-          <Button variant="outline" size="sm" className="mb-0.5" onClick={() => { setSearchText(''); setFilterSumber(''); setFilterStatus('') }}>
+          <Button variant="outline" size="sm" className="mb-0.5" onClick={() => { setSearchText(''); setFilterSumber(''); setFilterStatus(''); setCurrentPage(1) }}>
             <MdFilterList size={16} className="mr-1" />
             Tampilkan Semua
           </Button>
@@ -154,7 +137,7 @@ export default function AspirasiPage(): React.ReactNode {
                 Tanggal Dibuat
               </th>
               <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">
-Tracing Aspirasi
+                Status
               </th>
               <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">
                 Aksi
@@ -162,17 +145,17 @@ Tracing Aspirasi
             </tr>
           </thead>
           <tbody>
-            {filteredList.length === 0 ? (
+            {aspirasiList.length === 0 ? (
               <tr>
                   <td
-                    colSpan={8}
+                  colSpan={9}
                   className="px-4 py-8 text-center text-[var(--color-text-secondary)]"
                 >
                   {hasFilter ? 'Tidak ada aspirasi dengan filter tersebut' : 'Belum ada data aspirasi'}
                 </td>
               </tr>
             ) : (
-              paginatedData.map((aspirasi: Aspirasi, i: number) => (
+                aspirasiList.map((aspirasi: Aspirasi, i: number) => (
                 <tr
                   key={aspirasi.id}
                   className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
@@ -233,7 +216,7 @@ Tracing Aspirasi
           </tbody>
         </table>
       </div>
-      <Pagination currentPage={currentPage} totalItems={filteredList.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
+      <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
 
       <Modal
         isOpen={!!selectedAspirasi}

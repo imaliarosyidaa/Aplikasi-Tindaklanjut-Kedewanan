@@ -16,7 +16,6 @@ export default function EditRelawanPage({
   const { id } = use(params)
   const { data: relawan, isLoading } = useSWR(`/api/relawan/${id}`, fetcher)
 
-  if (isLoading) return <p className="text-[var(--color-text-secondary)]">Memuat...</p>
   if (!relawan) return <p className="text-[var(--color-text-secondary)]">Relawan tidak ditemukan</p>
 
   return (

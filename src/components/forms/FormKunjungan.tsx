@@ -142,11 +142,10 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
         })
         router.push('/admin/kunjungan')
       } else {
-        const kunjunganRes = await fetch('/api/kunjungan', {
+        await fetch('/api/kunjungan/with-kegiatan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            jenis_kegiatan: jenisKegiatanFinal,
             tanggal,
             jam,
             jalan,
@@ -154,25 +153,14 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             kecamatan: kecamatanMap[kecamatanId],
             kota: kotaMap[kotaId],
             link_gmaps: linkGmaps,
-          }),
-        })
-        const kunjungan = await kunjunganRes.json()
-
-        await fetch('/api/kegiatan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            kunjungan_id: kunjungan.id,
             jenis_kegiatan: jenisKegiatanFinal,
             nama_kegiatan: namaKegiatan,
             isi,
             tempat,
             rt,
             rw,
-            tanggal,
             jumlah_peserta: jumlahPeserta,
             catatan,
-            link_gmaps: linkGmaps,
             foto: lampiran.length > 0 ? lampiran[0].base64 : '',
           }),
         })

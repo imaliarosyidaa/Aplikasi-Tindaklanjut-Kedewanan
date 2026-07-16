@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
+  const pageParam = searchParams.get('page')
+  const hasPagination = pageParam !== null
+  const page = Math.max(1, parseInt(pageParam ?? '1'))
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50')))
   const kelurahanNama = searchParams.get('kelurahan')
   const kunjunganId = searchParams.get('kunjungan_id')
 
@@ -26,19 +30,23 @@ export async function GET(request: NextRequest) {
     where.kunjungan_id = { in: kunjungans.map((k) => k.id) }
   }
 
-  const data = await prisma.kegiatan.findMany({
-    where,
-    include: {
-      kunjungan: {
-        include: {
-          kelurahan: true,
-          kecamatan: true,
-          kota: true,
+  const [data, total] = await Promise.all([
+    prisma.kegiatan.findMany({
+      where,
+      include: {
+        kunjungan: {
+          include: {
+            kelurahan: true,
+            kecamatan: true,
+            kota: true,
+          },
         },
       },
-    },
-    orderBy: { tanggal: 'desc' },
-  })
+      orderBy: { tanggal: 'desc' },
+      ...(hasPagination ? { skip: (page - 1) * limit, take: limit } : {}),
+    }),
+    prisma.kegiatan.count({ where }),
+  ])
 
   const result = data.map((k) => ({
     id: k.id,
@@ -60,7 +68,7 @@ export async function GET(request: NextRequest) {
     kota: k.kunjungan.kota.nama,
   }))
 
-  return NextResponse.json(result)
+  return NextResponse.json(hasPagination ? { data: result, total, page, limit } : result)
 }
 
 export async function POST(request: Request) {

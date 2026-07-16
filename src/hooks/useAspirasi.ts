@@ -6,12 +6,40 @@ import type { Aspirasi, AspirasiStatus } from '@/types'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-export function useAspirasiList() {
-  const { data, error, isLoading, mutate } = useSWR<Aspirasi[]>(
-    '/api/aspirasi',
+interface AspirasiListParams {
+  page?: number
+  limit?: number
+  search?: string
+  sumber?: string
+  status?: string
+}
+
+export function useAspirasiList(params?: AspirasiListParams) {
+  const qs = params
+    ? '?' + new URLSearchParams(
+        Object.fromEntries(
+          Object.entries(params).filter(([_, v]) => v !== undefined && v !== '')
+        )
+      ).toString()
+    : ''
+
+  const { data, error, isLoading, mutate } = useSWR<Aspirasi[] | { data: Aspirasi[]; total: number }>(
+    `/api/aspirasi${qs}`,
     fetcher
   )
-  return { data: data ?? [], error, isLoading, mutate }
+
+  if (params) {
+    const paginated = data as { data: Aspirasi[]; total: number } | undefined
+    return {
+      data: paginated?.data ?? [],
+      total: paginated?.total ?? 0,
+      error,
+      isLoading,
+      mutate,
+    }
+  }
+
+  return { data: (data as Aspirasi[]) ?? [], total: 0, error, isLoading, mutate }
 }
 
 export function useAspirasi(id: string) {

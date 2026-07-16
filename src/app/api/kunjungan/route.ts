@@ -1,15 +1,25 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
-  const data = await prisma.kunjungan.findMany({
-    orderBy: { created_at: 'desc' },
-    include: {
-      kelurahan: true,
-      kecamatan: true,
-      kota: true,
-    },
-  })
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const pageParam = searchParams.get('page')
+  const hasPagination = pageParam !== null
+  const page = Math.max(1, parseInt(pageParam ?? '1'))
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50')))
+
+  const [data, total] = await Promise.all([
+    prisma.kunjungan.findMany({
+      orderBy: { created_at: 'desc' },
+      ...(hasPagination ? { skip: (page - 1) * limit, take: limit } : {}),
+      include: {
+        kelurahan: true,
+        kecamatan: true,
+        kota: true,
+      },
+    }),
+    prisma.kunjungan.count(),
+  ])
 
   const result = data.map((k) => ({
     id: k.id,
@@ -25,7 +35,7 @@ export async function GET() {
     updated_at: k.updated_at.toISOString(),
   }))
 
-  return NextResponse.json(result)
+  return NextResponse.json(hasPagination ? { data: result, total, page, limit } : result)
 }
 
 export async function POST(request: Request) {

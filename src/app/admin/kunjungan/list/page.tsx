@@ -11,13 +11,17 @@ import type { Kegiatan } from '@/types'
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export default function KunjunganListPage() {
-  const { data: kegiatanList, isLoading, mutate } = useSWR<Kegiatan[]>('/api/kegiatan', fetcher)
+  const PAGE_SIZE = 50
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const { data: res, isLoading, mutate } = useSWR<{ data: Kegiatan[]; total: number }>(
+    `/api/kegiatan?page=${currentPage}&limit=${PAGE_SIZE}`,
+    fetcher
+  )
+  const data = res?.data ?? []
+  const total = res?.total ?? 0
   const [editingItem, setEditingItem] = useState<Kegiatan | null>(null)
   const [saving, setSaving] = useState(false)
-
-  if (isLoading) {
-    return <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-  }
 
   const formatTanggal = (tanggal: string): string => {
     if (!tanggal) return ''
@@ -67,13 +71,6 @@ export default function KunjunganListPage() {
     }
   }
 
-  const data = kegiatanList ?? []
-
-  const PAGE_SIZE = 50
-  const [currentPage, setCurrentPage] = useState(1)
-  const paginatedData = data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-  useEffect(() => { setCurrentPage(1) }, [data.length])
-
   return (
     <div className="space-y-6">
       <div>
@@ -101,7 +98,7 @@ export default function KunjunganListPage() {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((item, i) => (
+                {data.map((item, i) => (
                 <tr
                   key={item.id}
                   className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
@@ -142,10 +139,9 @@ export default function KunjunganListPage() {
               ))}
             </tbody>
           </table>
-        </div>
-        <Pagination currentPage={currentPage} totalItems={data.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
-        </>
+          </div>
       )}
+      <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
 
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

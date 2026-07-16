@@ -31,14 +31,6 @@ export default function KelurahanDikunjungiPage(): React.ReactNode {
   const paginatedData = visitedKelurahan.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
   useEffect(() => { setCurrentPage(1) }, [visitedKelurahan.length])
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       <Link href="/admin/dashboard">
@@ -62,6 +54,7 @@ export default function KelurahanDikunjungiPage(): React.ReactNode {
           Belum ada kelurahan yang dikunjungi
         </p>
       ) : (
+          <>
         <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
           <table className="w-full text-sm">
             <thead>

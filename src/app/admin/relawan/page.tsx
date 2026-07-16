@@ -49,17 +49,23 @@ const POSISI_LABEL: Record<string, string> = {
 }
 
 export default function RelawanPage(): React.ReactNode {
-  const { data: allRelawans, isLoading } = useRelawanList()
-  const { mutate } = useSWRConfig()
-  const [preview, setPreview] = useState<Relawan | null>(null)
-  const [edit, setEdit] = useState<Relawan | null>(null)
-  const [saving, setSaving] = useState(false)
-
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
   const [searched, setSearched] = useState(false)
+
+  const PAGE_SIZE = 50
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const searchParam = searched && query.trim() ? query.trim() : undefined
+  const { data: allRelawans, total, isLoading, mutate: mutateRelawan } = useRelawanList(
+    searchParam ? { page: currentPage, limit: PAGE_SIZE, search: searchParam } : { page: currentPage, limit: PAGE_SIZE }
+  )
+  const { mutate } = useSWRConfig()
+  const [preview, setPreview] = useState<Relawan | null>(null)
+  const [edit, setEdit] = useState<Relawan | null>(null)
+  const [saving, setSaving] = useState(false)
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
@@ -80,32 +86,20 @@ export default function RelawanPage(): React.ReactNode {
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   const results = useMemo(() => {
-    if (!searched || !allRelawans) return allRelawans ?? []
-    const q = query.toLowerCase().trim()
+    if (!allRelawans) return []
     const kotaNama = kotaMap[kotaId] ?? ''
     const kecamatanNama = kecamatanMap[kecamatanId] ?? ''
     const kelurahanNama = kelurahanMap[kelurahanId] ?? ''
-
     return allRelawans.filter((r) => {
       if (kotaNama && r.kota_kabupaten !== kotaNama) return false
       if (kecamatanNama && r.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && r.kelurahan !== kelurahanNama) return false
-      if (!q) return true
-      return (
-        r.nama.toLowerCase().includes(q) ||
-        r.nik.includes(q) ||
-        (r.no_telepon ?? '').includes(q)
-      )
+      return true
     })
-  }, [searched, allRelawans, query, kotaMap, kecamatanMap, kelurahanMap, kotaId, kecamatanId, kelurahanId])
+  }, [allRelawans, kotaMap, kecamatanMap, kelurahanMap, kotaId, kecamatanId, kelurahanId])
 
-  const handleSearch = () => setSearched(true)
+  const handleSearch = () => { setSearched(true); setCurrentPage(1) }
   const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim()
-
-  const PAGE_SIZE = 50
-  const [currentPage, setCurrentPage] = useState(1)
-  const paginatedData = results.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-  useEffect(() => { setCurrentPage(1) }, [results.length])
 
   return (
     <div className="space-y-6">
@@ -209,7 +203,7 @@ export default function RelawanPage(): React.ReactNode {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((r, i) => (
+                    {results.map((r, i) => (
                 <tr key={r.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
                   <td className="px-4 py-3 text-[var(--color-text-secondary)]">{(currentPage - 1) * PAGE_SIZE + i + 1}</td>
                   <td className="px-4 py-3 font-mono text-xs tracking-wider">{blurNik(r.nik)}</td>
@@ -239,7 +233,7 @@ export default function RelawanPage(): React.ReactNode {
                         onClick={async () => {
                           if (!window.confirm(`Yakin ingin menghapus relawan "${r.nama}"?`)) return
                           await fetch(`/api/relawan/${r.id}`, { method: 'DELETE' })
-                          mutate('/api/relawan')
+                                mutateRelawan()
                         }}
                         className="text-[var(--color-danger)] cursor-pointer hover:text-[var(--color-danger-dark)]"
                         title="Hapus"
@@ -253,7 +247,7 @@ export default function RelawanPage(): React.ReactNode {
             </tbody>
           </table>
           </div>
-          <Pagination currentPage={currentPage} totalItems={results.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
+              <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
         </div>
       )}
 
@@ -353,7 +347,7 @@ export default function RelawanPage(): React.ReactNode {
               })
               setSaving(false)
               setEdit(null)
-              mutate('/api/relawan')
+              mutateRelawan()
             }}>
               <Input id="edit-nama" name="nama" label="Nama Lengkap" defaultValue={edit.nama} required />
               <Input id="edit-nik" name="nik" label="NIK" defaultValue={edit.nik} required />

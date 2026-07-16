@@ -92,15 +92,6 @@ export default function AdminDashboardPage(): React.ReactNode {
     totalKecamatan > 0
       ? Math.round((data?.total_kunjungan ?? 0) / totalKecamatan)
       : 0
-      
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-      </div>
-    )
-  }
 
   const kunjunganPerBulan =
     (data?.kunjungan_per_bulan ?? []).map((k) => ({

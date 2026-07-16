@@ -1,21 +1,35 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { MASTER_WILAYAH } from '@/utils/masterWilayah'
 
 export async function GET() {
-  const [kunjungan, aspirasi, kecamatans, kelurahans] = await Promise.all([
+  const [
+    total_kunjungan,
+    total_aspirasi,
+    kunjungan_all,
+    aspirasi_all,
+    kecamatans,
+    kelurahans,
+    statusGroup,
+    sumberGroup,
+  ] = await Promise.all([
+    prisma.kunjungan.count(),
+    prisma.aspirasis.count(),
     prisma.kunjungan.findMany({
-      include: { kelurahan: { include: { kecamatan: true } } },
+      select: { tanggal: true, kelurahan_id: true },
     }),
-    prisma.aspirasis.findMany(),
-    prisma.kecamatan.findMany(),
-    prisma.kelurahan.findMany(),
+    prisma.aspirasis.findMany({
+      select: { created_at: true, status: true, sumber: true },
+    }),
+    prisma.kecamatan.findMany({ select: { id: true, nama: true } }),
+    prisma.kelurahan.findMany({ select: { id: true, kecamatan_id: true } }),
+    prisma.aspirasis.groupBy({ by: ['status'], _count: { status: true } }),
+    prisma.aspirasis.groupBy({ by: ['sumber'], _count: { sumber: true } }),
   ])
 
   const total_kelurahan = kelurahans.length
 
   const kelurahan_dikunjungi = new Set(
-    kunjungan.map((k) => k.kelurahan_id)
+    kunjungan_all.map((k) => k.kelurahan_id)
   ).size
 
   const kelurahan_belum_dikunjungi = total_kelurahan - kelurahan_dikunjungi
@@ -27,7 +41,7 @@ export async function GET() {
 
   const kunjungan_per_bulan = bulanNames.map((bulan, i) => {
     const month = String(i + 1).padStart(2, '0')
-    const jumlah = kunjungan.filter((k) => {
+    const jumlah = kunjungan_all.filter((k) => {
       const d = k.tanggal.toISOString()
       return d.startsWith(`2025-${month}`) || d.startsWith(`2026-${month}`)
     }).length
@@ -36,42 +50,49 @@ export async function GET() {
 
   const aspirasi_per_bulan = bulanNames.map((bulan, i) => {
     const month = String(i + 1).padStart(2, '0')
-    const jumlah = aspirasi.filter((a) => {
+    const jumlah = aspirasi_all.filter((a) => {
       const d = a.created_at.toISOString()
       return d.startsWith(`2025-${month}`) || d.startsWith(`2026-${month}`)
     }).length
     return { bulan, jumlah }
   })
 
-  const statusCounts: Record<string, number> = {}
-  const sumberCounts: Record<string, number> = {}
+  const aspirasi_per_status = statusGroup.map((g) => ({
+    status: g.status,
+    jumlah: g._count.status,
+  }))
 
-  for (const a of aspirasi) {
-    statusCounts[a.status] = (statusCounts[a.status] ?? 0) + 1
-    sumberCounts[a.sumber] = (sumberCounts[a.sumber] ?? 0) + 1
-  }
+  const aspirasi_per_sumber = sumberGroup.map((g) => ({
+    sumber: g.sumber,
+    jumlah: g._count.sumber,
+  }))
 
   const kunjungan_per_kecamatan = kecamatans.map((kec) => {
-    const kelList = kelurahans.filter((kel) => kel.kecamatan_id === kec.id)
-    const kelDikunjungi = kunjungan.filter((k) =>
-      kelList.some((kel) => kel.id === k.kelurahan_id)
+    const kelIds = kelurahans
+      .filter((kel) => kel.kecamatan_id === kec.id)
+      .map((kel) => kel.id)
+    const uniqueKel = new Set(
+      kunjungan_all
+        .filter((k) => kelIds.includes(k.kelurahan_id))
+        .map((k) => k.kelurahan_id)
     )
-    const uniqueKel = new Set(kelDikunjungi.map((k) => k.kelurahan_id))
     return {
       kecamatan: kec.nama,
-      jumlah_kunjungan: kelDikunjungi.length,
-      jumlah_kelurahan: kelList.length,
+      jumlah_kunjungan: kunjungan_all.filter((k) =>
+        kelIds.includes(k.kelurahan_id)
+      ).length,
+      jumlah_kelurahan: kelIds.length,
       kelurahan_dikunjungi: uniqueKel.size,
     }
   })
 
   return NextResponse.json({
-    total_kunjungan: kunjungan.length,
-    total_aspirasi: aspirasi.length,
+    total_kunjungan,
+    total_aspirasi,
     kunjungan_per_bulan,
     aspirasi_per_bulan,
-    aspirasi_per_status: Object.entries(statusCounts).map(([status, jumlah]) => ({ status, jumlah })),
-    aspirasi_per_sumber: Object.entries(sumberCounts).map(([sumber, jumlah]) => ({ sumber, jumlah })),
+    aspirasi_per_status,
+    aspirasi_per_sumber,
     kelurahan_dikunjungi,
     kelurahan_belum_dikunjungi,
     total_kelurahan,

@@ -43,16 +43,7 @@ export default function AspirasiDetailPage({
     hour: '2-digit',
     minute: '2-digit',
   })} WIB`
-}
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-      </div>
-    )
   }
-
   if (!aspirasi) {
     return (
       <div className="flex items-center justify-center h-64">

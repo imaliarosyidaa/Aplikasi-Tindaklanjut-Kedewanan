@@ -1,15 +1,37 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
-  const data = await prisma.relawan.findMany({
-    orderBy: { created_at: 'desc' },
-    include: {
-      kota: true,
-      kecamatan: true,
-      kelurahan: true,
-    },
-  })
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const pageParam = searchParams.get('page')
+  const hasPagination = pageParam !== null
+  const page = Math.max(1, parseInt(pageParam ?? '1'))
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50')))
+  const search = searchParams.get('search')?.trim()
+
+  const where: Record<string, unknown> = {}
+
+  if (search) {
+    where.OR = [
+      { nama: { contains: search } },
+      { nik: { contains: search } },
+      { no_telepon: { contains: search } },
+    ]
+  }
+
+  const [data, total] = await Promise.all([
+    prisma.relawan.findMany({
+      where,
+      orderBy: { created_at: 'desc' },
+      ...(hasPagination ? { skip: (page - 1) * limit, take: limit } : {}),
+      include: {
+        kota: true,
+        kecamatan: true,
+        kelurahan: true,
+      },
+    }),
+    prisma.relawan.count({ where }),
+  ])
 
   const result = data.map((r) => ({
     id: r.id,
@@ -28,7 +50,7 @@ export async function GET() {
     updated_at: r.updated_at.toISOString(),
   }))
 
-  return NextResponse.json(result)
+  return NextResponse.json(hasPagination ? { data: result, total, page, limit } : result)
 }
 
 export async function POST(request: Request) {

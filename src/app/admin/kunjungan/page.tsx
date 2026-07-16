@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { Select } from '@/components/ui/select'
@@ -18,13 +18,25 @@ interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
 
 export default function KunjunganPage() {
-  const { data: allKegiatan, isLoading, mutate } = useSWR<Kegiatan[]>('/api/kegiatan', fetcher)
-
+  const PAGE_SIZE = 50
+  const [currentPage, setCurrentPage] = useState(1)
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
   const [searched, setSearched] = useState(false)
+
+  const params = new URLSearchParams()
+  params.set('page', String(currentPage))
+  params.set('limit', String(PAGE_SIZE))
+  if (searched && query.trim()) params.set('search', query.trim())
+
+  const { data: res, isLoading, mutate } = useSWR<{ data: Kegiatan[]; total: number }>(
+    `/api/kegiatan?${params.toString()}`,
+    fetcher
+  )
+  const allKegiatan = res?.data ?? []
+  const total = res?.total ?? 0
 
   const [editingItem, setEditingItem] = useState<Kegiatan | null>(null)
   const [editForm, setEditForm] = useState({ nama_kegiatan: '', lokasi: '', catatan: '' })
@@ -47,33 +59,22 @@ export default function KunjunganPage() {
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
-  const handleSearch = () => setSearched(true)
+  const handleSearch = () => { setSearched(true); setCurrentPage(1) }
 
-  const PAGE_SIZE = 50
-  const [currentPage, setCurrentPage] = useState(1)
-
-  const results = useMemo(() => {
-    if (!searched || !allKegiatan) return allKegiatan ?? []
-    const q = query.toLowerCase().trim()
+  const filteredData = useMemo(() => {
+    if (!searched) return allKegiatan
     const kotaNama = kotaMap[kotaId] ?? ''
     const kecamatanNama = kecamatanMap[kecamatanId] ?? ''
     const kelurahanNama = kelurahanMap[kelurahanId] ?? ''
-
     return allKegiatan.filter((item) => {
       if (kotaNama && item.kota !== kotaNama) return false
       if (kecamatanNama && item.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && item.kelurahan !== kelurahanNama) return false
-      if (!q) return true
-      return (
-        (item.nama_kegiatan ?? '').toLowerCase().includes(q) ||
-        (item.isi ?? '').toLowerCase().includes(q) ||
-        (item.lokasi ?? '').toLowerCase().includes(q)
-      )
+      return true
     })
-  }, [searched, allKegiatan, query, kotaMap, kecamatanMap, kelurahanMap, kotaId, kecamatanId, kelurahanId])
+  }, [searched, allKegiatan, kotaMap, kecamatanMap, kelurahanMap, kotaId, kecamatanId, kelurahanId])
 
-  const paginatedData = results.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-  useEffect(() => { setCurrentPage(1) }, [results.length])
+  useEffect(() => { setCurrentPage(1) }, [filteredData.length])
 
   const formatTanggal = (tanggal: string): string => {
     if (!tanggal) return ''
@@ -107,10 +108,6 @@ export default function KunjunganPage() {
     if (!window.confirm('Yakin ingin menghapus kegiatan ini?')) return
     await fetch(`/api/kegiatan/${id}`, { method: 'DELETE' })
     mutate()
-  }
-
-  if (isLoading) {
-    return <p className="text-[var(--color-text-secondary)]">Memuat...</p>
   }
 
   return (
@@ -176,7 +173,7 @@ export default function KunjunganPage() {
         </div>
       </Card>
 
-      {results.length === 0 ? (
+      {filteredData.length === 0 ? (
         <Card>
           <p className="text-center text-[var(--color-text-secondary)] py-8">
             {searched ? 'Tidak ditemukan kegiatan dengan filter tersebut' : 'Belum ada data kegiatan'}
@@ -199,7 +196,7 @@ export default function KunjunganPage() {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((item, i) => (
+                  {filteredData.map((item, i) => (
                 <tr key={item.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
                   <td className="px-4 py-3 text-[var(--color-text-secondary)]">{(currentPage - 1) * PAGE_SIZE + i + 1}</td>
                   <td className="px-4 py-3 font-medium text-[var(--color-text)]">{item.nama_kegiatan || item.isi}</td>
@@ -235,7 +232,7 @@ export default function KunjunganPage() {
             </tbody>
           </table>
         </div>
-        <Pagination currentPage={currentPage} totalItems={results.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
+            <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
         </div>
       )}
 
