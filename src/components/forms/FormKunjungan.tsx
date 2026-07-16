@@ -228,7 +228,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           Batal
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? 'Memuat...' : isEdit ? 'Update' : 'Simpan'}
+          {isEdit ? 'Update' : 'Simpan'}
         </Button>
       </div>
     </form>

@@ -16,7 +16,7 @@ export default function EditKegiatanPage({
   const { id } = use(params)
   const { data: kegiatan, isLoading } = useSWR(`/api/kegiatan/${id}`, fetcher)
 
-  if (isLoading) return <p className="text-[var(--color-text-secondary)]">Memuat...</p>
+  if (isLoading) return null
   if (!kegiatan) return <p className="text-[var(--color-text-secondary)]">Kegiatan tidak ditemukan</p>
 
   return (

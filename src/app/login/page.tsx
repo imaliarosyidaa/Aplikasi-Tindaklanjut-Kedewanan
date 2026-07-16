@@ -99,7 +99,7 @@ export default function LoginPage(): React.ReactNode {
             <p className="text-sm text-[var(--color-danger)]">{error}</p>
           )}
             <button type="submit" className=" cursor-pointer text-center text-white p-[8px_10px] w-full bg-blue-700 rounded-md" disabled={loading}>
-              {loading ? 'Memuat...' : 'Masuk'}
+              {'Masuk'}
             </button>
           </form>
           <div className="mt-4 text-center">

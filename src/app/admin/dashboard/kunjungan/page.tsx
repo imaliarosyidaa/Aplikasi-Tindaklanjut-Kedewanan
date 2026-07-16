@@ -25,14 +25,6 @@ export default function DashboardKunjunganPage(): React.ReactNode {
     ),
   }))
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[var(--color-text-secondary)]">Memuat...</p>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       <Link href="/admin/dashboard">
