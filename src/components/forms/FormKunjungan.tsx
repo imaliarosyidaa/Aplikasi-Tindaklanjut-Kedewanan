@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react'
 import useSWR from 'swr'
 
-import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -55,8 +54,6 @@ const JENIS_KEGIATAN_OPTIONS = [
 ]
 
 export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInitialData }): React.ReactNode => {
-  const t = useTranslations('Kunjungan')
-  const c = useTranslations('Common')
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const isEdit = !!initialData
@@ -108,13 +105,13 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
-    if (!jenisKegiatan) errs.jenisKegiatan = c('required')
-    if (!tanggal) errs.tanggal = c('required')
-    if (!jam) errs.jam = c('required')
-    if (!kotaId) errs.kota = c('required')
-    if (!kecamatanId) errs.kecamatan = c('required')
-    if (!kelurahanId) errs.kelurahan = c('required')
-    if (!namaKegiatan) errs.namaKegiatan = c('required')
+    if (!jenisKegiatan) errs.jenisKegiatan = 'Wajib diisi'
+    if (!tanggal) errs.tanggal = 'Wajib diisi'
+    if (!jam) errs.jam = 'Wajib diisi'
+    if (!kotaId) errs.kota = 'Wajib diisi'
+    if (!kecamatanId) errs.kecamatan = 'Wajib diisi'
+    if (!kelurahanId) errs.kelurahan = 'Wajib diisi'
+    if (!namaKegiatan) errs.namaKegiatan = 'Wajib diisi'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -197,16 +194,16 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input id="tanggal" label={t('tanggal')} type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} error={errors.tanggal} />
-        <Input id="jam" label={t('jam')} type="time" value={jam} onChange={(e) => setJam(e.target.value)} error={errors.jam} />
+        <Input id="tanggal" label="Tanggal" type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} error={errors.tanggal} />
+        <Input id="jam" label="Jam" type="time" value={jam} onChange={(e) => setJam(e.target.value)} error={errors.jam} />
       </div>
 
-      <Input id="jalan" label={t('jalan')} placeholder="Masukkan nama jalan" value={jalan} onChange={(e) => setJalan(e.target.value)} />
+      <Input id="jalan" label="Jalan" placeholder="Masukkan nama jalan" value={jalan} onChange={(e) => setJalan(e.target.value)} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Select id="kota" label={t('kota')} placeholder="Pilih kota" options={kotaOptions} value={kotaId} onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} error={errors.kota} />
-        <Select id="kecamatan" label={t('kecamatan')} placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'} options={kecamatanOptions} value={kecamatanId} onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} error={errors.kecamatan} disabled={!kotaId} />
-        <Select id="kelurahan" label={t('kelurahan')} placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'} options={kelurahanOptions} value={kelurahanId} onChange={(e) => setKelurahanId(e.target.value)} error={errors.kelurahan} disabled={!kecamatanId} />
+        <Select id="kota" label="Kota" placeholder="Pilih kota" options={kotaOptions} value={kotaId} onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} error={errors.kota} />
+        <Select id="kecamatan" label="Kecamatan" placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'} options={kecamatanOptions} value={kecamatanId} onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} error={errors.kecamatan} disabled={!kotaId} />
+        <Select id="kelurahan" label="Kelurahan" placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'} options={kelurahanOptions} value={kelurahanId} onChange={(e) => setKelurahanId(e.target.value)} error={errors.kelurahan} disabled={!kecamatanId} />
       </div>
 
       <Input id="nama_kegiatan" label="Nama Kegiatan" placeholder="Masukkan nama kegiatan" value={namaKegiatan} onChange={(e) => setNamaKegiatan(e.target.value)} error={errors.namaKegiatan} required />
@@ -240,10 +237,10 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={() => router.back()}>
-          {c('cancel')}
+          Batal
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? c('loading') : isEdit ? 'Update' : c('save')}
+          {loading ? 'Memuat...' : isEdit ? 'Update' : 'Simpan'}
         </Button>
       </div>
     </form>

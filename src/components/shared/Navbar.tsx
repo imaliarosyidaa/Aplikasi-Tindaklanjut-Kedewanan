@@ -1,23 +1,21 @@
 'use client'
 import React, { useState } from 'react'
 
-import { useTranslations } from 'next-intl'
 import { usePathname } from '@/routing'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { Link } from '@/routing'
 import { MdMenu, MdClose, MdLogout } from 'react-icons/md'
 import { signOut } from 'next-auth/react'
 export const Navbar = (): React.ReactNode => {
-  const t = useTranslations('Nav')
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const navItems = [
-    { href: '/admin/dashboard', label: t('dashboard') },
-    { href: '/admin/aspirasi', label: t('aspirasi') },
-    { href: '/admin/kunjungan/list', label: t('kunjunganList') },
-    { href: '/admin/kunjungan/baru', label: t('kunjunganBaru') },
-    { href: '/admin/relawan', label: t('relawan') },
+    { href: '/admin/dashboard', label: 'Dashboard' },
+    { href: '/admin/aspirasi', label: 'Tracing Aspirasi' },
+    { href: '/admin/kunjungan/list', label: 'Daftar Kegiatan' },
+    { href: '/admin/kunjungan/baru', label: 'Input Kegiatan' },
+    { href: '/admin/relawan', label: 'Data Relawan' },
   ]
 
   return (
@@ -48,8 +46,7 @@ export const Navbar = (): React.ReactNode => {
           <ThemeSwitcher />
           <button
             onClick={() => {
-              const locale = pathname.split('/')[1]
-              signOut({ callbackUrl: `/${locale}/login` })
+              signOut({ callbackUrl: '/login' })
             }}
             className="hidden rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:block"
           >

@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 
-import { useTranslations } from 'next-intl'
 import { usePathname } from '@/routing'
 import { Link } from '@/routing'
 import {
@@ -18,7 +17,6 @@ interface SidebarItem {
 }
 
 export const UserSidebar = (): React.ReactNode => {
-  const t = useTranslations('Nav')
   const pathname = usePathname()
 
   const items: SidebarItem[] = [

@@ -1,7 +1,9 @@
 'use client'
 import React from 'react'
-
+// 1. Import komponen chart asli dengan nama alias (misal: MuiBarChart)
+import { BarChart as MuiBarChart } from '@mui/x-charts/BarChart'
 import { Card } from '@/components/ui/card'
+
 interface BarChartProps {
   title: string
   data: { label: string; value: number }[]
@@ -13,34 +15,29 @@ export const BarChart = ({
   data,
   color = 'var(--color-primary)',
 }: BarChartProps): React.ReactNode => {
-  const maxValue = Math.max(...data.map((d) => d.value), 1)
+  const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1
+
+  const chartSetting = {
+    yAxis: [
+      {
+        label: 'Jumlah',
+        width: 60,
+      },
+    ],
+    height: 300,
+  }
 
   return (
-    <Card>
+    <Card className="p-4">
       <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
         {title}
       </h3>
-      <div className="space-y-2">
-        {data.map((item) => (
-          <div key={item.label} className="flex items-center gap-3">
-            <span className="w-24 shrink-0 text-xs text-[var(--color-text-secondary)]">
-              {item.label}
-            </span>
-            <div className="flex-1 h-5 rounded-full bg-[var(--color-bg-secondary)] overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${(item.value / maxValue) * 100}%`,
-                  backgroundColor: color,
-                }}
-              />
-            </div>
-            <span className="w-8 text-right text-xs font-medium text-[var(--color-text)]">
-              {item.value}
-            </span>
-          </div>
-        ))}
-      </div>
+      <MuiBarChart
+        dataset={data.map((item) => ({ month: item.label, value: item.value }))}
+        xAxis={[{ scaleType: 'band', dataKey: 'month' }]} // Beberapa library chart butuh scaleType: 'band' untuk sumbu X berupa teks
+        series={[{ dataKey: 'value', color: color }]} // Memanfaatkan prop color yang dilewati ke komponen
+        {...chartSetting}
+      />
     </Card>
   )
 }

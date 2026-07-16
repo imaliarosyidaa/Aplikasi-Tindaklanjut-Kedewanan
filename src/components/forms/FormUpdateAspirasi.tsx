@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react'
 
-import { useTranslations } from 'next-intl'
 import { useUpdateStatus } from '@/hooks/useAspirasi'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
@@ -19,18 +18,16 @@ interface FormUpdateAspirasiProps {
 }
 
 const statusOptions = [
-  { value: 'BELUM_DITINDAKLANJUTI', labelKey: 'BELUM_DITINDAKLANJUTI' },
-  { value: 'SEDANG_DITINDAKLANJUTI', labelKey: 'SEDANG_DITINDAKLANJUTI' },
-  { value: 'SUDAH_DITINDAKLANJUTI', labelKey: 'SUDAH_DITINDAKLANJUTI' },
-  { value: 'TIDAK_BISA_DITINDAKLANJUTI', labelKey: 'TIDAK_BISA_DITINDAKLANJUTI' },
+  { value: 'BELUM_DITINDAKLANJUTI', label: 'Belum Ditindaklanjuti' },
+  { value: 'SEDANG_DITINDAKLANJUTI', label: 'Sedang Ditindaklanjuti' },
+  { value: 'SUDAH_DITINDAKLANJUTI', label: 'Sudah Ditindaklanjuti' },
+  { value: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Bisa Ditindaklanjuti' },
 ]
 
 export const FormUpdateAspirasi = ({
   aspirasi,
   onSuccess,
 }: FormUpdateAspirasiProps): React.ReactNode => {
-  const t = useTranslations('Aspirasi')
-  const c = useTranslations('Common')
   const { trigger, isMutating } = useUpdateStatus(aspirasi.id)
 
   const [status, setStatus] = useState<AspirasiStatus>(aspirasi.status)
@@ -55,11 +52,8 @@ export const FormUpdateAspirasi = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       <Select
         id="status"
-        label={c('status')}
-        options={statusOptions.map((opt) => ({
-          value: opt.value,
-          label: t(opt.labelKey),
-        }))}
+        label="Status"
+        options={statusOptions}
         value={status}
         onChange={(e) => setStatus(e.target.value as AspirasiStatus)}
       />
@@ -69,7 +63,7 @@ export const FormUpdateAspirasi = ({
           htmlFor="catatan"
           className="block text-sm font-medium text-[var(--color-text)] mb-1"
         >
-          {t('catatanTindakLanjut')}
+          Catatan Tindak Lanjut
         </label>
         <textarea
           id="catatan"
@@ -82,14 +76,14 @@ export const FormUpdateAspirasi = ({
       </div>
 
       <FileUpload
-        label={t('buktiTindakLanjut')}
+        label="Bukti Tindak Lanjut"
         value={lampiranFiles}
         onChange={setLampiranFiles}
       />
 
       <div className="flex justify-end gap-3 pt-2">
         <Button type="submit" disabled={isMutating}>
-          {isMutating ? c('loading') : c('save')}
+          {isMutating ? 'Memuat...' : 'Simpan'}
         </Button>
       </div>
     </form>

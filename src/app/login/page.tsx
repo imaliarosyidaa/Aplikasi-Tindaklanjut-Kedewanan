@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react'
 
-import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
@@ -9,8 +8,6 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from '@/routing'
 import { MdDirectionsWalk, MdVisibility, MdVisibilityOff } from 'react-icons/md'
 export default function LoginPage(): React.ReactNode {
-  const t = useTranslations('Auth')
-  const c = useTranslations('Common')
   const router = useRouter()
 
   const [email, setEmail] = useState('')
@@ -31,7 +28,7 @@ export default function LoginPage(): React.ReactNode {
     })
 
     if (result?.error) {
-      setError(t('loginError'))
+      setError('Email atau kata sandi salah')
       setLoading(false)
     } else {
       router.push('/admin/dashboard')
@@ -101,13 +98,13 @@ export default function LoginPage(): React.ReactNode {
           {error && (
             <p className="text-sm text-[var(--color-danger)]">{error}</p>
           )}
-            <button type="submit" className="cursor-pointer text-center text-white p-[8px_10px] w-full bg-blue-700 rounded-md" disabled={loading}>
-              {loading ? c('loading') : t('login')}
+            <button type="submit" className=" cursor-pointer text-center text-white p-[8px_10px] w-full bg-blue-700 rounded-md" disabled={loading}>
+              {loading ? 'Memuat...' : 'Masuk'}
             </button>
           </form>
           <div className="mt-4 text-center">
             <a href='/' className="cursor-pointertext-sm text-[var(--color-primary)] hover:underline">
-            {t('visitorLogin')}
+            Masuk sebagai Pengunjung
           </a>
         </div>
         </div>
