@@ -66,6 +66,7 @@ export default function RelawanPage(): React.ReactNode {
   )
   const { mutate } = useSWRConfig()
   const [preview, setPreview] = useState<Relawan | null>(null)
+  const [fullscreenFoto, setFullscreenFoto] = useState('')
   const [edit, setEdit] = useState<Relawan | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -254,11 +255,11 @@ export default function RelawanPage(): React.ReactNode {
       {preview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setPreview(null)}>
           <Card className="relative w-full max-w-lg mx-4 p-6 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setPreview(null)} className="absolute top-4 right-4 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"><MdClose size={20} /></button>
+            <button onClick={() => setPreview(null)} className="absolute top-4 right-4 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] cursor-pointer"><MdClose size={20} /></button>
             <h2 className="text-lg font-bold text-[var(--color-text)]">Detail Relawan</h2>
             {preview.foto && (
               <div className="flex justify-center">
-                <img src={preview.foto} alt="Foto" className="w-64 h-64 object-cover rounded-full border-4 border-[var(--color-primary-light)]" />
+                <img src={preview.foto} alt="Foto" onClick={() => setFullscreenFoto(preview.foto!)} className="cursor-pointer w-64 h-64 object-cover rounded-full border-4 border-[var(--color-primary-light)] hover:opacity-80 transition-opacity" />
               </div>
             )}
             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -271,6 +272,13 @@ export default function RelawanPage(): React.ReactNode {
               <div className="col-span-2"><span className="text-[var(--color-text-secondary)]">Posisi:</span><span className="text-[var(--color-text)] ml-1"><Badge variant="primary">{POSISI_LABEL[preview.posisi] || preview.posisi}</Badge></span></div>
             </div>
           </Card>
+        </div>
+      )}
+
+      {fullscreenFoto && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80" onClick={() => setFullscreenFoto('')}>
+          <button onClick={() => setFullscreenFoto('')} className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 cursor-pointer"><MdClose size={32} /></button>
+          <img src={fullscreenFoto} alt="Foto full" className="max-w-[90vw] max-h-[90vh] object-contain" onClick={(e) => e.stopPropagation()} />
         </div>
       )}
 

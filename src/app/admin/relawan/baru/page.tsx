@@ -25,9 +25,7 @@ export default function RelawanBaruPage(): React.ReactNode {
         </p>
       </div>
 
-      <div className="rounded-xl border border-orange-200 bg-orange-50 p-6">
-        <FormRelawan />
-      </div>
+      <FormRelawan />
     </div>
   )
 }

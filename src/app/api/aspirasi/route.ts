@@ -16,10 +16,11 @@ export async function GET(request: NextRequest) {
   if (sumber) where.sumber = sumber
   if (status) where.status = status
   if (search) {
+    const mode = { mode: 'insensitive' as const }
     where.OR = [
-      { pelapor_nama: { contains: search } },
+      { pelapor_nama: { contains: search, ...mode } },
       { pelapor_telepon: { contains: search } },
-      { id_laporan: { contains: search } },
+      { id_laporan: { contains: search, ...mode } },
     ]
   }
 

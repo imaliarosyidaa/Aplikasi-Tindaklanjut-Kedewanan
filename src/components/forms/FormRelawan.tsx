@@ -209,109 +209,56 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
     router.push('/admin/relawan')
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        NIK <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan)</span>
-      </label>
-      <Input
-        id="nik"
-        value={nik}
-        onChange={(e) => setNik(e.target.value)}
-        error={errors.nik}
-        required
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Nama Lengkap
-      </label>
-      <Input
-        id="nama"
-        value={nama}
-        onChange={(e) => setNama(e.target.value)}
-        error={errors.nama}
-        required
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        No. Telepon
-      </label>
-      <Input
-        id="no_telepon"
-        type="tel"
-        value={noTelepon}
-        onChange={(e) => setNoTelepon(e.target.value)}
-        error={errors.noTelepon}
-        required
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Jenis Kelamin
-      </label>
-      <Select
-        id="jenis_kelamin"
-        placeholder="Pilih jenis kelamin"
-        options={JENIS_KELAMIN_OPTIONS}
-        value={jenisKelamin}
-        onChange={(e) => setJenisKelamin(e.target.value)}
-        error={errors.jenisKelamin}
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Posisi
-      </label>
-      <Select
-        id="posisi"
-        placeholder="Pilih posisi"
-        options={POSISI_OPTIONS}
-        value={posisi}
-        onChange={(e) => { setPosisi(e.target.value); if (e.target.value !== 'LAINNYA') setPosisiLainnya('') }}
-        error={errors.posisi}
-      />
-      {posisi === 'LAINNYA' && (
-        <Input id="posisi_lainnya" label="Posisi (Lainnya)" placeholder="Tuliskan posisi" value={posisiLainnya} onChange={(e) => setPosisiLainnya(e.target.value)} required />
-      )}
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Kota/Kabupaten
-      </label>
-      <Select
-        id="kota"
-        placeholder="Pilih Kota/Kabupaten"
-        options={kotaOptions}
-        value={kotaId}
-        onChange={(e) => {
-          setKotaId(e.target.value)
-          setKecamatanId('')
-        }}
-        error={errors.kota}
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Kecamatan
-      </label>
-      <Select
-        id="kecamatan"
-        placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
-        options={kecamatanList.map((k) => ({ value: k.id, label: k.nama }))}
-        value={kecamatanId}
-        onChange={(e) => {
-          setKecamatanId(e.target.value)
-          setKelurahanId('')
-        }}
-        error={errors.kecamatan}
-        disabled={!kotaId}
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Kelurahan
-      </label>
-      <Select
-        id="kelurahan"
-        placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
-        options={kelurahanList.map((k) => ({ value: k.id, label: k.nama }))}
-        value={kelurahanId}
-        onChange={(e) => setKelurahanId(e.target.value)}
-        error={errors.kelurahan}
-        disabled={!kecamatanId}
-      />
-
+  const FieldRow = ({ label, children, error }: { label: string; children: React.ReactNode; error?: string }) => (
+    <div className="grid grid-cols-[180px_1fr] gap-4 items-start">
+      <label className="text-sm font-medium text-[var(--color-text)] pt-2 text-left">{label}</label>
       <div>
-        <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Domisili sesuai KTP?</label>
-        <div className="flex flex-col gap-4">
+        {children}
+        {error && <p className="text-xs text-[var(--color-danger)] mt-1">{error}</p>}
+      </div>
+    </div>
+  )
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 w-full">
+      <FieldRow label="NIK" error={errors.nik}>
+        <Input id="nik" value={nik} onChange={(e) => setNik(e.target.value)} />
+        <span className="text-xs text-[var(--color-text-secondary)]">(Boleh dikosongkan)</span>
+      </FieldRow>
+
+      <FieldRow label="Nama Lengkap" error={errors.nama}>
+        <Input id="nama" value={nama} onChange={(e) => setNama(e.target.value)} required />
+      </FieldRow>
+
+      <FieldRow label="No. Telepon" error={errors.noTelepon}>
+        <Input id="no_telepon" type="tel" value={noTelepon} onChange={(e) => setNoTelepon(e.target.value)} required />
+      </FieldRow>
+
+      <FieldRow label="Jenis Kelamin" error={errors.jenisKelamin}>
+        <Select id="jenis_kelamin" placeholder="Pilih jenis kelamin" options={JENIS_KELAMIN_OPTIONS} value={jenisKelamin} onChange={(e) => setJenisKelamin(e.target.value)} />
+      </FieldRow>
+
+      <FieldRow label="Posisi" error={errors.posisi}>
+        <Select id="posisi" placeholder="Pilih posisi" options={POSISI_OPTIONS} value={posisi} onChange={(e) => { setPosisi(e.target.value); if (e.target.value !== 'LAINNYA') setPosisiLainnya('') }} />
+        {posisi === 'LAINNYA' && (
+          <Input id="posisi_lainnya" placeholder="Tuliskan posisi" value={posisiLainnya} onChange={(e) => setPosisiLainnya(e.target.value)} required />
+        )}
+      </FieldRow>
+
+      <FieldRow label="Kota/Kabupaten">
+        <Select id="kota" placeholder="Pilih Kota/Kabupaten" options={kotaOptions} value={kotaId} onChange={(e) => { setKotaId(e.target.value); setKecamatanId('') }} />
+      </FieldRow>
+
+      <FieldRow label="Kecamatan" error={errors.kecamatan}>
+        <Select id="kecamatan" placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'} options={kecamatanList.map((k) => ({ value: k.id, label: k.nama }))} value={kecamatanId} onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} disabled={!kotaId} />
+      </FieldRow>
+
+      <FieldRow label="Kelurahan" error={errors.kelurahan}>
+        <Select id="kelurahan" placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'} options={kelurahanList.map((k) => ({ value: k.id, label: k.nama }))} value={kelurahanId} onChange={(e) => setKelurahanId(e.target.value)} disabled={!kecamatanId} />
+      </FieldRow>
+
+      <FieldRow label="Domisili sesuai KTP?">
+        <div className="flex gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="radio" name="domisili_ktp" value="Ya" checked={domisiliSesuaiKtp === 'Ya'} onChange={() => { setDomisiliSesuaiKtp('Ya'); setDomisiliSekarang('') }} className="accent-[var(--color-primary)]" />
             <span className="text-sm text-[var(--color-text)]">Ya</span>
@@ -321,61 +268,32 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
             <span className="text-sm text-[var(--color-text)]">Tidak</span>
           </label>
         </div>
-      </div>
+      </FieldRow>
+
       {domisiliSesuaiKtp === 'Tidak' && (
-        <Input
-          id="domisili_sekarang"
-          label="Domisili Sekarang"
-          value={domisiliSekarang}
-          onChange={(e) => setDomisiliSekarang(e.target.value)}
-          placeholder="Masukkan domisili saat ini"
-        />
+        <FieldRow label="Domisili Sekarang">
+          <Input id="domisili_sekarang" value={domisiliSekarang} onChange={(e) => setDomisiliSekarang(e.target.value)} placeholder="Masukkan domisili saat ini" />
+        </FieldRow>
       )}
 
-      <Input
-        id="jalan"
-        label="Alamat Sesuai KTP"
-        placeholder="Masukkan nama jalan"
-        value={jalan}
-        onChange={(e) => setJalan(e.target.value)}
-      />
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          id="rt"
-          label="RT"
-          type="number"
-          placeholder="Contoh: 001"
-          value={rt}
-          onChange={(e) => setRt(e.target.value)}
-        />
-        <Input
-          id="rw"
-          label="RW"
-          type="number"
-          placeholder="Contoh: 005"
-          value={rw}
-          onChange={(e) => setRw(e.target.value)}
-        />
-      </div>
+      <FieldRow label="Alamat Sesuai KTP">
+        <Input id="jalan" value={jalan} onChange={(e) => setJalan(e.target.value)} placeholder="Masukkan nama jalan" />
+      </FieldRow>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-[var(--color-text)]">
-          Upload Foto Diri <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan, format PNG/JPG/JPEG)</span>
-        </label>
-        <input
-          id="foto"
-          type="file"
-          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-          onChange={handleFileChange}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] file:mr-3 file:rounded file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-1 file:text-sm file:font-medium file:text-[var(--color-primary)]"
-        />
-        {fotoName && (
-          <p className="text-xs text-[var(--color-text-secondary)]">
-            {fotoBase64.startsWith('data:') ? 'Foto tersimpan' : `Terpilih: ${fotoName}`}
-          </p>
-        )}
+      <FieldRow label="RT / RW">
+        <div className="grid grid-cols-2 gap-2">
+          <Input id="rt" type="number" value={rt} onChange={(e) => setRt(e.target.value)} placeholder="RT, contoh: 001" />
+          <Input id="rw" type="number" value={rw} onChange={(e) => setRw(e.target.value)} placeholder="RW, contoh: 005" />
+        </div>
+      </FieldRow>
+
+      <FieldRow label="Upload Foto Diri">
+        <input id="foto" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" onChange={handleFileChange}
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] file:mr-3 file:rounded file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-1 file:text-sm file:font-medium file:text-[var(--color-primary)]" />
+        <span className="text-xs text-[var(--color-text-secondary)]">Format PNG/JPG/JPEG, boleh dikosongkan</span>
+        {fotoName && <p className="text-xs text-[var(--color-text-secondary)]">{fotoBase64.startsWith('data:') ? 'Foto tersimpan' : `Terpilih: ${fotoName}`}</p>}
         {errors.foto && <p className="text-xs text-[var(--color-danger)]">{errors.foto}</p>}
-      </div>
+      </FieldRow>
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="outline" onClick={() => router.back()}>

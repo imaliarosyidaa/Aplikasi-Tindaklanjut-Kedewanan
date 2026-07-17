@@ -12,9 +12,10 @@ export async function GET(request: NextRequest) {
   const where: Record<string, unknown> = {}
 
   if (search) {
+    const mode = { mode: 'insensitive' as const }
     where.OR = [
-      { nama: { contains: search } },
-      { nik: { contains: search } },
+      { nama: { contains: search, ...mode } },
+      { nik: { contains: search, ...mode } },
       { no_telepon: { contains: search } },
     ]
   }
