@@ -20,7 +20,7 @@ export const Card = ({
   return (
     <div
       className={cn(
-        'rounded-xl p-6 shadow-sm',
+        'rounded-xl p-6',
         variants[variant],
         className
       )}

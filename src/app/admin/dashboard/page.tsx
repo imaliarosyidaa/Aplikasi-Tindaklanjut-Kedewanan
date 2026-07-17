@@ -131,14 +131,47 @@ export default function AdminDashboardPage(): React.ReactNode {
 
   return (
     <div className="space-y-6">
-      <div>
+      <Card className="shadow-md">
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Dashboard
+          Selamat Datang, Admin 👋
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)]">
+        <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
           Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
         </p>
-      </div>
+        {/* Rangkuman Data Total */}
+        <div className="mt-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Total Kegiatan"
+              value={data?.total_kegiatan ?? 0}
+              icon={<MdDirectionsWalk size={24} />}
+              variant="info"
+              onClick={() => router.push('/admin/kunjungan')}
+            />
+            <StatCard
+              title="Total Aspirasi"
+              value={data?.total_aspirasi ?? 0}
+              icon={<MdTrackChanges size={24} />}
+              variant="primary"
+              onClick={() => router.push('/admin/aspirasi')}
+            />
+            <StatCard
+              title="Kelurahan Sudah Dikunjungi"
+              value={data?.kelurahan_dikunjungi ?? 0}
+              icon={<MdCheckCircle size={24} />}
+              variant="success"
+              onClick={() => router.push('/admin/dashboard/kelurahan-dikunjungi')}
+            />
+            <StatCard
+              title="Kelurahan Belum Dikunjungi"
+              value={data?.kelurahan_belum_dikunjungi ?? 0}
+              icon={<MdPending size={24} />}
+              variant="danger"
+              onClick={() => router.push('/admin/dashboard/kelurahan-belum')}
+            />
+          </div>
+        </div>
+      </Card>
 
       {/* Bagian Atas: Grid untuk List Kecamatan & 3 Stat Cards Utama */}
       <div>
@@ -182,40 +215,6 @@ export default function AdminDashboardPage(): React.ReactNode {
             />
           </div>
           
-        </div>
-      </div>
-
-      {/* Rangkuman Data Total */}
-      <div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            title="Total Kegiatan"
-            value={data?.total_kegiatan ?? 0}
-            icon={<MdDirectionsWalk size={24} />}
-            variant="info"
-            onClick={() => router.push('/admin/kunjungan')}
-          />
-          <StatCard
-            title="Total Aspirasi"
-            value={data?.total_aspirasi ?? 0}
-            icon={<MdTrackChanges size={24} />}
-            variant="primary"
-            onClick={() => router.push('/admin/aspirasi')}
-          />
-          <StatCard
-            title="Kelurahan Sudah Dikunjungi"
-            value={data?.kelurahan_dikunjungi ?? 0}
-            icon={<MdCheckCircle size={24} />}
-            variant="success"
-            onClick={() => router.push('/admin/dashboard/kelurahan-dikunjungi')}
-          />
-          <StatCard
-            title="Kelurahan Belum Dikunjungi"
-            value={data?.kelurahan_belum_dikunjungi ?? 0}
-            icon={<MdPending size={24} />}
-            variant="danger"
-            onClick={() => router.push('/admin/dashboard/kelurahan-belum')}
-          />
         </div>
       </div>
 
