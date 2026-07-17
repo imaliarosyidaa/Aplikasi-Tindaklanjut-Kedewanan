@@ -45,8 +45,9 @@ export const Navbar = (): React.ReactNode => {
         <div className="flex items-center gap-2">
           <ThemeSwitcher />
           <button
-            onClick={() => {
-              signOut({ callbackUrl: '/login' })
+            onClick={async () => {
+              await signOut({ redirect: false })
+              window.location.href = '/login'
             }}
             className="hidden rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:block"
           >

@@ -343,6 +343,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         <Input
           id="rt"
           label="RT"
+          type="number"
           placeholder="Contoh: 001"
           value={rt}
           onChange={(e) => setRt(e.target.value)}
@@ -350,6 +351,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         <Input
           id="rw"
           label="RW"
+          type="number"
           placeholder="Contoh: 005"
           value={rw}
           onChange={(e) => setRw(e.target.value)}
