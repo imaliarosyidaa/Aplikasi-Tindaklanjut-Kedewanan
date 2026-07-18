@@ -192,7 +192,7 @@ export default function KunjunganPage() {
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               </tr>
             </thead>
-            <tbody>            
+            <tbody className="bg-[var(--color-bg)]">            
               {filteredData.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">

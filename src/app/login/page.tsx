@@ -46,8 +46,7 @@ export default function LoginPage(): React.ReactNode {
             <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo Text" className="h-24 w-auto" />
         </div>
         <div className="bg-gradient-to-t from-black pl-8 pb-8 pr-[25%]">
-          <p className="text-6xl mb-6 font-medium leading-[75px] tracking-wide">Aplikasi Tindak Lanjut Kedewanan</p>
-          <p className="text-md text-slate-400">Sistem untuk mengelola dan melacak aspirasi masyarakat</p>
+          <p className="text-6xl mb-6 font-medium leading-[75px] tracking-wide">Aplikasi Koordinasi Tindak Lanjut Kedewanan</p>
         </div>
       </div>
       <div className="w-1/2 flex flex-col justify-center items-center">

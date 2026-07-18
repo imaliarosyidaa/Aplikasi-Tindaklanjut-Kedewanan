@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useDashboardStats } from '@/hooks/useDashboard'
 import { StatCard } from '@/components/dashboard/StatCard'
@@ -16,6 +16,9 @@ import {
 import { IoMdCloseCircle } from "react-icons/io";
 import type { KecamatanStat } from '@/types'
 import { Card } from '@/components/ui/card'
+import { TbCalendarWeek } from "react-icons/tb";
+import { BsBarChart } from "react-icons/bs";
+import { BsBinoculars } from "react-icons/bs";
 
 const SUMBER_COLORS: Record<string, string> = {
   LEMBAR_ASPIRASI_RESES: '#3b82f6',
@@ -39,9 +42,12 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
 
   return (
     <Card className="p-4 relative w-full h-full min-h-[340px]">
-      <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
+      <div className="flex mb-4 items-center gap-2 mb-4">
+        <BsBinoculars className='text-blue-600' />
+        <h3 className="text-sm font-semibold text-[var(--color-text)]">
         Status Kunjungan Kecamatan
       </h3>
+      </div>
       
       <div 
         className={`space-y-3 transition-all max-h-[260px] duration-500 ease-in-out overflow-y-auto pb-12
@@ -54,7 +60,7 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
               key={k.kecamatan}
               className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 bg-white"
             >
-              <div className="flex items-center gap-3">
+              <div className="w-2/6 flex items-center gap-3">
                 {visited ? (
                   <MdCheckCircle size={24} color="var(--color-success)" />
                 ) : (
@@ -64,9 +70,26 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
                   <p className="font-medium text-[var(--color-text)] text-sm">{k.kecamatan}</p>
                 </div>
               </div>
-              <p className="text-xs text-[var(--color-text-secondary)]">
+              <div className="w-2/6 bg-gray-100 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100}%` }}></div>
+              </div>
+              <p className="text-xs w-1/6">
                     {k.kelurahan_dikunjungi}/{k.jumlah_kelurahan} kelurahan
                   </p>
+              <p
+                className={`text-xs font-medium ${k.jumlah_kelurahan > 0
+                  ? Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100) < 50
+                    ? "text-red-500"
+                    : Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100) < 75
+                      ? "text-yellow-500"
+                      : "text-green-500"
+                  : "text-red-500"
+                  }`}
+              >
+                {k.jumlah_kelurahan > 0
+                  ? `${Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100)}%`
+                  : "0%"}
+              </p>
             </div>
           )
         })}
@@ -129,15 +152,46 @@ export default function AdminDashboardPage(): React.ReactNode {
       color: SUMBER_COLORS[a.sumber] ?? 'var(--color-primary)',
     }))
 
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const date = currentTime.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
+  const time = currentTime.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
   return (
     <div className="space-y-6">
-      <Card className="shadow-md">
+      <Card className="shadow-md bg-[url('/bg-stats.png')] bg-[length:130%] bg-left">
+        <div className="flex flex-row justify-between items-center">
+          <div>
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
           Selamat Datang, Admin 👋
         </h1>
         <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
           Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
         </p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-[var(--color-text-secondary)]">
+            <TbCalendarWeek size={18} />
+            <span >{date}</span><span>|</span>
+            <span>{time} WIB</span>
+          </div>
+        </div>
         {/* Rangkuman Data Total */}
         <div className="mt-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

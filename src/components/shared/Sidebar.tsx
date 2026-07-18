@@ -30,7 +30,7 @@ export const Sidebar = (): React.ReactNode => {
   ]
 
   return (
-    <aside className="hidden w-64 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bg)] lg:block">
+    <aside className="relative z-0 hidden w-64 shrink-0 overflow-hidden border-r border-[var(--color-border)] shadow-2xl lg:block">
       <Link href="/admin/dashboard" className="flex h-16 items-center px-6 border-b border-[var(--color-border)]">
         <span className="font-bold text-[var(--color-text)]">
           Dashboard

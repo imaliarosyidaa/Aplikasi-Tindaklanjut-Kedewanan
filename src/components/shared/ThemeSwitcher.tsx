@@ -39,7 +39,7 @@ export const ThemeSwitcher = (): React.ReactNode => {
           key={t}
           onClick={() => setTheme(t)}
           className={cn(
-            'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
+            'cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
             theme === t
               ? 'bg-[var(--color-primary)] text-white'
               : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'

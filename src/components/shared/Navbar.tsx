@@ -49,13 +49,13 @@ export const Navbar = (): React.ReactNode => {
               await signOut({ redirect: false })
               window.location.href = '/login'
             }}
-            className="hidden rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:block"
+            className="cursor-pointer hidden rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:block"
           >
             <MdLogout size={20} />
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:hidden"
+            className="cursor-pointer rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:hidden"
           >
             {mobileOpen ? <MdClose size={20} /> : <MdMenu size={20} />}
           </button>

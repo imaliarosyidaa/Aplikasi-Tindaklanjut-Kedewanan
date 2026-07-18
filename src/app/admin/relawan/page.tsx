@@ -204,8 +204,9 @@ export default function RelawanPage(): React.ReactNode {
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               </tr>
             </thead>
-            <tbody>{results.length === 0 ? (
-              <tr>
+            <tbody className="bg-[var(--color-bg)]">
+              {results.length === 0 ? (
+                <tr className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
                 <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
                   {hasFilter ? 'Tidak ada relawan dengan filter tersebut' : 'Belum ada data relawan'}
                 </td>
