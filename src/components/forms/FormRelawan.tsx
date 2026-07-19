@@ -378,6 +378,11 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           onChange={handleFileChange}
           className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] file:mr-3 file:rounded file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-1 file:text-sm file:font-medium file:text-[var(--color-primary)]"
         />
+        {fotoBase64 && fotoBase64.startsWith('data:') && (
+          <div className="flex justify-center">
+            <img src={fotoBase64} alt="Foto diri" className="w-32 h-32 object-cover rounded-full border-4 border-[var(--color-primary-light)]" />
+          </div>
+        )}
         {fotoName && (
           <p className="text-xs text-[var(--color-text-secondary)]">
             {fotoBase64.startsWith('data:') ? 'Foto tersimpan' : `Terpilih: ${fotoName}`}

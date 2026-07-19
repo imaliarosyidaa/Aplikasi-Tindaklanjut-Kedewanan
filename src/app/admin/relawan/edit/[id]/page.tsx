@@ -31,7 +31,7 @@ export default function EditRelawanPage({
           Edit Relawan
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          {relawan.nama}
+          {relawan?.nama}
         </p>
       </div>
 

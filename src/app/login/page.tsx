@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { signIn } from 'next-auth/react'
 import { useRouter } from '@/routing'
 import { MdDirectionsWalk, MdVisibility, MdVisibilityOff } from 'react-icons/md'
 export default function LoginPage(): React.ReactNode {
@@ -21,17 +20,33 @@ export default function LoginPage(): React.ReactNode {
     setLoading(true)
     setError('')
 
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    })
+    try {
+      const csrfRes = await fetch('/api/auth/csrf')
+      const { csrfToken } = await csrfRes.json()
 
-    if (result?.error) {
+      const formBody = new URLSearchParams({
+        email,
+        password,
+        csrfToken,
+        callbackUrl: '/admin/dashboard',
+        json: 'true',
+      })
+
+      const res = await fetch('/api/auth/callback/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formBody.toString(),
+      })
+
+      if (res.ok || res.status === 302) {
+        router.push('/admin/dashboard')
+      } else {
+        setError('Email atau kata sandi salah')
+        setLoading(false)
+      }
+    } catch (_) {
       setError('Email atau kata sandi salah')
       setLoading(false)
-    } else {
-      router.push('/admin/dashboard')
     }
   }
 
@@ -52,7 +67,7 @@ export default function LoginPage(): React.ReactNode {
       <div className="w-1/2 flex flex-col justify-center items-center">
         <h1 className="text-center mb-8 text-3xl font-bold"><span className="text-xl">Selamat Datang! </span><br />Aplikasi Tindak Lanjut Kedewanan</h1>
         <div id="Forms" className="flex flex-col gap-y-6 text-center w-1/2">
-          <form onSubmit={handleSubmit} className="text-left font-medium flex flex-col gap-[16px]">
+          <form onSubmit={handleSubmit} method="post" className="text-left font-medium flex flex-col gap-[16px]">
             <div className="flex flex-col">
               <label className="mb-2" htmlFor="email">Email</label>
               <input
