@@ -12,6 +12,7 @@ import { Link } from '@/routing'
 import { Pagination } from '@/components/ui/pagination'
 import { Card } from '@/components/ui/card'
 import { MdVisibility, MdFilterList, MdEdit, MdDelete } from 'react-icons/md'
+import type { Aspirasi } from '@/types'
 export default function AspirasiPage(): React.ReactNode {
   const sumberLabel: Record<string, string> = {
     LEMBAR_ASPIRASI_RESES: 'Lembar Aspirasi Reses',

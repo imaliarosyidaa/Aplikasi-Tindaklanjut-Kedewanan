@@ -70,6 +70,8 @@ export default function RelawanPage(): React.ReactNode {
   const [fullscreenFoto, setFullscreenFoto] = useState('')
   const [edit, setEdit] = useState<Relawan | null>(null)
   const [saving, setSaving] = useState(false)
+  const [editFoto, setEditFoto] = useState('')
+  const [editFotoName, setEditFotoName] = useState('')
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
@@ -272,7 +274,7 @@ export default function RelawanPage(): React.ReactNode {
       </div>
 
       {preview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setPreview(null)}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40" onClick={() => setPreview(null)}>
           <Card className="relative w-full max-w-lg mx-4 p-6 space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setPreview(null)} className="absolute top-4 right-4 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] cursor-pointer"><MdClose size={20} /></button>
             <h2 className="text-lg font-bold text-[var(--color-text)]">Detail Relawan</h2>
@@ -295,7 +297,7 @@ export default function RelawanPage(): React.ReactNode {
       )}
 
       {fullscreenFoto && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80" onClick={() => setFullscreenFoto('')}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80" onClick={() => setFullscreenFoto('')}>
           <button onClick={() => setFullscreenFoto('')} className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 cursor-pointer"><MdClose size={32} /></button>
           <img src={fullscreenFoto} alt="Foto full" className="max-w-[90vw] max-h-[90vh] object-contain" onClick={(e) => e.stopPropagation()} />
         </div>

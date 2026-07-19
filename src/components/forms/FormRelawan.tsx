@@ -82,7 +82,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const [rw, setRw] = useState('')
   const [fotoBase64, setFotoBase64] = useState(initialData?.foto ?? '')
   const [fotoName, setFotoName] = useState(initialData?.foto ? 'foto-existing' : '')
-  const [domisiliSesuaiKtp, setDomisiliSesuaiKtp] = useState('')
+  const [domisiliSesuaiKtp, setDomisiliSesuaiKtp] = useState(initialData?.domisili_sekarang ? 'Tidak' : 'Ya')
   const [domisiliSekarang, setDomisiliSekarang] = useState(initialData?.domisili_sekarang ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -129,6 +129,15 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
       setJalan(parsed.jalan)
       setRt(parsed.rt)
       setRw(parsed.rw)
+      setNama(initialData.nama ?? '')
+      setNik(initialData.nik ?? '')
+      setNoTelepon(initialData.no_telepon ?? '')
+      setJenisKelamin(initialData.jenis_kelamin ?? '')
+      setPosisi(initialData.posisi ?? '')
+      setFotoBase64(initialData.foto ?? '')
+      setFotoName(initialData.foto ? 'foto-existing' : '')
+      setDomisiliSesuaiKtp(initialData.domisili_sekarang ? 'Tidak' : 'Ya')
+      setDomisiliSekarang(initialData.domisili_sekarang ?? '')
     }
   }, [initialData])
 
@@ -183,6 +192,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           posisi: posisiFinal,
           alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
           domisili_sekarang: domisiliSekarang,
+          foto: fotoBase64 || undefined,
           kota_kabupaten: kotaMap[kotaId],
           kecamatan: kecamatanMap[kecamatanId],
           kelurahan: kelurahanMap[kelurahanId],
