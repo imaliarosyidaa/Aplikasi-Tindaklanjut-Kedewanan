@@ -27,13 +27,14 @@ export default function KunjunganPage() {
   const [searched, setSearched] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const params = new URLSearchParams()
   params.set('page', String(currentPage))
   params.set('limit', String(PAGE_SIZE))
   if (searched && query.trim()) params.set('search', query.trim())
 
-  const { data: res, mutate } = useSWR<{ data: Kegiatan[]; total: number }>(
+  const { data: res, isLoading, mutate } = useSWR<{ data: Kegiatan[]; total: number }>(
     `/api/kegiatan?${params.toString()}`, fetcher
   )
   const allKegiatan = res?.data ?? []
@@ -101,7 +102,7 @@ export default function KunjunganPage() {
         body: JSON.stringify({ ids: Array.from(selectedIds) }),
       })
       setSelectedIds(new Set())
-      mutate()
+      await mutate()
     } catch {
       alert('Gagal menghapus')
     } finally {
@@ -115,21 +116,23 @@ export default function KunjunganPage() {
     return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   }
 
-  const openEdit = (item: Kegiatan) => {
-    setEditingItem(item)
-    setEditForm({ nama_kegiatan: item.nama_kegiatan || '', lokasi: item.lokasi || '', catatan: item.catatan || '' })
-  }
-
   const handleEditSave = async () => {
     if (!editingItem) return
     await fetch(`/api/kegiatan/${editingItem.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editForm) })
-    setEditingItem(null); mutate()
+    setEditingItem(null); await mutate()
   }
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Yakin ingin menghapus kegiatan ini?')) return
-    await fetch(`/api/kegiatan/${id}`, { method: 'DELETE' })
-    mutate()
+    setDeletingId(id)
+    try {
+      await fetch(`/api/kegiatan/${id}`, { method: 'DELETE' })
+      await mutate()
+    } catch {
+      alert('Gagal menghapus')
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   return (
@@ -170,7 +173,9 @@ export default function KunjunganPage() {
         <div className="flex items-center justify-end mb-2">
           {selectedIds.size > 0 && (
             <Button variant="danger" size="sm" onClick={handleBulkDelete} disabled={deleting}>
-              <MdDelete size={16} className="mr-1" />
+              {deleting ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-1" />
+              ) : <MdDelete size={16} className="mr-1" />}
               Hapus {selectedIds.size} Terpilih
             </Button>
           )}
@@ -192,8 +197,14 @@ export default function KunjunganPage() {
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               </tr>
             </thead>
-            <tbody className="bg-[var(--color-bg)]">            
-              {filteredData.length === 0 ? (
+            <tbody className="bg-[var(--color-bg)]">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={10} className="px-4 py-8 text-center">
+                    <div className="inline-block w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+                  </td>
+                </tr>
+              ) : filteredData.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
                     'Belum ada data kegiatan'
@@ -215,7 +226,11 @@ export default function KunjunganPage() {
                     <div className="inline-flex items-center gap-2">
                       <Link href={`/admin/kunjungan/kegiatan/${item.id}`} className="text-[var(--color-primary)] hover:underline cursor-pointer"><MdVisibility size={16} /></Link>
                       <Link href={`/admin/kunjungan/edit/${item.id}`} className="text-[var(--color-warning)] cursor-pointer hover:underline"><MdEdit size={16} /></Link>
-                      <button onClick={() => handleDelete(item.id)} className="text-[var(--color-danger)] hover:underline cursor-pointer"><MdDelete size={16} /></button>
+                      <button onClick={() => handleDelete(item.id)} disabled={deletingId === item.id} className="text-[var(--color-danger)] hover:underline cursor-pointer disabled:opacity-40">
+                        {deletingId === item.id ? (
+                          <div className="w-4 h-4 border-2 border-[var(--color-danger)] border-t-transparent rounded-full animate-spin inline-block" />
+                        ) : <MdDelete size={16} />}
+                      </button>
                     </div>
                   </td>
                 </tr>

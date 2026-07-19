@@ -12,7 +12,7 @@ export const Navbar = (): React.ReactNode => {
 
   const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard' },
-    { href: '/admin/aspirasi', label: 'Tracing Aspirasi' },
+    { href: '/admin/aspirasi', label: 'Daftar Aspirasi' },
     { href: '/admin/kunjungan/list', label: 'Daftar Kegiatan' },
     { href: '/admin/kunjungan/baru', label: 'Input Kegiatan' },
     { href: '/admin/relawan', label: 'Data Relawan' },

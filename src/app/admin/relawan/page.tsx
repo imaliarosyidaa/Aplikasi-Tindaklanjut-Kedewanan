@@ -56,12 +56,13 @@ export default function RelawanPage(): React.ReactNode {
   const [searched, setSearched] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const PAGE_SIZE = 50
   const [currentPage, setCurrentPage] = useState(1)
 
   const searchParam = searched && query.trim() ? query.trim() : undefined
-  const { data: allRelawans, total, mutate: mutateRelawan } = useRelawanList(
+  const { data: allRelawans, total, isLoading, mutate: mutateRelawan } = useRelawanList(
     searchParam ? { page: currentPage, limit: PAGE_SIZE, search: searchParam } : { page: currentPage, limit: PAGE_SIZE }
   )
   const { mutate } = useSWRConfig()
@@ -129,7 +130,7 @@ export default function RelawanPage(): React.ReactNode {
         body: JSON.stringify({ ids: Array.from(selectedIds) }),
       })
       setSelectedIds(new Set())
-      mutateRelawan()
+      await mutateRelawan()
     } catch {
       alert('Gagal menghapus')
     } finally {
@@ -181,7 +182,9 @@ export default function RelawanPage(): React.ReactNode {
         <div className="flex items-center justify-end mb-2">
           {selectedIds.size > 0 && (
             <Button variant="danger" size="sm" onClick={handleBulkDelete} disabled={deleting}>
-              <MdDelete size={16} className="mr-1" />
+              {deleting ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-1" />
+              ) : <MdDelete size={16} className="mr-1" />}
               Hapus {selectedIds.size} Terpilih
             </Button>
           )}
@@ -205,7 +208,13 @@ export default function RelawanPage(): React.ReactNode {
               </tr>
             </thead>
             <tbody className="bg-[var(--color-bg)]">
-              {results.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={10} className="px-4 py-8 text-center">
+                    <div className="inline-block w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+                  </td>
+                </tr>
+              ) : results.length === 0 ? (
                 <tr className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
                 <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
                   {hasFilter ? 'Tidak ada relawan dengan filter tersebut' : 'Belum ada data relawan'}
@@ -235,11 +244,20 @@ export default function RelawanPage(): React.ReactNode {
                         <MdEdit size={18} />
                       </Link>
                       <button onClick={async () => {
-                        if (!window.confirm(`Yakin ingin menghapus relawan "${r.nama}"?`)) return
-                        await fetch(`/api/relawan/${r.id}`, { method: 'DELETE' })
-                        mutateRelawan()
-                      }} className="text-[var(--color-danger)] cursor-pointer hover:text-[var(--color-danger-dark)]" title="Hapus">
-                        <MdDelete size={18} />
+                        if (deletingId || !window.confirm(`Yakin ingin menghapus relawan "${r.nama}"?`)) return
+                        setDeletingId(r.id)
+                        try {
+                          await fetch(`/api/relawan/${r.id}`, { method: 'DELETE' })
+                          await mutateRelawan()
+                        } catch {
+                          alert('Gagal menghapus')
+                        } finally {
+                          setDeletingId(null)
+                        }
+                      }} disabled={deletingId === r.id} className="text-[var(--color-danger)] cursor-pointer hover:text-[var(--color-danger-dark)] disabled:opacity-40" title="Hapus">
+                        {deletingId === r.id ? (
+                          <div className="w-4 h-4 border-2 border-[var(--color-danger)] border-t-transparent rounded-full animate-spin inline-block" />
+                        ) : <MdDelete size={18} />}
                       </button>
                     </div>
                   </td>

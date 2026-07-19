@@ -10,8 +10,8 @@ import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
 import { Link } from '@/routing'
 import { Pagination } from '@/components/ui/pagination'
-import { MdVisibility, MdFilterList, MdDelete } from 'react-icons/md'
-import type { Aspirasi } from '@/types'
+import { Card } from '@/components/ui/card'
+import { MdVisibility, MdFilterList, MdEdit, MdDelete } from 'react-icons/md'
 export default function AspirasiPage(): React.ReactNode {
   const sumberLabel: Record<string, string> = {
     LEMBAR_ASPIRASI_RESES: 'Lembar Aspirasi Reses',
@@ -34,8 +34,9 @@ export default function AspirasiPage(): React.ReactNode {
   const [filterStatus, setFilterStatus] = useState('')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const { data: aspirasiList, total, mutate } = useAspirasiList({
+  const { data: aspirasiList, total, isLoading, mutate } = useAspirasiList({
     page: currentPage,
     limit: PAGE_SIZE,
     search: searchText || undefined,
@@ -75,7 +76,7 @@ export default function AspirasiPage(): React.ReactNode {
         body: JSON.stringify({ ids: Array.from(selectedIds) }),
       })
       setSelectedIds(new Set())
-      mutate()
+      await mutate()
     } catch {
       alert('Gagal menghapus')
     } finally {
@@ -112,48 +113,57 @@ export default function AspirasiPage(): React.ReactNode {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 items-end bg-[var(--color-bg-secondary)] p-4 rounded-lg border border-[var(--color-border)]">
-        <div className="min-w-[160px] flex-1">
-          <Select
-            id="filter-sumber"
-            label="Sumber"
-            placeholder="Semua Sumber"
-            options={sumberOptions}
-            value={filterSumber}
-            onChange={(e) => { setFilterSumber(e.target.value); setCurrentPage(1) }}
-          />
+      <Card className="p-6">
+        <div className="space-y-4">
+          <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
+          <div className="flex flex-wrap gap-3">
+            <div className="min-w-[140px] flex-1">
+              <Select
+                id="filter-sumber"
+                label="Sumber"
+                placeholder="Semua Sumber"
+                options={sumberOptions}
+                value={filterSumber}
+                onChange={(e) => { setFilterSumber(e.target.value); setCurrentPage(1) }}
+              />
+            </div>
+            <div className="min-w-[160px] flex-1">
+              <Select
+                id="filter-status"
+                label="Status"
+                placeholder="Semua Status"
+                options={statusOptions}
+                value={filterStatus}
+                onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
+              />
+            </div>
+          </div>
+          <div className="flex gap-3 items-end">
+            <div className="flex-1">
+              <Input
+                id="search"
+                label="Cari Nama atau No. Telepon"
+                value={searchText}
+                onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1) }}
+                placeholder="Ketik nama atau telepon..."
+              />
+            </div>
+            {hasFilter && (
+              <Button variant="outline" size="sm" className="mb-0.5" onClick={() => { setSearchText(''); setFilterSumber(''); setFilterStatus(''); setCurrentPage(1) }}>
+                <MdFilterList size={16} className="mr-1" />
+                Tampilkan Semua
+              </Button>
+            )}
+          </div>
         </div>
-        <div className="min-w-[160px] flex-1">
-          <Select
-            id="filter-status"
-            label="Status"
-            placeholder="Semua Status"
-            options={statusOptions}
-            value={filterStatus}
-            onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
-          />
-        </div>
-        <div className="min-w-[180px] flex-1">
-          <Input
-            id="search"
-            label="Cari Nama atau No. Telepon"
-            value={searchText}
-            onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1) }}
-            placeholder="Ketik nama atau telepon..."
-          />
-        </div>
-        {hasFilter && (
-          <Button variant="outline" size="sm" className="mb-0.5" onClick={() => { setSearchText(''); setFilterSumber(''); setFilterStatus(''); setCurrentPage(1) }}>
-            <MdFilterList size={16} className="mr-1" />
-            Tampilkan Semua
-          </Button>
-        )}
-      </div>
+      </Card>
 
       <div className="flex items-center justify-end mb-2">
         {selectedIds.size > 0 && (
           <Button variant="danger" size="sm" onClick={handleBulkDelete} disabled={deleting}>
-            <MdDelete size={16} className="mr-1" />
+            {deleting ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-1" />
+            ) : <MdDelete size={16} className="mr-1" />}
             Hapus {selectedIds.size} Terpilih
           </Button>
         )}
@@ -178,8 +188,14 @@ export default function AspirasiPage(): React.ReactNode {
             </tr>
           </thead>
           <tbody className="bg-[var(--color-bg)]">
-            {aspirasiList.length === 0 ? (
-              <tr className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
+            {isLoading ? (
+              <tr>
+                <td colSpan={10} className="px-4 py-8 text-center">
+                  <div className="inline-block w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+                </td>
+              </tr>
+            ) : aspirasiList.length === 0 ? (
+              <tr>
                 <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
                   {hasFilter ? 'Tidak ada aspirasi dengan filter tersebut' : 'Belum ada data aspirasi'}
                 </td>
@@ -207,22 +223,29 @@ export default function AspirasiPage(): React.ReactNode {
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <div className="flex flex-col items-center gap-1">
-                      <Link href={`/admin/aspirasi/${aspirasi.id}`}>
-                        <Button variant="ghost" size="sm" className='cursor-pointer text-[var(--color-primary)] whitespace-nowrap'>
-                          <MdVisibility size={16} className="mr-1" />
-                          Lihat
-                        </Button>
+                    <div className="inline-flex items-center gap-2">
+                      <Link href={`/admin/aspirasi/${aspirasi.id}`} className="text-[var(--color-primary)] hover:underline cursor-pointer" title="Lihat detail">
+                        <MdVisibility size={16} />
                       </Link>
-                      <Button variant="outline" size="sm" onClick={() => setSelectedAspirasi(aspirasi)} className='cursor-pointer whitespace-nowrap'>Update Status</Button>
-                      <Button variant="ghost" size="sm" onClick={async () => {
-                        if (window.confirm('Hapus aspirasi ini?')) {
+                      <button onClick={() => setSelectedAspirasi(aspirasi)} className="text-[var(--color-warning)] cursor-pointer hover:underline" title="Update Status">
+                        <MdEdit size={16} />
+                      </button>
+                      <button onClick={async () => {
+                          if (deletingId || !window.confirm('Hapus aspirasi ini?')) return
+                          setDeletingId(aspirasi.id)
+                          try {
                           await fetch(`/api/aspirasi/${aspirasi.id}`, { method: 'DELETE' })
-                          mutate()
+                            await mutate()
+                          } catch {
+                            alert('Gagal menghapus')
+                          } finally {
+                            setDeletingId(null)
                         }
-                      }} className='cursor-pointer text-[var(--color-danger)] whitespace-nowrap'>
-                        <MdDelete size={16} className="mr-1" />Hapus
-                      </Button>
+                        }} disabled={deletingId === aspirasi.id} className="text-[var(--color-danger)] hover:underline cursor-pointer disabled:opacity-40" title="Hapus">
+                          {deletingId === aspirasi.id ? (
+                            <div className="w-4 h-4 border-2 border-[var(--color-danger)] border-t-transparent rounded-full animate-spin inline-block" />
+                          ) : <MdDelete size={16} />}
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -231,7 +254,7 @@ export default function AspirasiPage(): React.ReactNode {
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end mt-4">
         <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
       </div>
 

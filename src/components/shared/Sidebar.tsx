@@ -23,7 +23,7 @@ export const Sidebar = (): React.ReactNode => {
 
   const items: SidebarItem[] = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: <MdDashboard size={20} /> },
-    { href: '/admin/aspirasi', label: 'Tracing Aspirasi', icon: <MdTrackChanges size={20} /> },
+    { href: '/admin/aspirasi', label: 'Daftar Aspirasi', icon: <MdTrackChanges size={20} /> },
     { href: '/admin/kunjungan', label: 'Daftar Kegiatan', icon: <MdList size={20} /> },
     { href: '/admin/kunjungan/baru', label: 'Input Kegiatan', icon: <MdAddLocation size={20} /> },
     { href: '/admin/relawan', label: 'Data Relawan', icon: <MdGroup size={20} /> },

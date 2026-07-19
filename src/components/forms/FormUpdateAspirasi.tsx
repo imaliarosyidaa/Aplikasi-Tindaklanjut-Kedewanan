@@ -83,7 +83,9 @@ export const FormUpdateAspirasi = ({
 
       <div className="flex justify-end gap-3 pt-2">
         <Button type="submit" disabled={isMutating}>
-          {'Simpan'}
+          {isMutating ? (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+          ) : 'Simpan'}
         </Button>
       </div>
     </form>

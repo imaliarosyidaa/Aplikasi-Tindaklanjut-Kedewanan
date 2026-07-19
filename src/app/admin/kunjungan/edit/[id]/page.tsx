@@ -16,8 +16,6 @@ export default function EditKegiatanPage({
   const { id } = use(params)
   const { data: kegiatan } = useSWR(`/api/kegiatan/${id}`, fetcher)
 
-  if (!kegiatan) return <p className="text-[var(--color-text-secondary)]">Kegiatan tidak ditemukan</p>
-
   return (
     <div className="w-full mx-auto space-y-6">
       <Link

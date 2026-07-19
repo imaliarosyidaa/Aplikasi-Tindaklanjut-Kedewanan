@@ -33,7 +33,7 @@ export const StatCard = ({
     <>
       <div
         className={cn(
-          'flex h-12 w-12 items-center justify-center ',
+          'flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--color-bg-secondary)]',
           variantStyles[variant]
         )}
       >
