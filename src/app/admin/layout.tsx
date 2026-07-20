@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <div className="relative flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1">
         <div className="absolute inset-0 bg-[url('/bg-layout.png')] bg-cover bg-center bg-no-repeat opacity-100 pointer-events-none" />
 
         <div className="relative z-10 flex flex-1">

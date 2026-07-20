@@ -12,6 +12,9 @@ interface AspirasiListParams {
   search?: string
   sumber?: string
   status?: string
+  kota?: string
+  kecamatan?: string
+  kelurahan?: string
 }
 
 export function useAspirasiList(params?: AspirasiListParams) {

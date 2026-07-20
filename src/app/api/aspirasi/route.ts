@@ -10,11 +10,17 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('search')?.trim()
   const sumber = searchParams.get('sumber')
   const status = searchParams.get('status')
+  const kotaId = searchParams.get('kota')
+  const kecamatanId = searchParams.get('kecamatan')
+  const kelurahanId = searchParams.get('kelurahan')
 
   const where: Record<string, unknown> = {}
 
   if (sumber) where.sumber = sumber
   if (status) where.status = status
+  if (kotaId) where.kota_id = kotaId
+  if (kecamatanId) where.kecamatan_id = kecamatanId
+  if (kelurahanId) where.kelurahan_id = kelurahanId
   if (search) {
     const mode = { mode: 'insensitive' as const }
     where.OR = [

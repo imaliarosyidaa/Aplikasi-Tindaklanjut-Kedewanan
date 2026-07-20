@@ -65,7 +65,7 @@ export default function LoginPage(): React.ReactNode {
         </div>
       </div>
       <div className="w-1/2 flex flex-col justify-center items-center">
-        <h1 className="text-center mb-8 text-3xl font-bold"><span className="text-xl">Selamat Datang! </span><br />Aplikasi Tindak Lanjut Kedewanan</h1>
+        <h1 className="text-center mb-8 text-3xl font-bold"><span className="text-xl">Selamat Datang! </span><br />Aplikasi Koordinasi Tindak Lanjut Kedewanan</h1>
         <div id="Forms" className="flex flex-col gap-y-6 text-center w-1/2">
           <form onSubmit={handleSubmit} method="post" className="text-left font-medium flex flex-col gap-[16px]">
             <div className="flex flex-col">
