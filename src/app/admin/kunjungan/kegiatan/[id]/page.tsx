@@ -73,7 +73,7 @@ export default function DetailKegiatanPage({
 
   return (
     <div className="space-y-6">
-      <Link href="/admin/kunjungan/list">
+      <Link href="/admin/kunjungan">
         <Button variant="ghost" size="sm">
           <MdArrowBack size={18} className="mr-1" />
           Kembali ke Daftar Kunjungan

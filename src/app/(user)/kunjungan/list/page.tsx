@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function Redirect() {
-  redirect('/admin/kunjungan/list')
+  redirect('/admin/kunjungan')
 }

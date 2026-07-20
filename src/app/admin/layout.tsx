@@ -25,9 +25,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <div className="relative flex flex-1">
         <div className="absolute inset-0 bg-[url('/bg-layout.png')] bg-cover bg-center bg-no-repeat opacity-100 pointer-events-none" />
 
-        <div className="relative z-10 flex flex-1">
-          <Sidebar />
-          <main className="flex-1 p-6 min-w-0">
+        <div className="relative z-10 flex flex-1 justify-center">
+          {/* <Sidebar /> */}
+          <main className="flex-1 p-6 max-w-6xl min-w-0">
             {children}
           </main>
         </div>
