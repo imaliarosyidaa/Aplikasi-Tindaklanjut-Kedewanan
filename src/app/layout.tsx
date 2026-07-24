@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { ThemeProvider } from 'next-themes'
+import { ThemeProvider } from '@/components/ThemeProvider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -16,14 +16,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          themes={['light', 'dark', 'yellow', 'ramadan', 'valentine']}
-        >
-          {children}
-        </ThemeProvider>
+        <ThemeProvider defaultTheme="light">{children}</ThemeProvider>
       </body>
     </html>
   )

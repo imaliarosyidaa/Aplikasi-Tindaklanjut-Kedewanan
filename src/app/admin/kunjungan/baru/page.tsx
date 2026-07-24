@@ -349,7 +349,7 @@ export default function KegiatanBaruPage() {
 
                   <button
                     type="button"
-                    onClick={() => setJumlahPeserta(Math.max(0, (Number(jumlahPeserta) || 0) - 1))}
+                    onClick={() => setJumlahPeserta(String(Math.max(0, (Number(jumlahPeserta) || 0) - 1)))}
                     className="px-3 py-2.5 text-gray-500 hover:text-[var(--color-primary)] bg-[var(--color-bg-secondary)]/30 hover:bg-[var(--color-bg-secondary)]/80 transition-all cursor-pointer border-r border-[var(--color-border)] font-semibold text-lg"
                   >
                     -
@@ -372,7 +372,7 @@ export default function KegiatanBaruPage() {
 
                   <button
                     type="button"
-                    onClick={() => setJumlahPeserta((Number(jumlahPeserta) || 0) + 1)}
+                    onClick={() => setJumlahPeserta(String((Number(jumlahPeserta) || 0) + 1))}
                     className="px-3 py-2.5 text-gray-500 hover:text-[var(--color-primary)] bg-[var(--color-bg-secondary)]/30 hover:bg-[var(--color-bg-secondary)]/80 transition-all cursor-pointer border-l border-[var(--color-border)] font-semibold text-lg"
                   >
                     +
@@ -438,18 +438,82 @@ export default function KegiatanBaruPage() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       )}
 
       {/* Step 4: Upload */}
       {step === 3 && (
-        <div>
-          <h2 className="text-xl font-semibold">Dokumentasi Kegiatan</h2>
-          <p className="mb-6 text-slate-500">Upload dokumentasi kegiatan (opsional).</p>
-          <div className="max-w-xl">
-            <FileUpload label="Upload Foto" value={fotoFiles} onChange={setFotoFiles} />
+        <div className='bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16'>
+          <div className='col-span-2 mt-[-12px]'>
+            <h2 className="text-xl font-semibold">Dokumentasi Kegiatan</h2>
+            <p className="mb-6 text-slate-500">Upload dokumentasi kegiatan (opsional).</p>
+            <div className="max-w-xl">
+              <FileUpload label="Upload Foto" value={fotoFiles} onChange={setFotoFiles} />
+            </div>
+          </div>
+          <div className="p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
+            <div>
+              <div className="flex gap-2 mb-6">
+                <MdInfo
+                  size={20}
+                  className="text-blue-500 flex-shrink-0"
+                />
+                <div>
+                  <h2 className="mb-2 font-medium text-black">Informasi</h2>
+                  <div className="text-xs text-[var(--color-text-secondary)]">
+                    Lampirkan foto akan digunakan ssebagai dokumentasi kegiatan dan meningkatkan validitass data yang diinput.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <div className="flex mb-2 items-center gap-2">
+                <MdInfo
+                  size={20}
+                  className="text-blue-500 flex-shrink-0"
+                />
+                <h2 className="font-medium text-black text-sm">Tips Upload</h2>
+              </div>
+              <div className="text-xs text-[var(--color-text-secondary)]">
+                <div className="flex gap-2 mb-2">
+                  <IoMdCheckmarkCircleOutline
+                    size={15}
+                    className="text-green-500 flex-shrink-0"
+                  />
+                  <p>Gunakan foto dengan kualitas yang baik dan jelas</p>
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <IoMdCheckmarkCircleOutline
+                    size={15}
+                    className="text-green-500 flex-shrink-0"
+                  />
+                  <p>Pastikan objek kegiatan terlihat jelas</p>
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <IoMdCheckmarkCircleOutline
+                    size={15}
+                    className="text-green-500 flex-shrink-0"
+                  />
+                  <p>Hindari foto blur atau gelap</p>
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <IoMdCheckmarkCircleOutline
+                    size={15}
+                    className="text-green-500 flex-shrink-0"
+                  />
+                  <p>Ukuran file maksimal 10 MB per foto</p>
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <IoMdCheckmarkCircleOutline
+                    size={15}
+                    className="text-green-500 flex-shrink-0"
+                  />
+                  <p>Format file: JPG, JPEG, PNG</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

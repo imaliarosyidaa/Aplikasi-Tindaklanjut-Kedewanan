@@ -1,40 +1,91 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 
 import { UserSidebar } from '@/components/shared/UserSidebar'
-import { Link } from '@/routing'
-import { MdAdminPanelSettings } from 'react-icons/md'
+import { Link, usePathname } from '@/routing'
+import { MdAdd, MdAdminPanelSettings, MdClose, MdDashboard, MdLock, MdLogout, MdMenu, MdTrackChanges } from 'react-icons/md'
+import { ThemeSwitcher } from '@/components/shared/ThemeSwitcher'
+import { signOut } from 'next-auth/react'
+import Footer from '@/components/shared/Footer'
 
 export default function UserLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const navItems = [
+    { href: '/', label: 'Pengajuan Aspirasi', icon: <MdAdd size={20} /> },
+    { href: '/laporan-saya', label: 'Laporan Saya', icon: <MdTrackChanges size={20} /> },
+  ]
+
   return (
     <div className="flex min-h-screen flex-col">
-      <nav className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 items-center justify-between px-12">
+      <nav className="relative top-0 z-0 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 items-center justify-between px-8">
           <div className="flex items-center justify-center gap-3 py-2">
             <img src="/Lambang_DPRD_Generik.png" alt="Logo" className="h-12 w-auto" />
             <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo Text" className="h-12 w-auto" />
-            <span className="text-lg font-bold text-[var(--color-primary)]">
-              Dashboard Pengguna
-            </span>
+
+            <div className="hidden items-center gap-1 md:flex">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
+                    ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                    : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'
+                    }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </div>
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
-          >
-            <MdAdminPanelSettings size={18} />
-            Login Sebagai Admin
-          </Link>
+
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <button
+              onClick={async () => {
+                window.location.href = '/login'
+              }}
+              className="cursor-pointer flex text-white gap-2 items-center justify-center rounded-lg p-2 bg-gradient-to-r from-blue-600 to-purple-600"
+            >
+              <MdLock size={20} />
+              Login sebagai admin
+            </button>
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="cursor-pointer rounded-lg p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] md:hidden"
+            >
+              {mobileOpen ? <MdClose size={20} /> : <MdMenu size={20} />}
+            </button>
+          </div>
         </div>
+
+        {mobileOpen && (
+          <div className="border-t border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-2 md:hidden">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={`block rounded-lg px-3 py-2 text-sm font-medium ${pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
+                  ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                  : 'text-[var(--color-text-secondary)]'
+                  }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+        </div>
+        )}
       </nav>
 
-      <div className="flex flex-1">
-        <UserSidebar />
-        <main className="flex-1 p-6">{children}</main>
-      </div>
+      <main>{children}</main>
+      <Footer />
     </div>
   )
 }

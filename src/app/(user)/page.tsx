@@ -1,51 +1,35 @@
 'use client'
-import React from 'react'
 
-import { Card } from '@/components/ui/card'
-import { Link } from '@/routing'
-import { MdAdd, MdTrackChanges } from 'react-icons/md'
+import Hero from '@/components/shared/Hero'
+import PengajuanAspirasiPage from './pengajuan-aspirasi/page'
 
-export default function UserHomePage(): React.ReactNode {
+export default function UserHomePage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Dashboard Pengguna
-        </h1>
-        <p className="text-sm text-[var(--color-text-secondary)]">
-          Selamat datang di portal aspirasi masyarakat
-        </p>
-      </div>
+    <div className="w-full">
+      {/* Hero */}
+      <Hero
+        title="Sampaikan"
+        highlight="Aspirasi Anda"
+        subtitle="Portal resmi penyampaian aspirasi masyarakat kepada DPRD DKI Jakarta. Sampaikan usulan, pengaduan, maupun apresiasi secara mudah, transparan, dan dapat dipantau perkembangannya."
+      />
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Link href="/pengajuan-aspirasi">
-          <Card className="p-6 flex flex-col items-center text-center space-y-3 bg-blue-50 border-blue-200 hover:border-blue-400 transition-colors cursor-pointer">
-            <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-              <MdAdd size={32} className="text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">
-              Pengajuan Aspirasi
+      {/* Form Pengajuan */}
+      <section className="bg-white py-16">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <div className="mb-10 text-start">
+            <h2 className="text-3xl font-bold text-[var(--color-text)]">
+              Ajukan Aspirasi Sekarang
             </h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
-              Ajukan aspirasi atau pengaduan Anda
-            </p>
-          </Card>
-        </Link>
 
-        <Link href="/laporan-saya">
-          <Card className="p-6 flex flex-col items-center text-center space-y-3 bg-purple-50 border-purple-200 hover:border-purple-400 transition-colors cursor-pointer">
-            <div className="h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center">
-              <MdTrackChanges size={32} className="text-purple-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">
-              Laporan Saya
-            </h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
-              Lacak status aspirasi yang sudah diajukan
+            <p className="mt-3 text-[var(--color-text-secondary)]">
+              Lengkapi formulir berikut untuk menyampaikan aspirasi atau
+              pengaduan Anda.
             </p>
-          </Card>
-        </Link>
-      </div>
+          </div>
+
+          <PengajuanAspirasiPage />
+        </div>
+      </section>
     </div>
   )
 }

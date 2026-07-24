@@ -23,6 +23,7 @@ import {
 } from 'react-icons/md'
 import useSWR from 'swr'
 import { getKelurahanByKecamatanId } from '@/utils/masterWilayah'
+import Hero from '@/components/shared/Hero'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -59,6 +60,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   }
 
   return (
+    <section className="bg-white py-16">
     <Card className="p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -183,6 +185,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
         )}
       </div>
     </Card>
+    </section>
   )
 }
 
@@ -238,25 +241,13 @@ export default function LaporanSayaPage(): React.ReactNode {
   const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim() || queryId.trim()
 
   return (
-    <div className="space-y-6">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1 text-sm text-[var(--color-primary)] hover:underline"
-      >
-        <MdArrowBack size={16} />
-        Kembali ke Dashboard
-      </Link>
-
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Laporan Saya
-        </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Filter dan cari laporan Anda
-        </p>
-      </div>
-
-      <Card className="p-6 w-full mx-auto bg-purple-50 border-purple-200">
+    <div>
+      <Hero
+        title="Lacak"
+        highlight="Status Aspirasi"
+        subtitle="Masukkan nomor registrasi atau identitas pelapor untuk melihat perkembangan aspirasi yang telah diajukan."
+      />
+      <div className="p-16 w-full mx-auto bg-white border-purple-200">
         <div className="space-y-4">
           <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian Laporan</p>
           <div className="flex flex-wrap gap-3">
@@ -320,7 +311,10 @@ export default function LaporanSayaPage(): React.ReactNode {
             </Button>
           </div>
         </div>
-      </Card>
+        <div className='h-screen flex items-end justify-center'>
+          <img src="/laporan.png" alt="Logo" className="w-2/5 opacity-60 h-auto" />
+        </div>
+      </div>
 
       {searched && (
         <div className="space-y-4">

@@ -20,6 +20,8 @@ import {
   MdSource,
 } from 'react-icons/md'
 import useSWR from 'swr'
+import type { LucideIcon } from 'lucide-react'
+import { Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -283,6 +285,15 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     fetcher
   )
 
+  const sumberAspirasi: { id: string; title: string; desc?: string; icon?: LucideIcon }[] = [
+    { id: 'LEMBAR_ASPIRASI_RESES', title: 'Lembar Aspirasi Reses', icon: Home },
+    { id: 'LEMBAR_ASPIRASI_SOSPERDA', title: 'Lembar Aspirasi Sosperda', icon: Handshake },
+    { id: 'ASPIRASI_PROPOSAL_LANGSUNG', title: 'Aspirasi Proposal Langsung', icon: Megaphone },
+    { id: 'KOORDINASI_DINAS_TERKAIT', title: 'Koordinasi Dinas Terkait', icon: PhoneCall },
+    { id: 'USULAN_MUSRENBANG_DEWAN', title: 'Usulan Musrenbang Dewan', icon: TextCursor },
+    { id: 'CALL_CENTER', title: 'Call Center', icon: PhoneCall },
+  ]
+
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
@@ -353,25 +364,27 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   }
 
   return (
-    <div className="space-y-6">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1 text-sm text-[var(--color-primary)] hover:underline"
-      >
-        <MdArrowBack size={16} />
-        Kembali ke Dashboard
-      </Link>
-
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Pengajuan Aspirasi
-        </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Sampaikan aspirasi Anda
-        </p>
-      </div>
-
-      <Card className="p-6 w-full mx-auto bg-blue-50 border-blue-200">
+    <div>
+      <div className="w-full mx-auto">
+        <div>
+          <h2 className="text-xl font-semibold">Pilih Sumber Aspirasi</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {sumberAspirasi.map((item) => {
+              const Icon = item.icon as LucideIcon
+              const active = sumber === item.id
+              return (
+                <button key={item.id} onClick={() => setSumber(item.id)}
+                  className={`cursor-pointer text-center flex h-48 flex-col justify-center items-center rounded-2xl border p-6 transition duration-300 hover:bg-blue-50 hover:-translate-y-1 ${active ? 'border-blue-600 border-2' : 'border-slate-200 bg-white'}`}>
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                    <Icon size={30} />
+                  </div>
+                  <h3 className="font-bold text-lg">{item.title}</h3>
+                  <p className="text-slate-500 mt-2 text-sm">{item.desc}</p>
+                </button>
+              )
+            })}
+          </div>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="id_laporan"
@@ -380,30 +393,64 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             disabled
             className="bg-gray-100 text-gray-500"
           />
+
+          <Card>
+            <div className='flex items-center gap-4 mb-8'>
+              <MdPerson className='text-blue-700' size={24} />
+              <h1 className='text-xl text-blue-700 font-bold'>Data Pelapor</h1>
+            </div>
+            <div className='grid lg:grid-cols-2 gap-4 grid-cols-1'>
+              <div>
+                <Input
+                  id="nama"
+                  label="Nama Pelapor"
+                  value={nama}
+                  onChange={(e) => setNama(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Input
+                  id="nik"
+                  label="Nomor Induk Kependudukan (NIK)"
+                  value={nik}
+                  onChange={(e) => setNik(e.target.value)}
+                />
+                <div>
+                  <p className="text-sm text-[var(--color-text-secondary)]">*Boleh Dikosongkan</p>
+                </div>
+              </div>
+            </div>
+
           <Input
-            id="nik"
-            label="Nomor Induk Kependudukan (NIK)"
-            value={nik}
-            onChange={(e) => setNik(e.target.value)}
-          />
-          <p className="text-sm text-[var(--color-text-secondary)] -mt-2">*Boleh Dikosongkan</p>
-          <Input
-            id="nama"
-            label="Nama Pelapor"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
+              id="telepon"
+              label="No. Telepon"
+              type="tel"
+              value={telepon}
+              onChange={(e) => setTelepon(e.target.value)}
             required
           />
-          <Select
-            id="kota"
-            label="Kota"
-            placeholder="Pilih kota"
-            options={kotaOptions}
-            value={kotaId}
-            onChange={handleKotaChange}
-            error={errors.kota}
-          />
-    
+          </Card>
+
+          <Card>
+            <div className='flex items-center gap-4 mb-8'>
+              <MdPerson className='text-blue-700' size={24} />
+              <h1 className='text-xl text-blue-700 font-bold'>Lokasi Kejadian</h1>
+            </div>
+            <div className='grid lg:grid-cols-2 gap-4 grid-cols-1'>
+              <div>
+                <Select
+                  id="kota"
+                  label="Kota"
+                  placeholder="Pilih kota"
+                  options={kotaOptions}
+                  value={kotaId}
+                  onChange={handleKotaChange}
+                  error={errors.kota}
+                />
+              </div>
+              <div>
+
           <Select
             id="kecamatan"
             label="Kecamatan"
@@ -414,6 +461,9 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             error={errors.kecamatan}
             disabled={!kotaId}
           />
+              </div>
+            </div>
+            <div>
     
           <Select
             id="kelurahan"
@@ -433,30 +483,9 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             onChange={(e) => setAlamat(e.target.value)}
             required
           />
-          <Input
-            id="telepon"
-            label="No. Telepon"
-            type="tel"
-            value={telepon}
-            onChange={(e) => setTelepon(e.target.value)}
-            required
-          />
-          <Select
-            id="sumber"
-            label="Sumber Aspirasi"
-            placeholder="Pilih sumber aspirasi"
-            options={[
-              { value: 'LEMBAR_ASPIRASI_RESES', label: 'Lembar Aspirasi Reses' },
-              { value: 'LEMBAR_ASPIRASI_SOSPERDA', label: 'Lembar Aspirasi Sosperda' },
-              { value: 'ASPIRASI_PROPOSAL_LANGSUNG', label: 'Aspirasi Proposal Langsung' },
-              { value: 'KOORDINASI_DINAS_TERKAIT', label: 'Koordinasi Dinas Terkait' },
-              { value: 'USULAN_MUSRENBANG_DEWAN', label: 'Usulan Musrenbang Dewan' },
-              { value: 'CALL_CENTER', label: 'Call Center' },
-            ]}
-            value={sumber}
-            onChange={(e) => setSumber(e.target.value)}
-            required
-          />
+            </div>
+          </Card>
+
           <div>
             <label
               htmlFor="pengaduan"
@@ -485,7 +514,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             {loading ? 'Mengirim...' : 'Kirim Aspirasi'}
           </Button>
         </form>
-      </Card>
+      </div>
     </div>
   )
 }

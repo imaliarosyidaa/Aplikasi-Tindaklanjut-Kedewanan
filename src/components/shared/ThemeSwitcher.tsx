@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/ThemeProvider'
 import { useEffect, useState } from 'react'
 import { MdLightMode, MdDarkMode, MdOutlineWbSunny, MdMosque, MdFavorite } from 'react-icons/md'
 import { cn } from '@/utils/cn'

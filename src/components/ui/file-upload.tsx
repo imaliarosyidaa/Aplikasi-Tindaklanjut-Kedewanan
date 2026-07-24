@@ -138,7 +138,7 @@ export const FileUpload = ({
 
       <div
         className={cn(
-          'border-2 border-dashed rounded-lg p-6 text-center transition-colors',
+          'border-2 bg-white border-dashed rounded-lg p-6 text-center transition-colors',
           isDragging
             ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
             : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'
