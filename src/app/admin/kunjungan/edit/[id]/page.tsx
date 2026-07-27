@@ -31,7 +31,7 @@ export default function EditKegiatanPage({
           Edit Kegiatan
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          {kegiatan.nama_kegiatan}
+          {kegiatan?.nama_kegiatan}
         </p>
       </div>
 

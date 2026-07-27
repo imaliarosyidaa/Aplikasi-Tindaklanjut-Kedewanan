@@ -14,6 +14,7 @@ import { Pagination } from '@/components/ui/pagination'
 import { Card } from '@/components/ui/card'
 import { MdVisibility, MdFilterList, MdEdit, MdDelete } from 'react-icons/md'
 import type { Aspirasi } from '@/types'
+import { useSearchParams } from 'next/navigation'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 interface KotaItem { id: string; nama: string }
@@ -21,6 +22,8 @@ interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
 
 export default function AspirasiPage(): React.ReactNode {
+  const searchParams = useSearchParams()
+
   const sumberLabel: Record<string, string> = {
     LEMBAR_ASPIRASI_RESES: 'Lembar Aspirasi Reses',
     LEMBAR_ASPIRASI_SOSPERDA: 'Lembar Aspirasi Sosperda',
@@ -38,8 +41,8 @@ export default function AspirasiPage(): React.ReactNode {
   const PAGE_SIZE = 50
   const [currentPage, setCurrentPage] = useState(1)
   const [searchText, setSearchText] = useState('')
-  const [filterSumber, setFilterSumber] = useState('')
-  const [filterStatus, setFilterStatus] = useState('')
+  const [filterSumber, setFilterSumber] = useState(searchParams.get('sumber') ? searchParams.get('sumber') : '')
+  const [filterStatus, setFilterStatus] = useState(searchParams.get('status') ? searchParams.get('status') : '')
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
@@ -149,7 +152,7 @@ export default function AspirasiPage(): React.ReactNode {
                 label="Sumber"
                 placeholder="Semua Sumber"
                 options={sumberOptions}
-                value={filterSumber}
+                value={filterSumber ?? ''}
                 onChange={(e) => { setFilterSumber(e.target.value); setCurrentPage(1) }}
               />
             </div>
@@ -159,7 +162,7 @@ export default function AspirasiPage(): React.ReactNode {
                 label="Status"
                 placeholder="Semua Status"
                 options={statusOptions}
-                value={filterStatus}
+                value={filterStatus ?? ''}
                 onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
               />
             </div>

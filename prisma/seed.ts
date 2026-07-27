@@ -1,13 +1,12 @@
 import 'dotenv/config'
-import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 import { PrismaClient } from '../src/generated/prisma/client'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { randomUUID } from 'crypto'
 
-const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
-})
+const adapter = new PrismaMariaDb(process.env.DATABASE_URL!)
+const prisma = new PrismaClient({ adapter })
 
 interface CsvRow {
   kota: string
@@ -124,7 +123,7 @@ async function main() {
   // 4. Aspirasi
   // ──────────────────────────────────────────────
   const aspirasiData = [
-    { id: randomUUID(), sumber: 'LEMBAR_ASPIRASI_RESES' as const, deskripsi: 'Warga mengusulkan perbaikan drainase di RW 03 Kelurahan Bukit Duri karena sering banjir saat hujan deras.', status: 'BELUM_DITINDAKLANJUTI' as const, pelapor_nama: 'Ahmad Fauzi', pelapor_email: 'ahmad.fauzi@email.com', pelapor_telepon: '081234567890', kategori_usulan: 'Infrastruktur', jenis_usulan: 'Pembangunan', jenis_reses: 'Reses Periode I', tindak_lanjut: 'Belum ditindaklanjuti', tanggal_dibuat: new Date('2026-01-15'), kecamatan: 'Tebet', kelurahan: 'Bukit Duri', alamat: 'RW 03 Kelurahan Bukit Duri' },
+    { id: randomUUID(), sumber: 'LEMBAR_ASPIRASI_RESES' as const, deskripsi: 'Warga mengusulkan perbaikan drainase di RW 03 Kelurahan Bukit Duri karena sering banjir saat hujan deras.', status: 'BELUM_DITINDAKLANJUTI' as const, pelapor_nama: 'Ahmad Fauzi', pelapor_email: 'ahmad.fauzi@email.com', pelapor_telepon: '081234567890', kategori_usulan: 'Infrastruktur', jenis_usulan: 'Pembangunan', jenis_reses: 'Reses Periode I', tindak_lanjut: 'Belum ditindaklanjuti', tanggal_dibuat: new Date('2026-01-15'), catatan_tindak_lanjut: undefined, kecamatan: 'Tebet', kelurahan: 'Bukit Duri', alamat: 'RW 03 Kelurahan Bukit Duri' },
     { id: randomUUID(), sumber: 'LEMBAR_ASPIRASI_SOSPERDA' as const, deskripsi: 'Usulan pembangunan posyandu untuk melayani balita dan lansia di Kelurahan Bangka.', status: 'SEDANG_DITINDAKLANJUTI' as const, pelapor_nama: 'Siti Nurhaliza', pelapor_email: 'siti.nur@email.com', pelapor_telepon: '081234567891', kategori_usulan: 'Kesehatan', jenis_usulan: 'Pembangunan', jenis_reses: 'Reses Periode I', tindak_lanjut: 'Koordinasi dengan dinas terkait', tanggal_dibuat: new Date('2026-01-20'), catatan_tindak_lanjut: 'Sedang dalam proses koordinasi dengan Dinas Kesehatan Jakarta Selatan.', kecamatan: 'Mampang Prapatan', kelurahan: 'Bangka', alamat: 'Kelurahan Bangka' },
     { id: randomUUID(), sumber: 'ASPIRASI_PROPOSAL_LANGSUNG' as const, deskripsi: 'Pengajuan bantuan modal usaha untuk kelompok UMKM binaan Kelurahan Pejaten Barat sebanyak 50 orang.', status: 'SUDAH_DITINDAKLANJUTI' as const, pelapor_nama: 'Bambang Supriyadi', pelapor_email: 'bambang@email.com', pelapor_telepon: '081234567892', kategori_usulan: 'Ekonomi', jenis_usulan: 'Bantuan Modal', jenis_reses: 'Reses Periode II', tindak_lanjut: 'Sudah direalisasikan', tanggal_dibuat: new Date('2026-02-05'), catatan_tindak_lanjut: 'Bantuan modal sudah disalurkan melalui Dinas Koperasi dan UMKM DKI Jakarta.', kecamatan: 'Pasar Minggu', kelurahan: 'Pejaten Barat', alamat: 'Kelurahan Pejaten Barat' },
     { id: randomUUID(), sumber: 'KOORDINASI_DINAS_TERKAIT' as const, deskripsi: 'Koordinasi dengan Dinas Pendidikan terkait renovasi 3 ruang kelas SDN Kalibata 01 yang rusak berat.', status: 'SEDANG_DITINDAKLANJUTI' as const, pelapor_nama: 'Dewi Sartika', pelapor_email: 'dewi.sartika@email.com', pelapor_telepon: '081234567893', kategori_usulan: 'Pendidikan', jenis_usulan: 'Renovasi', jenis_reses: 'Reses Periode I', tindak_lanjut: 'Koordinasi dengan dinas terkait', tanggal_dibuat: new Date('2026-02-20'), catatan_tindak_lanjut: 'Surat rekomendasi sudah dikirim ke Dinas Pendidikan, menunggu jadwal survei.', kecamatan: 'Pancoran', kelurahan: 'Kalibata', alamat: 'SDN Kalibata 01' },
