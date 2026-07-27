@@ -1,0 +1,41 @@
+{
+  "appId": "com.dprd-jaksel.kunjungan-tracker",
+  "productName": "Aplikasi Koordinasi Tindak Lanjut Kedewanan",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "electron/**/*",
+    ".next/**/*",
+    "public/**/*",
+    "next.config.ts",
+    "package.json",
+    "prisma/**/*",
+    "src/generated/**/*",
+    "node_modules/**/*",
+    "!node_modules/.cache",
+    "!**/*.map",
+    "!**/CHANGELOG*",
+    "!**/README*"
+  ],
+  "extraMetadata": {
+    "main": "electron/main.js"
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "public/Lambang_DPRD_Generik.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Aplikasi Koordinasi Tindak Lanjut Kedewanan"
+  },
+  "asar": false
+}

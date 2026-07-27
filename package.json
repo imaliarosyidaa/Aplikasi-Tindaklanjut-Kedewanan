@@ -1,13 +1,17 @@
 {
   "name": "kunjungan-tracker",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Aplikasi Koordinasi Tindak Lanjut Kedewanan DPRD DKI Jakarta",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "electron:dev": "concurrently -k \"next dev -p 3000\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "set CSC_IDENTITY_AUTO_DISCOVERY=false && npm run build && electron-builder --win --config electron-builder.json"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -43,12 +47,16 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^10.0.4",
     "dotenv": "^17.4.2",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "prettier": "^3.9.5",
     "tailwindcss": "^4",
     "tsx": "^4.22.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^9.1.0"
   }
 }
