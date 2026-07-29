@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  binaryTargets = ["native","windows"]
 }
 
 // datasource db {
@@ -17,10 +18,10 @@ enum UserRole {
 }
 
 enum AspirasiStatus {
-  BELUM_DITINDAKLANJUTI
-  SEDANG_DITINDAKLANJUTI
-  SUDAH_DITINDAKLANJUTI
   TIDAK_BISA_DITINDAKLANJUTI
+  SUDAH_DITINDAKLANJUTI
+  SEDANG_DITINDAKLANJUTI
+  BELUM_DITINDAKLANJUTI
 }
 
 enum SumberAspirasi {
@@ -180,7 +181,7 @@ model Relawan {
   alamat               String
   domisili_sekarang    String?
   posisi               PosisiRelawan
-  foto                 String?
+  foto                 String? @db.MediumText
   created_at           DateTime      @default(now()) @map("created_at")
   updated_at           DateTime      @updatedAt @map("updated_at")
   kota_id              String  //@db.Uuid
@@ -201,7 +202,7 @@ model Kegiatan {
   isi            String?
   hari           String?
   tanggal        DateTime?
-  foto           String?
+  foto           String? @db.MediumText
   nama_kegiatan  String
   link_gmaps     String?
   tempat         String?

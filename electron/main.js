@@ -1,11 +1,44 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const http = require('http')
+const fs = require('fs')
+const Module = require('module')
 const { parse } = require('url')
+
+const originalResolveFilename = Module._resolveFilename
+Module._resolveFilename = function (request, parent, isMain, options) {
+  if (request.startsWith('@prisma/client-') && request.includes('/runtime/')) {
+    const fallback = request.replace(/^@prisma\/client-[^/]+/, '@prisma/client')
+    try {
+      return originalResolveFilename.call(this, fallback, parent, isMain, options)
+    } catch (error) {
+      // fall through to the original resolver
+    }
+  }
+
+  return originalResolveFilename.call(this, request, parent, isMain, options)
+}
 
 const isDev = !app.isPackaged
 const PORT = 3000
 const URL = `http://localhost:${PORT}`
+
+if (!isDev) {
+  const nextDir = path.join(__dirname, '..')
+  require('dotenv').config({ path: path.join(nextDir, '.env') })
+}
+
+if (!isDev) {
+  const appRoot = path.join(__dirname, '..')
+  const unpackedPrismaRoot = path.join(appRoot, 'node_modules', '@prisma')
+  const appAsarUnpackedRoot = path.join(appRoot, 'resources', 'app.asar.unpacked', 'node_modules', '@prisma')
+
+  if (!fs.existsSync(path.join(unpackedPrismaRoot, 'client', 'runtime', 'client.js')) && fs.existsSync(path.join(appAsarUnpackedRoot, 'client', 'runtime', 'client.js'))) {
+    process.env.NODE_PATH = path.join(appAsarUnpackedRoot)
+    require('module').Module._initPaths()
+  }
+}
+console.log("DATABASE_URL =", process.env.DATABASE_URL)
 
 let mainWindow = null
 let server = null

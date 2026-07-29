@@ -1,10 +1,38 @@
 {
   "appId": "com.dprd-jaksel.kunjungan-tracker",
   "productName": "Aplikasi Koordinasi Tindak Lanjut Kedewanan",
+  "asar": true,
+  "asarUnpack": [
+    "**/node_modules/@prisma/client/**",
+    "**/node_modules/@prisma/client-runtime-utils/**",
+    "**/node_modules/prisma/**",
+    "**/node_modules/.prisma/**",
+    "**/node_modules/@prisma/adapter-mariadb/**"
+  ],
+  "extraResources": [
+    {
+      "from": "./node_modules/.prisma",
+      "to": "../.prisma/"
+    },
+    {
+      "from": "./node_modules/@prisma/client",
+      "to": "../@prisma/client"
+    },
+    {
+      "from": "./node_modules/@prisma/client-runtime-utils",
+      "to": "../@prisma/client-runtime-utils"
+    },
+    {
+      "from": "./node_modules/@prisma/adapter-mariadb",
+      "to": "../@prisma/adapter-mariadb"
+    }
+  ],
   "directories": {
     "output": "release"
   },
   "files": [
+    ".env",
+    "prisma.config.ts",
     "electron/**/*",
     ".next/**/*",
     "public/**/*",
@@ -16,7 +44,8 @@
     "!node_modules/.cache",
     "!**/*.map",
     "!**/CHANGELOG*",
-    "!**/README*"
+    "!**/README*",
+    "!.next/dev/**/*"
   ],
   "extraMetadata": {
     "main": "electron/main.js"
@@ -36,6 +65,5 @@
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
     "shortcutName": "Aplikasi Koordinasi Tindak Lanjut Kedewanan"
-  },
-  "asar": false
+  }
 }

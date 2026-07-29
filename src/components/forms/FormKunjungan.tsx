@@ -138,6 +138,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             jumlah_peserta: jumlahPeserta,
             link_gmaps: linkGmaps,
             tanggal,
+            foto: lampiran.length > 0 ? lampiran[0].base64 : initialData?.foto ?? '',
           }),
         })
         router.push('/admin/kunjungan')

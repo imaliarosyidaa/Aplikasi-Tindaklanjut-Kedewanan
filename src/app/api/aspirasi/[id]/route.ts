@@ -21,6 +21,22 @@ export async function GET(
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
+  const statusPriority = [
+    'SUDAH_DITINDAKLANJUTI',
+    'SEDANG_DITINDAKLANJUTI',
+    'BELUM_DITINDAKLANJUTI',
+    'TIDAK_BISA_DITINDAKLANJUTI',
+  ]
+
+  const trackings = a.trackings.slice().sort((left, right) => {
+    const leftOrder = statusPriority.indexOf(left.status)
+    const rightOrder = statusPriority.indexOf(right.status)
+    if (leftOrder !== rightOrder) {
+      return leftOrder - rightOrder
+    }
+    return left.created_at.getTime() - right.created_at.getTime()
+  })
+
   return NextResponse.json({
     id: a.id,
     nik: a.nik ?? '',
@@ -30,7 +46,7 @@ export async function GET(
     pelapor_nama: a.pelapor_nama,
     pelapor_email: a.pelapor_email ?? '',
     pelapor_telepon: a.pelapor_telepon,
-    lampiran: a.lampiran as string[] ?? [],
+    lampiran: (a.lampiran as string[]) ?? [],
     kategori_usulan: a.kategori_usulan,
     jenis_usulan: a.jenis_usulan,
     jenis_reses: a.jenis_reses,
@@ -42,12 +58,12 @@ export async function GET(
     kecamatan: a.kecamatan?.nama ?? '',
     kelurahan: a.kelurahan?.nama ?? '',
     lokasi: a.alamat ?? '',
-    trackings: a.trackings.map((t) => ({
+    trackings: trackings.map((t) => ({
       id: t.id,
       aspirasi_id: t.aspirasi_id,
       status: t.status,
       catatan: t.catatan ?? '',
-      lampiran: t.lampiran as string[] ?? [],
+      lampiran: (t.lampiran as string[]) ?? [],
       created_at: t.created_at.toISOString(),
     })),
   })

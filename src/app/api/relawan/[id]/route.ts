@@ -42,7 +42,7 @@ export async function PATCH(
   if (body.posisi !== undefined) updateData.posisi = body.posisi
   if (body.alamat !== undefined) updateData.alamat = body.alamat
   if (body.domisili_sekarang !== undefined) updateData.domisili_sekarang = body.domisili_sekarang
-  if (body.foto !== undefined) updateData.foto = body.foto
+  if (body.foto !== undefined) updateData.foto = body.foto || null
 
   if (body.kota_kabupaten || body.kecamatan || body.kelurahan) {
     if (body.kota_kabupaten) {

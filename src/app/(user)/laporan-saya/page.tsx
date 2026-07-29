@@ -33,14 +33,9 @@ interface KelurahanItem { id: string; nama: string }
 
 function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const rawTrackings = aspirasi.trackings ?? []
-  const trackings = Object.values(
-    rawTrackings.reduce((acc, t) => {
-      if (!acc[t.status] || new Date(t.created_at) > new Date(acc[t.status].created_at)) {
-        acc[t.status] = t
-      }
-      return acc
-    }, {} as Record<string, (typeof rawTrackings)[number]>)
-  ).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+  const trackings = [...rawTrackings].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  )
 
   const statusLabelMap: Record<string, string> = {
     BELUM_DITINDAKLANJUTI: 'Laporan Anda Diterima',
@@ -209,10 +204,6 @@ export default function LaporanSayaPage(): React.ReactNode {
     fetcher
   )
 
-  const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
-  const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
-  const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
-
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
@@ -228,11 +219,13 @@ export default function LaporanSayaPage(): React.ReactNode {
       if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
       if (qId && (a.id_laporan ?? '').toUpperCase() !== qId) return false
-      if (!q) return true
-      return (
-        a.pelapor_nama.toLowerCase().includes(q) ||
-        a.pelapor_telepon.includes(q)
-      )
+      if (q) {
+        return (
+          a.pelapor_nama.toLowerCase().includes(q) ||
+          a.pelapor_telepon.includes(q)
+        )
+      }
+      return true
     })
     setResults(filtered)
     setSearched(true)

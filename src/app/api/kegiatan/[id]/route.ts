@@ -63,6 +63,7 @@ export async function PATCH(
     where: { id },
     data: {
       nama_kegiatan: body.nama_kegiatan,
+      jenis_kegiatan: body.jenis_kegiatan,
       tempat: body.lokasi,
       catatan: body.catatan,
       rt: body.rt,
@@ -70,6 +71,7 @@ export async function PATCH(
       jumlah_peserta: body.jumlah_peserta ? Number(body.jumlah_peserta) : undefined,
       link_gmaps: body.link_gmaps,
       tanggal: body.tanggal ? new Date(body.tanggal) : undefined,
+      foto: body.foto !== undefined ? body.foto || null : undefined,
     },
     include: {
       kunjungan: {

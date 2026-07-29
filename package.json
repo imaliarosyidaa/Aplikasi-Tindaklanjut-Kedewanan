@@ -2,6 +2,7 @@
   "name": "kunjungan-tracker",
   "version": "1.0.0",
   "description": "Aplikasi Koordinasi Tindak Lanjut Kedewanan DPRD DKI Jakarta",
+  "author": "DPRD DKI Jakarta",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -11,7 +12,9 @@
     "lint": "eslint",
     "prisma:seed": "tsx prisma/seed.ts",
     "electron:dev": "concurrently -k \"next dev -p 3000\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "set CSC_IDENTITY_AUTO_DISCOVERY=false && npm run build && electron-builder --win --config electron-builder.json"
+    "clean:release": "node -e \"require('fs').rmSync('release', { recursive: true, force: true })\"",
+    "preelectron:build": "npm run clean:release",
+    "electron:build": "set CSC_IDENTITY_AUTO_DISCOVERY=false&& set CSC_LINK=&& set CSC_KEY_PASSWORD=&& npm run build && electron-builder --win --config electron-builder.json"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

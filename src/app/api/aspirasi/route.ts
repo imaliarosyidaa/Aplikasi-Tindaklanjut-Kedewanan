@@ -33,7 +33,10 @@ export async function GET(request: NextRequest) {
   const [data, total] = await Promise.all([
     prisma.aspirasis.findMany({
       where,
-      orderBy: { created_at: 'desc' },
+      orderBy: [
+        { status: 'desc' }, // SUDAH_DITINDAKLANJUTI (3) → SEDANG_DITINDAKLANJUTI (2) → BELUM_DITINDAKLANJUTI (1)
+        { created_at: 'desc' },
+      ],
       ...(hasPagination ? { skip: (page - 1) * limit, take: limit } : {}),
       include: {
         kota: true,
