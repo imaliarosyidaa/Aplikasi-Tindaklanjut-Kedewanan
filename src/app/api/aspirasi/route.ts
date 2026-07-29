@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     prisma.aspirasis.findMany({
       where,
       orderBy: [
-        { status: 'desc' }, // SUDAH_DITINDAKLANJUTI (3) → SEDANG_DITINDAKLANJUTI (2) → BELUM_DITINDAKLANJUTI (1)
+        { status: 'asc' },
         { created_at: 'desc' },
       ],
       ...(hasPagination ? { skip: (page - 1) * limit, take: limit } : {}),

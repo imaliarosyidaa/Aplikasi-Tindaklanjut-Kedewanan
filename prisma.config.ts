@@ -8,6 +8,6 @@ export default defineConfig({
     seed: 'prisma/seed.ts',
   },
   datasource: {
-    url: process.env['DIRECT_URL'] ?? 'mysql://root:@localhost:3306/kunjungan_db',
+    url: process.env['DATABASE_URL'] ?? 'mysql://root:@localhost:3306/aspirasi_dprd',
   },
 })

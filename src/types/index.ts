@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'user'
 
 export type Theme = 'light' | 'dark' | 'yellow' | 'ramadan' | 'valentine'
 
-export type AspirasiStatus = 'BELUM_DITINDAKLANJUTI' | 'SEDANG_DITINDAKLANJUTI' | 'SUDAH_DITINDAKLANJUTI' | 'TIDAK_BISA_DITINDAKLANJUTI'
+export type AspirasiStatus = 'BELUM_DITINDAKLANJUTI' | 'SEDANG_DITINDAKLANJUTI' | 'SUDAH_DITINDAKLANJUTI' | 'TIDAK_BISA_DITINDAKLANJUTI' | 'SELESAI'
 
 export type SumberAspirasi =
   | 'LEMBAR_ASPIRASI_RESES'

@@ -32,154 +32,197 @@ interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
 
 function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
-  const rawTrackings = aspirasi.trackings ?? []
-  const trackings = [...rawTrackings].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  )
+  const trackings = aspirasi.trackings ?? []
 
-  const statusLabelMap: Record<string, string> = {
-    BELUM_DITINDAKLANJUTI: 'Laporan Anda Diterima',
-    SEDANG_DITINDAKLANJUTI: 'Laporan Anda Sedang Diproses',
-    SUDAH_DITINDAKLANJUTI: 'Laporan Anda Sudah Ditindak Lanjuti',
-    TIDAK_BISA_DITINDAKLANJUTI: 'Tidak Dapat Ditindaklanjuti',
-  }
+  // Ambil data tracking spesifik untuk tiap tahapan jika ada
+  const trackBelum = trackings.find((t) => t.status === 'BELUM_DITINDAKLANJUTI')
+  const trackSedang = trackings.find((t) => t.status === 'SEDANG_DITINDAKLANJUTI')
+  const trackSudah = trackings.find((t) => t.status === 'SUDAH_DITINDAKLANJUTI' || t.status === 'TIDAK_BISA_DITINDAKLANJUTI')
+  const trackSelesai = trackings.find((t) => t.status === 'SELESAI')
 
-  const getIcon = (status: string) => {
-    switch (status) {
-      case 'BELUM_DITINDAKLANJUTI': return <MdHourglassEmpty size={20} />
-      case 'SEDANG_DITINDAKLANJUTI': return <MdSearch size={20} />
-      case 'SUDAH_DITINDAKLANJUTI': return <MdCheckCircle size={20} />
-      case 'TIDAK_BISA_DITINDAKLANJUTI': return <MdCancel size={20} />
-      default: return <MdHourglassEmpty size={20} />
-    }
-  }
+  // Penentuan tahap aktif/sudah lewat berdasarkan status utama aspirasi
+  const isSedangOrBeyond = ['SEDANG_DITINDAKLANJUTI', 'SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI', 'SELESAI'].includes(aspirasi.status)
+  const isSudahOrBeyond = ['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI', 'SELESAI'].includes(aspirasi.status)
+  const isSelesai = aspirasi.status === 'SELESAI' || aspirasi.status === 'SUDAH_DITINDAKLANJUTI'
 
   return (
     <section className="bg-white py-16">
-    <Card className="p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-[var(--color-text-secondary)]">ID Laporan</p>
-          <p className="font-mono font-bold text-[var(--color-text)]">{aspirasi.id_laporan}</p>
+      <Card className="p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-[var(--color-text-secondary)]">ID Laporan</p>
+            <p className="font-mono font-bold text-[var(--color-text)]">{aspirasi.id_laporan}</p>
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        <div className="flex items-center gap-2">
-          <MdPerson size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text)]">{aspirasi.pelapor_nama}</span>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <MdPerson size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+            <span className="text-[var(--color-text)]">{aspirasi.pelapor_nama}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MdPhone size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+            <span className="text-[var(--color-text)]">{aspirasi.pelapor_telepon}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+            <span className="text-[var(--color-text-secondary)]">Alamat:</span>
+            <span className="text-[var(--color-text)]">{aspirasi.lokasi || '-'}</span>
+            <span className="text-[var(--color-text)]">{aspirasi.kelurahan || '-'},</span>
+            <span className="text-[var(--color-text)]">{aspirasi.kecamatan || '-'},</span>
+            <span className="text-[var(--color-text)]">{aspirasi.kota || '-'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MdSource size={16} className="text-[var(--color-text-secondary)] shrink-0" />
+            <span className="text-[var(--color-text-secondary)]">Sumber:</span>
+            <span className="text-[var(--color-text)]">{aspirasi.sumber?.replace(/_/g, ' ')}</span>
+          </div>
+          <div className="flex items-start gap-2 col-span-2">
+            <MdDescription size={16} className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" />
+            <span className="text-[var(--color-text)]">{aspirasi.deskripsi}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <MdPhone size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text)]">{aspirasi.pelapor_telepon}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <MdLocationOn size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text-secondary)]">Alamat:</span>
-          <span className="text-[var(--color-text)]">{aspirasi.lokasi || '-'}</span>
-          <span className="text-[var(--color-text)]">{aspirasi.kelurahan || '-'},</span>
-          <span className="text-[var(--color-text)]">{aspirasi.kecamatan || '-'},</span>
-          <span className="text-[var(--color-text)]">{aspirasi.kota || '-'}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <MdSource size={16} className="text-[var(--color-text-secondary)] shrink-0" />
-          <span className="text-[var(--color-text-secondary)]">Sumber:</span>
-          <span className="text-[var(--color-text)]">{aspirasi.sumber.replace(/_/g, ' ')}</span>
-        </div>
-        <div className="flex items-start gap-2 col-span-2">
-          <MdDescription size={16} className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" />
-          <span className="text-[var(--color-text)]">{aspirasi.deskripsi}</span>
-        </div>
-      </div>
 
-      <div className="relative pt-2">
-        {trackings.length === 0 && (
+        {/* --- TRACKING STATUS MANUAL (4 DIV STATIS) --- */}
+        <div className="relative pt-2">
+
+          {/* DIV 1: Belum Ditindaklanjuti (Laporan Diterima) */}
           <div className="flex gap-3">
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-amber-100 text-amber-600">
                 <MdHourglassEmpty size={20} />
               </div>
+              <div className={`w-0.5 flex-1 ${isSedangOrBeyond ? 'bg-[var(--color-primary)]' : 'bg-gray-200'}`} />
             </div>
-            <div>
-              <p className="text-sm font-medium text-[var(--color-text-secondary)]">Laporan Anda Diterima</p>
+            <div className="pb-4">
+              <p className="text-sm font-medium text-amber-600">Laporan Anda Diterima</p>
+              {trackBelum?.catatan && (
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{trackBelum.catatan}"</p>
+              )}
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-                {new Date(aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
+                {new Date(trackBelum?.created_at || aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
                   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
                   hour: '2-digit', minute: '2-digit',
                 })}
               </p>
             </div>
           </div>
-        )}
-        {trackings.map((t, i) => {
-          const isLast = i === trackings.length - 1 && !['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI'].includes(t.status)
-          return (
-            <div key={t.id} className="flex gap-3">
-              <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors ${
-                  t.status === 'TIDAK_BISA_DITINDAKLANJUTI'
-                    ? 'bg-red-100 text-red-600'
-                    : 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+
+          {/* DIV 2: Sedang Ditindaklanjuti */}
+          <div className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isSedangOrBeyond
+                ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                : 'bg-gray-100 text-gray-400'
                 }`}>
-                  {getIcon(t.status)}
-                </div>
-                {!isLast && <div className="w-0.5 flex-1 bg-[var(--color-primary)]" />}
+                <MdSearch size={20} />
               </div>
-              <div className={`${isLast ? '' : 'pb-4'}`}>
-                <p className={`text-sm font-medium ${
-                  t.status === 'TIDAK_BISA_DITINDAKLANJUTI'
-                    ? 'text-red-600'
-                    : 'text-[var(--color-text)]'
-                }`}>
-                  {statusLabelMap[t.status] ?? t.status.replace(/_/g, ' ')}
-                </p>
-                {t.lampiran && t.lampiran.length > 0 && (
-                  <div className="flex flex-col gap-2 mt-2">
-                    {t.lampiran.map((url, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => {
-                            fetch(url).then(r => r.blob()).then(blob => {
-                              window.open(URL.createObjectURL(blob), '_blank')
-                            })
-                          }}
-                          className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
-                        >
-                          <MdDescription size={14} />
-                          Klik untuk Melihat Detail
-                        </button>
-                      )
-                    )}
-                  </div>
-                )}
-                {t.catatan && (
-                  <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{t.catatan}"</p>
-                )}
+              <div className={`w-0.5 flex-1 ${isSudahOrBeyond ? 'bg-[var(--color-primary)]' : 'bg-gray-200'}`} />
+            </div>
+            <div className="pb-4">
+              <p className={`text-sm font-medium ${isSedangOrBeyond ? 'text-[var(--color-text)]' : 'text-gray-400'}`}>
+                Laporan Anda Sedang Diproses
+              </p>
+              {trackSedang?.catatan && (
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{trackSedang.catatan}"</p>
+              )}
+              {trackSedang?.created_at && (
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-                  {new Date(t.created_at).toLocaleDateString('id-ID', {
+                  {new Date(trackSedang.created_at).toLocaleDateString('id-ID', {
                     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
                     hour: '2-digit', minute: '2-digit',
                   })}
                 </p>
-              </div>
+              )}
             </div>
-          )
-        })}
-        {trackings.length > 0 && ['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI'].includes(trackings[trackings.length - 1].status) && (
+          </div>
+
+          {/* DIV 3: Sudah / Tidak Bisa Ditindaklanjuti */}
           <div className="flex gap-3">
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-green-100 text-green-600">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+                ? 'bg-red-100 text-red-600'
+                : isSudahOrBeyond
+                  ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                  : 'bg-gray-100 text-gray-400'
+                }`}>
+                {aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI' ? <MdCancel size={20} /> : <MdCheckCircle size={20} />}
+              </div>
+              <div className={`w-0.5 flex-1 ${isSelesai ? 'bg-[var(--color-primary)]' : 'bg-gray-200'}`} />
+            </div>
+            <div className="pb-4">
+              <p className={`text-sm font-medium ${
+                aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+                  ? 'text-red-600'
+                : isSudahOrBeyond
+                  ? 'text-[var(--color-text)]'
+                  : 'text-gray-400'
+                }`}>
+                {aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI' ? 'Tidak Dapat Ditindaklanjuti' : 'Laporan Anda Sudah Ditindak Lanjuti'}
+              </p>
+
+              {trackSudah?.lampiran && trackSudah.lampiran.length > 0 && (
+                <div className="flex flex-col gap-2 mt-2">
+                  {trackSudah.lampiran.map((url, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        fetch(url).then(r => r.blob()).then(blob => {
+                          window.open(URL.createObjectURL(blob), '_blank')
+                        })
+                      }}
+                      className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
+                    >
+                      <MdDescription size={14} />
+                      Klik untuk Melihat Detail
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {trackSudah?.catatan && (
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{trackSudah.catatan}"</p>
+              )}
+              {trackSudah?.created_at && (
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                  {new Date(trackSudah.created_at).toLocaleDateString('id-ID', {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit',
+                  })}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* DIV 4: Selesai */}
+          <div className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isSelesai ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                }`}>
                 <MdCheckCircle size={20} />
               </div>
             </div>
             <div>
-              <p className="text-sm font-medium text-green-600">Selesai</p>
+              <p className={`text-sm font-medium ${isSelesai ? 'text-green-600' : 'text-gray-400'}`}>
+                Selesai
+              </p>
+              {trackSelesai?.catatan && (
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{trackSelesai.catatan}"</p>
+              )}
+              {trackSelesai?.created_at && (
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                  {new Date(trackSelesai.created_at).toLocaleDateString('id-ID', {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit',
+                  })}
+                </p>
+              )}
             </div>
           </div>
-        )}
-      </div>
-    </Card>
+
+        </div>
+      </Card>
     </section>
   )
 }
