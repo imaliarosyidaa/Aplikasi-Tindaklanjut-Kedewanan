@@ -46,7 +46,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const isSelesai = aspirasi.status === 'SELESAI' || aspirasi.status === 'SUDAH_DITINDAKLANJUTI'
 
   return (
-    <section className="bg-white py-16">
+    <section>
       <Card className="p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -254,6 +254,7 @@ export default function LaporanSayaPage(): React.ReactNode {
   const handleSearch = () => {
     const q = query.toLowerCase().trim()
     const qId = queryId.trim().toUpperCase()
+    if (!q) return null
     const kecamatanNama = kecamatanOptions.find(k => k.value === kecamatanId)?.label ?? ''
     const kelurahanOpts = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
     const kelurahanNama = kelurahanOpts.find(k => k.value === kelurahanId)?.label ?? ''
@@ -355,7 +356,7 @@ export default function LaporanSayaPage(): React.ReactNode {
       </div>
 
       {searched && (
-        <div className="space-y-4 px-16">
+        <div className="space-y-4 px-16 pt-8 pb-16">
           {results.length === 0 ? (
             <Card>
               <p className="text-center text-[var(--color-text-secondary)] py-8">

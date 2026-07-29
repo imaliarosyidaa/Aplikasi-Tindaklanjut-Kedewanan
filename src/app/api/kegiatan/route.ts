@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     isi: k.isi ?? '',
     hari: k.hari ?? '',
     tanggal: k.tanggal?.toISOString() ?? '',
-    foto: k.foto ?? '',
+    foto: (() => { try { const f = k.foto ?? ''; return f.startsWith('[') ? JSON.parse(f) : f } catch { return k.foto ?? '' } })(),
     nama_kegiatan: k.nama_kegiatan,
     link_gmaps: k.link_gmaps ?? '',
     lokasi: k.tempat ?? '',
@@ -74,6 +74,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   const body = await request.json()
 
+  const fotoVal = Array.isArray(body.foto) ? JSON.stringify(body.foto) : (body.foto ?? '')
+
   const created = await prisma.kegiatan.create({
     data: {
       jenis_kegiatan: body.jenis_kegiatan ?? '',
@@ -81,7 +83,7 @@ export async function POST(request: Request) {
       isi: body.isi ?? '',
       hari: body.hari ?? '',
       tanggal: body.tanggal ? new Date(body.tanggal) : null,
-      foto: body.foto ?? '',
+      foto: fotoVal,
       nama_kegiatan: body.nama_kegiatan,
       link_gmaps: body.link_gmaps ?? '',
       tempat: body.tempat ?? '',
@@ -105,7 +107,7 @@ export async function POST(request: Request) {
     isi: created.isi ?? '',
     hari: created.hari ?? '',
     tanggal: created.tanggal?.toISOString() ?? '',
-    foto: created.foto ?? '',
+    foto: (() => { try { const f = created.foto ?? ''; return f.startsWith('[') ? JSON.parse(f) : f } catch { return created.foto ?? '' } })(),
     nama_kegiatan: created.nama_kegiatan,
     link_gmaps: created.link_gmaps ?? '',
     lokasi: created.tempat ?? '',

@@ -23,6 +23,8 @@ export async function POST(request: Request) {
       },
     })
 
+    const fotoVal = Array.isArray(body.foto) ? JSON.stringify(body.foto) : (body.foto ?? '')
+
     const kegiatan = await tx.kegiatan.create({
       data: {
         jenis_kegiatan: body.jenis_kegiatan ?? '',
@@ -30,7 +32,7 @@ export async function POST(request: Request) {
         isi: body.isi ?? '',
         hari: body.hari ?? '',
         tanggal: body.tanggal ? new Date(body.tanggal) : null,
-        foto: body.foto ?? '',
+        foto: fotoVal,
         nama_kegiatan: body.nama_kegiatan,
         link_gmaps: body.link_gmaps ?? '',
         tempat: body.tempat ?? '',
@@ -57,7 +59,7 @@ export async function POST(request: Request) {
     isi: result.isi ?? '',
     hari: result.hari ?? '',
     tanggal: result.tanggal?.toISOString() ?? '',
-    foto: result.foto ?? '',
+    foto: (() => { try { const f = result.foto ?? ''; return f.startsWith('[') ? JSON.parse(f) : f } catch { return result.foto ?? '' } })(),
     nama_kegiatan: result.nama_kegiatan,
     link_gmaps: result.link_gmaps ?? '',
     lokasi: result.tempat ?? '',

@@ -77,11 +77,34 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   const [rw, setRw] = useState(initialData?.rw ?? '')
   const [jumlahPeserta, setJumlahPeserta] = useState(initialData?.jumlah_peserta ? String(initialData.jumlah_peserta) : '')
   const [catatan, setCatatan] = useState(initialData?.catatan ?? '')
-  const [lampiran, setLampiran] = useState<UploadedFile[]>(
-    initialData?.foto && initialData.foto.startsWith('data:')
-      ? [{ name: 'foto-existing', size: 0, type: 'image/png', base64: initialData.foto }]
-      : []
-  )
+  const [lampiran, setLampiran] = useState<UploadedFile[]>(() => {
+    if (!initialData?.foto) return []
+    try {
+      const parsed = typeof initialData.foto === 'string' && initialData.foto.startsWith('[')
+        ? JSON.parse(initialData.foto)
+        : [initialData.foto]
+      return parsed.filter(Boolean).map((base64: string) => ({
+        name: 'foto-existing',
+        size: 0,
+        type: 'image/png',
+        base64,
+      }))
+    } catch {
+      const f = initialData.foto
+      if (typeof f === 'string' && f.startsWith('data:')) {
+        return [{ name: 'foto-existing', size: 0, type: 'image/png', base64: f }]
+      }
+      if (Array.isArray(f)) {
+        return f.filter(Boolean).map((base64: string) => ({
+          name: 'foto-existing',
+          size: 0,
+          type: 'image/png',
+          base64,
+        }))
+      }
+      return []
+    }
+  })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -138,7 +161,14 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             jumlah_peserta: jumlahPeserta,
             link_gmaps: linkGmaps,
             tanggal,
-            foto: lampiran.length > 0 ? lampiran[0].base64 : initialData?.foto ?? '',
+            foto: lampiran.length > 0 ? lampiran.map(f => f.base64) : (() => {
+              if (!initialData?.foto) return []
+              const f = initialData.foto
+              if (typeof f === 'string' && f.startsWith('[')) return JSON.parse(f)
+              if (typeof f === 'string') return [f]
+              if (Array.isArray(f)) return f
+              return []
+            })(),
           }),
         })
         router.push('/admin/kunjungan')
@@ -162,7 +192,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             rw,
             jumlah_peserta: jumlahPeserta,
             catatan,
-            foto: lampiran.length > 0 ? lampiran[0].base64 : '',
+            foto: lampiran.length > 0 ? lampiran.map(f => f.base64) : [],
           }),
         })
 
@@ -177,7 +207,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => { setJenisKegiatan(e.target.value); if (e.target.value !== 'lainya') setJenisKegiatanLainnya('') }} error={errors.jenisKegiatan} disabled={isEdit} />
+      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => { setJenisKegiatan(e.target.value); if (e.target.value !== 'lainya') setJenisKegiatanLainnya('') }} error={errors.jenisKegiatan} />
       {jenisKegiatan === 'lainya' && (
         <Input id="jenis_kegiatan_lainnya" label="Jenis Kegiatan (Lainnya)" placeholder="Tuliskan jenis kegiatan" value={jenisKegiatanLainnya} onChange={(e) => setJenisKegiatanLainnya(e.target.value)} required />
       )}

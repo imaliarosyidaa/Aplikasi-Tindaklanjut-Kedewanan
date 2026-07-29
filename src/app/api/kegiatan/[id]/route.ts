@@ -32,7 +32,7 @@ export async function GET(
     hari: k.hari ?? '',
     tanggal: k.tanggal?.toISOString() ?? '',
     jam: k.kunjungan.jam ?? '',
-    foto: k.foto ?? '',
+    foto: (() => { try { const f = k.foto ?? ''; return f.startsWith('[') ? JSON.parse(f) : f } catch { return k.foto ?? '' } })(),
     nama_kegiatan: k.nama_kegiatan,
     link_gmaps: k.link_gmaps ?? '',
     tempat: k.tempat ?? '',
@@ -59,6 +59,10 @@ export async function PATCH(
   const { id } = await params
   const body = await request.json()
 
+  const fotoVal = body.foto !== undefined
+    ? (Array.isArray(body.foto) ? JSON.stringify(body.foto) : (body.foto || null))
+    : undefined
+
   const updated = await prisma.kegiatan.update({
     where: { id },
     data: {
@@ -71,7 +75,7 @@ export async function PATCH(
       jumlah_peserta: body.jumlah_peserta ? Number(body.jumlah_peserta) : undefined,
       link_gmaps: body.link_gmaps,
       tanggal: body.tanggal ? new Date(body.tanggal) : undefined,
-      foto: body.foto !== undefined ? body.foto || null : undefined,
+      foto: fotoVal,
     },
     include: {
       kunjungan: {

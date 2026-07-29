@@ -128,7 +128,7 @@ export interface Kegiatan {
   hari: string
   tanggal: string
   lokasi: string
-  foto: string
+  foto: string | string[]
   jenis_kegiatan: string
   nama_kegiatan: string
   link_gmaps: string

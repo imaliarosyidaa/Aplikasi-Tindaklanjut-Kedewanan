@@ -139,24 +139,41 @@ export default function DetailKegiatanPage({
               <MdPeople size={16} />
               <span>{kegiatan.jumlah_peserta} peserta</span>
             </div>
-            {kegiatan.foto && (
-              <button
-                type="button"
-                onClick={() => {
-                  const url = kegiatan.foto.startsWith('data:') ? kegiatan.foto : `/${kegiatan.foto}`
-                  fetch(url).then(r => {
-                    if (!r.ok) throw new Error('Not found');
-                    return r.blob()
-                  }).then(blob => {
-                    window.open(URL.createObjectURL(blob), '_blank')
-                  }).catch(() => {})
-                }}
-                className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
-              >
-                <MdImage size={14} />
-                {kegiatan.foto.startsWith('data:') ? 'Lihat Foto' : kegiatan.foto}
-              </button>
-            )}
+            {(() => {
+              let fotoList: string[] = []
+              const f = kegiatan.foto
+              if (f) {
+                if (typeof f === 'string') {
+                  try {
+                    fotoList = f.startsWith('[') ? JSON.parse(f) : [f]
+                  } catch {
+                    fotoList = [f]
+                  }
+                } else if (Array.isArray(f)) {
+                  fotoList = f
+                }
+              }
+              return fotoList.length > 0 ? (
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-[var(--color-text)]">Foto Dokumentasi</p>
+                  {fotoList.map((url, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        fetch(url).then(r => r.blob()).then(blob => {
+                          window.open(URL.createObjectURL(blob), '_blank')
+                        })
+                      }}
+                      className="block text-xs font-medium text-blue-600 hover:underline cursor-pointer"
+                    >
+                      <MdImage size={14} className="inline mr-1" />
+                      Lihat Foto {fotoList.length > 1 ? idx + 1 : ''}
+                    </button>
+                  ))}
+                </div>
+              ) : null
+            })()}
             <div className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdNotes size={16} className="mt-0.5" />
               <span>{kegiatan.catatan}</span>

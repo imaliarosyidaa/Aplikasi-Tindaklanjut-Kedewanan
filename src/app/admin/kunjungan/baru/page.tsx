@@ -18,12 +18,12 @@ interface KelurahanItem { id: string; nama: string }
 interface UploadedFile { name: string; size: number; type: string; base64: string }
 
 const activities = [
-  { id: 'RESES', title: 'Reses', desc: 'Serap aspirasi masyarakat', icon: Home },
-  { id: 'SOSPERDA', title: 'Sosperda', desc: 'Fungsi pengawasan produk hukum daerah DKI Jakarta', icon: Handshake },
-  { id: 'PELATIHAN_MASYARAKAT', title: 'Pelatihan Masyarakat', desc: 'Pemberdayaan dan peningkatan keterampilan warga', icon: Megaphone },
-  { id: 'RAPAT_KERJA', title: 'Rapat Kerja', desc: 'Koordinasi program kerja bersama mitra eksekutif', icon: ClipboardList },
-  { id: 'RAPAT_KOMISI', title: 'Rapat Komisi', desc: 'Pembahasan kebijakan dan pengawasan bidang spesifik', icon: ClipboardList },
-  { id: 'LAINYA', title: 'Lainnya', desc: 'Agenda kedewanan di luar kategori utama', icon: ClipboardList },
+  { id: 'reses', title: 'Reses', desc: 'Serap aspirasi masyarakat', icon: Home },
+  { id: 'sosperda', title: 'Sosperda', desc: 'Fungsi pengawasan produk hukum daerah DKI Jakarta', icon: Handshake },
+  { id: 'pelatihan_masyarakat', title: 'Pelatihan Masyarakat', desc: 'Pemberdayaan dan peningkatan keterampilan warga', icon: Megaphone },
+  { id: 'rapat_kerja', title: 'Rapat Kerja', desc: 'Koordinasi program kerja bersama mitra eksekutif', icon: ClipboardList },
+  { id: 'rapat_komisi', title: 'Rapat Komisi', desc: 'Pembahasan kebijakan dan pengawasan bidang spesifik', icon: ClipboardList },
+  { id: 'lainya', title: 'Lainnya', desc: 'Agenda kedewanan di luar kategori utama', icon: ClipboardList },
 ]
 
 const stepLabels = ['Jenis Kegiatan', 'Lokasi', 'Detail', 'Upload']
@@ -83,7 +83,7 @@ export default function KegiatanBaruPage() {
         catatan,
         isi: namaKegiatan,
         link_gmaps: linkGmaps,
-        foto: fotoFiles[0]?.base64 ?? '',
+        foto: fotoFiles.map(f => f.base64),
         jalan,
         rt,
         rw,
