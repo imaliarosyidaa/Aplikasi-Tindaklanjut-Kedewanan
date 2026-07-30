@@ -7,7 +7,6 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/routing'
 import { MdArrowBack, MdDescription, MdEdit } from 'react-icons/md'
-import { Select } from '@/components/ui/select'
 import { Aspirasi } from '@/types'
 import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
@@ -20,7 +19,7 @@ export default function AspirasiDetailPage({
   params,
 }: AspirasiDetailProps): React.ReactNode {
   const { id } = use(params)
-  const { data: aspirasi } = useAspirasi(id)
+  const { data: aspirasi, mutate } = useAspirasi(id)
 
   const statusLabel: Record<string, string> = {
     BELUM_DITINDAKLANJUTI: 'Belum Ditindaklanjuti',
@@ -37,22 +36,32 @@ export default function AspirasiDetailPage({
   ]
 
   const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false)
+  console.log(aspirasi)
 
-  // Extract tracking & tentukan status paling akhir
   const rawTrackings = aspirasi?.trackings ?? []
   const latestTracking = rawTrackings.length > 0 ? rawTrackings[rawTrackings.length - 1] : null
-  const currentStatus = latestTracking?.status || aspirasi?.status || ''
-  const latestNote = latestTracking?.catatan || ''
+  console.log(latestTracking)
+  const latestCatatan = latestTracking?.catatan ?? 'Belum ada catatan'
 
+
+  const currentStatus = latestTracking?.status || aspirasi?.status || ''
   // State local untuk menyimpan status yang terpilih
   const [selectedStatus, setSelectedStatus] = useState<string>('')
+
+  // Cari tracking yang sesuai dengan selectedStatus (cari dari paling baru)
+  const activeTracking = selectedStatus
+    ? [...rawTrackings].reverse().find(t => t.status === selectedStatus)
+    : latestTracking
+  const activeNote = activeTracking?.catatan || ''
+  const activeLampiran: string[] = Array.isArray(activeTracking?.lampiran) ? activeTracking.lampiran : []
 
   // SINKRONISASI STATE: Isi state lokal dengan status terakhir dari data API
   useEffect(() => {
     if (currentStatus) {
       setSelectedStatus(currentStatus)
     }
-  }, [currentStatus])
+  }, [currentStatus, activeNote])
 
   if (!aspirasi) {
     return (
@@ -131,7 +140,7 @@ export default function AspirasiDetailPage({
 
           <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)]">
             <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
-              Lokasi Kejadian
+              Alamat Usulan
             </h3>
             <div className="space-y-3.5 text-sm">
               <div className="flex justify-between items-center gap-2">
@@ -164,7 +173,7 @@ export default function AspirasiDetailPage({
             </h3>
             <p className="text-[var(--color-text)] text-sm">{aspirasi.deskripsi}</p>
 
-            <p className="text-sm font-semibold text-[var(--color-text)] mb-4 pb-3">
+            <p className="text-sm font-semibold text-[var(--color-text)]">
               Lampiran
             </p>
             <div className='grid grid-cols-4 gap-2'>
@@ -273,6 +282,32 @@ export default function AspirasiDetailPage({
                           </span>
                         )}
                       </div>
+                      {t.catatan && (
+                        <p className="text-sm text-[var(--color-text)] whitespace-pre-wrap mt-1">
+                          "{t.catatan}"
+                        </p>
+                      )}
+                      {Array.isArray(t.lampiran) && t.lampiran.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {t.lampiran.map((url: string, idx: number) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => {
+                                if (typeof url === 'string' && url.startsWith('data:')) {
+                                  fetch(url).then(r => r.blob()).then(blob => window.open(URL.createObjectURL(blob), '_blank'))
+                                } else if (typeof url === 'string') {
+                                  window.open(url, '_blank')
+                                }
+                              }}
+                              className="inline-flex items-center gap-2 py-1.5 px-3 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:hover:bg-blue-900/60 rounded-lg transition-colors cursor-pointer border border-blue-200 dark:border-blue-800"
+                            >
+                              <MdDescription size={16} />
+                              Lihat Lampiran {t.lampiran.length > 1 ? `#${idx + 1}` : ''}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -288,29 +323,61 @@ export default function AspirasiDetailPage({
               Tindak Lanjut
             </h3>
 
-            {/* SELECT DENGAN STATUS TERAKHIR */}
-            <Select
-              id="status-tindak-lanjut"
-              label="Status Tindak Lanjut"
-              options={statusOptions}
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-            />
-            <p className="text-sm font-semibold text-[var(--color-text)] mb-4 pb-3">
+            {/* BADGE-STYLED STATUS SELECTOR */}
+            <div className="space-y-1">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] flex items-center gap-2"
+                >
+                  <Badge status={selectedStatus as any}>{statusLabel[selectedStatus] || selectedStatus}</Badge>
+                  <span className="ml-auto text-[var(--color-text-secondary)]">▾</span>
+                </button>
+                {showStatusDropdown && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setShowStatusDropdown(false)} />
+                    <div className="absolute z-20 mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] shadow-lg p-1 space-y-1">
+                      {statusOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => { setSelectedStatus(opt.value); setShowStatusDropdown(false) }}
+                          className="w-full text-left px-1 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                          <Badge status={opt.value as any}>{opt.label}</Badge>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+            <p className="text-sm font-semibold text-[var(--color-text)]">
               Catatan Tindak Lanjut
             </p>
-            <div className="space-y-3.5 text-sm">
-              <span className="text-[var(--color-text)] font-medium">
-                {latestNote || '-'}
-              </span>
-            </div>
-            <p className="text-sm font-semibold text-[var(--color-text)] mb-4 pb-3">
+            <p className="text-[var(--color-text)] text-sm">{latestCatatan}</p>
+            <p className="text-sm font-semibold text-[var(--color-text)]">
               Bukti Tindak Lanjut
             </p>
-            <div className="space-y-3.5 text-sm">
-              <span className="text-[var(--color-text)] font-medium">
-                {latestNote || '-'}
-              </span>
+            <div className="flex flex-wrap gap-2">
+              {activeLampiran.length > 0 ? activeLampiran.map((url, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    if (typeof url === 'string' && url.startsWith('data:')) {
+                      fetch(url).then(r => r.blob()).then(blob => window.open(URL.createObjectURL(blob), '_blank'))
+                    } else if (typeof url === 'string') {
+                      window.open(url, '_blank')
+                    }
+                  }}
+                  className="inline-flex items-center gap-2 py-1.5 px-3 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:hover:bg-blue-900/60 rounded-lg transition-colors cursor-pointer border border-blue-200 dark:border-blue-800"
+                >
+                  <MdDescription size={16} />
+                  Lihat Bukti {activeLampiran.length > 1 ? `#${idx + 1}` : ''}
+                </button>
+              )) : <span className="text-sm text-[var(--color-text-secondary)]">-</span>}
             </div>
             <Button onClick={() => setSelectedAspirasi(aspirasi)} className='w-full'><MdEdit size={18} className="mr-1" />Update Status</Button>
           </Card>

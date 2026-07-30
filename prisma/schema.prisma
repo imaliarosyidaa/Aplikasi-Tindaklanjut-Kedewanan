@@ -25,15 +25,6 @@ enum AspirasiStatus {
   SELESAI
 }
 
-enum SumberAspirasi {
-  LEMBAR_ASPIRASI_RESES
-  LEMBAR_ASPIRASI_SOSPERDA
-  ASPIRASI_PROPOSAL_LANGSUNG
-  KOORDINASI_DINAS_TERKAIT
-  USULAN_MUSRENBANG_DEWAN
-  CALL_CENTER
-}
-
 model User {
   // id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id String @id @default(uuid())
@@ -115,7 +106,7 @@ model Aspirasis {
   id String @id @default(uuid())
   id_laporan           String?         @default("")
   nik                  String?          @default("")
-  sumber               SumberAspirasi
+  sumber               String?
   deskripsi            String
   status               AspirasiStatus
   pelapor_nama         String

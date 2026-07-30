@@ -46,11 +46,11 @@ export function useAspirasiList(params?: AspirasiListParams) {
 }
 
 export function useAspirasi(id: string) {
-  const { data, error, isLoading } = useSWR<Aspirasi>(
+  const { data, error, isLoading, mutate } = useSWR<Aspirasi>(
     id ? `/api/aspirasi/${id}` : null,
     fetcher
   )
-  return { data, error, isLoading }
+  return { data, error, isLoading, mutate }
 }
 
 interface UpdateStatusPayload {

@@ -19,7 +19,7 @@ import {
 } from 'react-icons/md'
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
-import { Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
+import { ClipboardList, Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
 import { MasterKecamatan, MasterKelurahan, MasterKota, UploadedFile } from '../../../types/index'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -31,6 +31,7 @@ const SUMBER_ASPIRASI: { id: string; title: string; desc?: string; icon?: Lucide
   { id: 'KOORDINASI_DINAS_TERKAIT', title: 'Koordinasi Dinas Terkait', icon: PhoneCall },
   { id: 'USULAN_MUSRENBANG_DEWAN', title: 'Usulan Musrenbang Dewan', icon: TextCursor },
   { id: 'CALL_CENTER', title: 'Call Center', icon: PhoneCall },
+  { id: 'LAINYA', title: 'Lainnya', desc: 'Jenis kegiatan di kategori utama', icon: ClipboardList },
 ]
 
 function TicketLaporan({
@@ -242,6 +243,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [alamat, setAlamat] = useState('')
   const [telepon, setTelepon] = useState('')
   const [sumber, setSumber] = useState('')
+  const [sumberLainya, setSumberLainya] = useState('')
   const [pengaduan, setPengaduan] = useState('')
   const [lampiran, setLampiran] = useState<UploadedFile[]>([])
   const [submitted, setSubmitted] = useState(false)
@@ -270,7 +272,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
     fetcher
   )
-
+  const [email, setEmail] = useState('')
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
@@ -323,7 +325,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         body: JSON.stringify({
           id_laporan: idLaporan,
           nik,
-          sumber,
+          sumber: sumber === 'LAINYA' ? sumberLainya : sumber,
           deskripsi: pengaduan,
           pelapor_nama: nama,
           pelapor_email: '',
@@ -331,6 +333,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           kota,
           kecamatan,
           kelurahan,
+          email,
           lokasi: alamat,
           lampiran: lampiran.map(f => ({ name: f.name, size: f.size, type: f.type, base64: f.base64 })),
         }),
@@ -429,6 +432,11 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 </button>
               )
             })}
+            {sumber === 'LAINYA' && (
+              <div className="mt-4">
+                <Input id="jenis-lainnya" label="Jenis Kegiatan Lainnya" value={sumberLainya} onChange={(e) => setSumberLainya(e.target.value)} placeholder="Masukkan sumber kegiatan" />
+              </div>
+            )}
           </div>
         </Card>
 
@@ -466,6 +474,16 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               onChange={(e) => setTelepon(e.target.value)}
               required
               placeholder="08xxxxxxxxxx"
+              className="md:col-span-2"
+            />
+            <Input
+              id="email"
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="***@gmail.com"
               className="md:col-span-2"
             />
           </div>
