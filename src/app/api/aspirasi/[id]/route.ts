@@ -39,6 +39,7 @@ export async function GET(
 
   return NextResponse.json({
     id: a.id,
+    id_laporan: a.id_laporan ?? '',
     nik: a.nik ?? '',
     sumber: a.sumber,
     deskripsi: a.deskripsi,
@@ -46,7 +47,7 @@ export async function GET(
     pelapor_nama: a.pelapor_nama,
     pelapor_email: a.pelapor_email ?? '',
     pelapor_telepon: a.pelapor_telepon,
-    lampiran: (a.lampiran as string[]) ?? [],
+    lampiran: (Array.isArray(a.lampiran) ? a.lampiran.map((f: unknown) => typeof f === 'string' ? f : (f as Record<string, unknown>).base64 ?? '') : []) as string[],
     kategori_usulan: a.kategori_usulan,
     jenis_usulan: a.jenis_usulan,
     jenis_reses: a.jenis_reses,
@@ -63,7 +64,7 @@ export async function GET(
       aspirasi_id: t.aspirasi_id,
       status: t.status,
       catatan: t.catatan ?? '',
-      lampiran: (t.lampiran as string[]) ?? [],
+      lampiran: (Array.isArray(t.lampiran) ? t.lampiran.map((f: unknown) => typeof f === 'string' ? f : (f as Record<string, unknown>).base64 ?? '') : []) as string[],
       created_at: t.created_at.toISOString(),
     })),
   })
@@ -77,6 +78,7 @@ export async function PATCH(
   const body = await request.json()
 
   if (body.status) {
+    // Update status + create tracking record
     await prisma.aspirasis.update({
       where: { id },
       data: { status: body.status },
@@ -90,6 +92,26 @@ export async function PATCH(
         lampiran: body.lampiran ?? [],
       },
     })
+  } else {
+    // Edit data fields
+    const updateData: Record<string, unknown> = {}
+    if (body.pelapor_nama !== undefined) updateData.pelapor_nama = body.pelapor_nama
+    if (body.pelapor_telepon !== undefined) updateData.pelapor_telepon = body.pelapor_telepon
+    if (body.pelapor_email !== undefined) updateData.pelapor_email = body.pelapor_email
+    if (body.deskripsi !== undefined) updateData.deskripsi = body.deskripsi
+    if (body.kategori_usulan !== undefined) updateData.kategori_usulan = body.kategori_usulan
+    if (body.jenis_usulan !== undefined) updateData.jenis_usulan = body.jenis_usulan
+    if (body.jenis_reses !== undefined) updateData.jenis_reses = body.jenis_reses
+    if (body.tindak_lanjut !== undefined) updateData.tindak_lanjut = body.tindak_lanjut
+    if (body.sumber !== undefined) updateData.sumber = body.sumber
+    if (body.alamat !== undefined) updateData.alamat = body.alamat
+
+    if (Object.keys(updateData).length > 0) {
+      await prisma.aspirasis.update({
+        where: { id },
+        data: updateData,
+      })
+    }
   }
 
   const updated = await prisma.aspirasis.findUnique({
@@ -110,7 +132,7 @@ export async function PATCH(
     pelapor_nama: updated.pelapor_nama,
     pelapor_email: updated.pelapor_email ?? '',
     pelapor_telepon: updated.pelapor_telepon,
-    lampiran: updated.lampiran as string[] ?? [],
+    lampiran: (Array.isArray(updated.lampiran) ? updated.lampiran.map((f: unknown) => typeof f === 'string' ? f : (f as Record<string, unknown>).base64 ?? '') : []) as string[],
     kategori_usulan: updated.kategori_usulan,
     jenis_usulan: updated.jenis_usulan,
     jenis_reses: updated.jenis_reses,

@@ -1,13 +1,17 @@
 'use client'
-import React from 'react'
 
-import { use } from 'react'
+import React, { use, useState, useEffect } from 'react'
 import { useAspirasi } from '@/hooks/useAspirasi'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/routing'
-import { MdArrowBack, MdPerson, MdDescription } from 'react-icons/md'
+import { MdArrowBack, MdDescription, MdEdit } from 'react-icons/md'
+import { Select } from '@/components/ui/select'
+import { Aspirasi } from '@/types'
+import { Modal } from '@/components/ui/modal'
+import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
+
 interface AspirasiDetailProps {
   params: Promise<{ id: string }>
 }
@@ -16,34 +20,40 @@ export default function AspirasiDetailPage({
   params,
 }: AspirasiDetailProps): React.ReactNode {
   const { id } = use(params)
-  const sumberLabel: Record<string, string> = {
-    LEMBAR_ASPIRASI_RESES: 'Lembar Aspirasi Reses',
-    LEMBAR_ASPIRASI_SOSPERDA: 'Lembar Aspirasi Sosperda',
-    ASPIRASI_PROPOSAL_LANGSUNG: 'Aspirasi Proposal Langsung',
-    KOORDINASI_DINAS_TERKAIT: 'Koordinasi Dinas Terkait',
-    USULAN_MUSRENBANG_DEWAN: 'Usulan Musrenbang Dewan',
-    CALL_CENTER: 'Call Center',
-  }
+  const { data: aspirasi } = useAspirasi(id)
+
   const statusLabel: Record<string, string> = {
     BELUM_DITINDAKLANJUTI: 'Belum Ditindaklanjuti',
     SEDANG_DITINDAKLANJUTI: 'Sedang Ditindaklanjuti',
     SUDAH_DITINDAKLANJUTI: 'Sudah Ditindaklanjuti',
     TIDAK_BISA_DITINDAKLANJUTI: 'Tidak Bisa Ditindaklanjuti',
   }
-  const { data: aspirasi } = useAspirasi(id)
-  const formatTanggalJam = (dateString: string) => {
-  const date = new Date(dateString)
 
-  return `${date.toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })}, Jam ${date.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })} WIB`
-  }
+  const statusOptions = [
+    { value: 'BELUM_DITINDAKLANJUTI', label: 'Belum Ditindaklanjuti' },
+    { value: 'SEDANG_DITINDAKLANJUTI', label: 'Sedang Ditindaklanjuti' },
+    { value: 'SUDAH_DITINDAKLANJUTI', label: 'Sudah Ditindaklanjuti' },
+    { value: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Bisa Ditindaklanjuti' },
+  ]
+
+  const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
+
+  // Extract tracking & tentukan status paling akhir
+  const rawTrackings = aspirasi?.trackings ?? []
+  const latestTracking = rawTrackings.length > 0 ? rawTrackings[rawTrackings.length - 1] : null
+  const currentStatus = latestTracking?.status || aspirasi?.status || ''
+  const latestNote = latestTracking?.catatan || ''
+
+  // State local untuk menyimpan status yang terpilih
+  const [selectedStatus, setSelectedStatus] = useState<string>('')
+
+  // SINKRONISASI STATE: Isi state lokal dengan status terakhir dari data API
+  useEffect(() => {
+    if (currentStatus) {
+      setSelectedStatus(currentStatus)
+    }
+  }, [currentStatus])
+
   if (!aspirasi) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -54,117 +64,291 @@ export default function AspirasiDetailPage({
     )
   }
 
-  const detailFields = [
-    { label: 'Deskripsi', value: aspirasi.deskripsi },
-    { label: 'Kategori Usulan', value: aspirasi.kategori_usulan },
-    { label: 'Jenis Usulan', value: aspirasi.jenis_usulan },
-    { label: 'Jenis Reses', value: aspirasi.jenis_reses },
-    { label: 'Tindak Lanjut', value: aspirasi.tindak_lanjut },
-    { label: 'Sumber Aspirasi', value: sumberLabel[aspirasi.sumber] || aspirasi.sumber },
-    { label: 'Tanggal Dibuat', value: formatTanggalJam(aspirasi.tanggal_dibuat) },
-  ]
-
-  const rawTrackings = aspirasi.trackings ?? []
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return ''
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-blue-500">
       <Link href="/admin/aspirasi">
         <Button variant="ghost" size="sm">
           <MdArrowBack size={18} className="mr-1" />
-          Kembali
+          Kembali Ke Daftar Laporan
         </Button>
       </Link>
 
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Detail Aspirasi
-        </h1>
-      </div>
+      <Card className="flex justify-between p-4">
+        <div>
+          <h1 className="text-2xl mb-2 font-bold text-[var(--color-text)]">
+            Laporan #{aspirasi.id_laporan}
+          </h1>
+          <p className="text-[var(--color-text)] text-sm">
+            Dibuat pada {formatDate(aspirasi.created_at)}
+          </p>
+        </div>
+        <div>
+          <Badge status={aspirasi.status as any}>
+            {statusLabel[aspirasi.status] || aspirasi.status}
+          </Badge>
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <Card className="flex flex-col items-center text-center space-y-4">
-            <div className="h-24 w-24 rounded-full bg-[var(--color-bg-secondary)] flex items-center justify-center">
-              <MdPerson size={40} className="text-[var(--color-text-secondary)]" />
-            </div>
-            <div className="space-y-2 w-full">
-              <div>
-                <p className="text-sm text-[var(--color-text-secondary)]">
-                  Pelapor
-                </p>
-                <p className="font-medium text-[var(--color-text)]">
-                  {aspirasi.pelapor_nama}
-                </p>
+        {/* Kolom 1: Informasi Pelapor & Lokasi */}
+        <div className="lg:col-span-1 flex flex-col gap-5">
+          <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)]">
+            <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
+              Informasi Pelapor
+            </h3>
+            <div className="space-y-3.5 text-sm">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Nama</span>
+                <span className="text-[var(--color-text)] font-semibold">
+                  {aspirasi.pelapor_nama || '-'}
+                </span>
               </div>
-              <div>
-                <p className="text-sm text-[var(--color-text-secondary)]">
-                  Email
-                </p>
-                <p className="font-medium text-[var(--color-text)]">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Email</span>
+                <span className="text-[var(--color-text)] font-medium truncate max-w-[180px]">
                   {aspirasi.pelapor_email || '-'}
-                </p>
+                </span>
               </div>
-              <div>
-                <p className="text-sm text-[var(--color-text-secondary)]">
-                  Telepon
-                </p>
-                <p className="font-medium text-[var(--color-text)]">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Telepon</span>
+                <span className="text-[var(--color-text)] font-medium">
                   {aspirasi.pelapor_telepon || '-'}
-                </p>
+                </span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)]">
+            <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
+              Lokasi Kejadian
+            </h3>
+            <div className="space-y-3.5 text-sm">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Kota / Kab</span>
+                <span className="text-[var(--color-text)] font-medium">
+                  {aspirasi.kota || '-'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Kecamatan</span>
+                <span className="text-[var(--color-text)] font-medium">
+                  {aspirasi.kecamatan || '-'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Kelurahan</span>
+                <span className="text-[var(--color-text)] font-medium">
+                  {aspirasi.kelurahan || '-'}
+                </span>
               </div>
             </div>
           </Card>
         </div>
 
-        <div className="lg:col-span-2">
-          <Card className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[var(--color-text-secondary)]">
-                  Status
-                </p>
-                <Badge status={aspirasi.status}>{statusLabel[aspirasi.status] || aspirasi.status}</Badge>
+        {/* Kolom 2: Isi & Timeline */}
+        <div className="lg:col-span-1 flex flex-col gap-5">
+          <Card className="p-5 space-y-4">
+            <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">
+              Isi Aspirasi
+            </h3>
+            <p className="text-[var(--color-text)] text-sm">{aspirasi.deskripsi}</p>
+
+            <p className="text-sm font-semibold text-[var(--color-text)] mb-4 pb-3">
+              Lampiran
+            </p>
+            <div className='grid grid-cols-4 gap-2'>
+
+              {Array.isArray(aspirasi.lampiran) ? (() => {
+
+                const total = aspirasi.lampiran.length
+
+                const maxVisible = 4
+
+                const visible = aspirasi.lampiran.slice(0, maxVisible)
+
+                const remaining = total - maxVisible
+
+                return visible.map((url: unknown, i: number) => {
+
+                  const isLast = i === maxVisible - 1 && remaining > 0
+
+                  const f = typeof url === 'string' ? url : ''
+
+                  const isPdf = f.startsWith('data:application/pdf') || f.toLowerCase().includes('.pdf')
+
+                  return (
+
+                    <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-[var(--color-border)] bg-gray-50 group cursor-pointer"
+
+                      onClick={() => {
+
+                        if (isLast) return
+
+                        if (f.startsWith('data:')) {
+
+                          fetch(f).then(r => r.blob()).then(blob => window.open(URL.createObjectURL(blob), '_blank'))
+
+                        } else { window.open(f, '_blank') }
+
+                      }}
+
+                    >
+
+                      {isPdf ? (
+
+                        <div className="flex items-center justify-center h-full text-xs text-blue-600 font-medium p-1 text-center">
+
+                          PDF
+
+                        </div>
+
+                      ) : f.startsWith('data:') ? (
+
+                        <img src={f} alt="Lampiran" className="w-full h-full object-cover" />
+
+                      ) : (
+
+                        <div className="flex items-center justify-center h-full text-xs text-blue-600 underline truncate p-1">
+
+                          File {i + 1}
+
+                        </div>
+
+                      )}
+
+                      {isLast && (
+
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+
+                          <span className="text-white text-lg font-bold">+{remaining} lainnya</span>
+
+                        </div>
+
+                      )}
+
+                    </div>
+
+                  )
+
+                })
+
+              })() : (typeof aspirasi.lampiran === 'string' ? aspirasi.lampiran : '-')}
+
+            </div>
+          </Card>
+
+          <Card className="p-5 shadow-sm rounded-xl border">
+            <h3 className="text-base font-semibold text-[var(--color-text)] pb-4 mb-2 border-b border-[var(--color-border)]">
+              Timeline / Riwayat
+            </h3>
+
+            {rawTrackings.length === 0 ? (
+              <p className="text-sm text-[var(--color-text-secondary)] italic py-2">
+                Belum ada riwayat tindak lanjut.
+              </p>
+            ) : (
+              <div className="relative pl-6 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-200 dark:before:bg-gray-700">
+                {rawTrackings.map((t, index) => (
+                  <div key={t.id || index} className="relative group">
+                    <span className="absolute -left-[30px] top-1.5 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white dark:ring-gray-900 group-first:bg-blue-600" />
+                    <div className="flex flex-col gap-1.5">
+                      <div className="grid grid-cols-1 gap-1">
+                        <span className="text-sm font-semibold text-[var(--color-text)]">
+                          {statusLabel[t.status] || t.status?.replace(/_/g, ' ')}
+                        </span>
+                        {t.created_at && (
+                          <span className="text-xs text-[var(--color-text-secondary)]">
+                            {formatDate(t.created_at)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* Kolom 3: Update Tindak Lanjut */}
+        <div className="lg:col-span-1 flex flex-col gap-5">
+          <Card className="p-5 space-y-4">
+            <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">
+              Tindak Lanjut
+            </h3>
+
+            {/* SELECT DENGAN STATUS TERAKHIR */}
+            <Select
+              id="status-tindak-lanjut"
+              label="Status Tindak Lanjut"
+              options={statusOptions}
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            />
+            <p className="text-sm font-semibold text-[var(--color-text)] mb-4 pb-3">
+              Catatan Tindak Lanjut
+            </p>
+            <div className="space-y-3.5 text-sm">
+              <span className="text-[var(--color-text)] font-medium">
+                {latestNote || '-'}
+              </span>
+            </div>
+            <p className="text-sm font-semibold text-[var(--color-text)] mb-4 pb-3">
+              Bukti Tindak Lanjut
+            </p>
+            <div className="space-y-3.5 text-sm">
+              <span className="text-[var(--color-text)] font-medium">
+                {latestNote || '-'}
+              </span>
+            </div>
+            <Button onClick={() => setSelectedAspirasi(aspirasi)} className='w-full'><MdEdit size={18} className="mr-1" />Update Status</Button>
+          </Card>
+          <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)]">
+            <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
+              Informasi Tambahan
+            </h3>
+            <div className="space-y-3.5 text-sm">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Kategori Usulan</span>
+                <span className="text-[var(--color-text)] font-medium">
+                  {aspirasi.kategori_usulan || '-'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Jenis Usulan</span>
+                <span className="text-[var(--color-text)] font-medium">
+                  {aspirasi.jenis_usulan || '-'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-[var(--color-text-secondary)]">Jenis Reses</span>
+                <span className="text-[var(--color-text)] font-medium">
+                  {aspirasi.jenis_reses || '-'}
+                </span>
               </div>
             </div>
-
-              {detailFields.map((field) => (
-                <div key={field.label}>
-                  <p className="text-sm text-[var(--color-text-secondary)]">
-                    {field.label}
-                  </p>
-                  <p className="text-[var(--color-text)] whitespace-pre-wrap">
-                    {field.value}
-                  </p>
-                </div>
-              ))}
-            </Card>
-
-            {rawTrackings.some(t => t.lampiran && t.lampiran.length > 0) && (
-              <Card className="space-y-4 p-5">
-                <h2 className="text-lg font-semibold text-[var(--color-text)]">Bukti Tindak Lanjut</h2>
-                <div className="flex flex-col gap-3">
-                  {rawTrackings.filter(t => t.lampiran && t.lampiran.length > 0).map((t) =>
-                    t.lampiran.map((url: string, idx: number) => (
-                      <button
-                        key={`${t.id}-${idx}`}
-                        type="button"
-                        onClick={() => {
-                          fetch(url).then(r => r.blob()).then(blob => {
-                            window.open(URL.createObjectURL(blob), '_blank')
-                          })
-                        }}
-                        className="inline-flex items-center gap-2 py-2 px-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <MdDescription size={18} />
-                        Klik untuk Melihat Detail
-                      </button>
-                    ))
-                  )}
-                </div>
-              </Card>
-            )}
-          </div>
+          </Card>
         </div>
-      </div>
-    )
-  }
+      </div >
+      <Modal isOpen={!!selectedAspirasi} onClose={() => setSelectedAspirasi(null)} title="Update Status">
+        {selectedAspirasi && (
+          <FormUpdateAspirasi
+            aspirasi={selectedAspirasi}
+            onSuccess={() => { setSelectedAspirasi(null); mutate() }}
+          />
+        )}
+      </Modal>
+    </div >
+  )
+}

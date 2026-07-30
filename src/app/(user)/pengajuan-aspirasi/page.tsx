@@ -20,30 +20,9 @@ import {
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
 import { Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
+import { MasterKecamatan, MasterKelurahan, MasterKota, UploadedFile } from '../../../types/index'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
-
-interface KotaItem {
-  id: string
-  nama: string
-}
-
-interface KecamatanItem {
-  id: string
-  nama: string
-}
-
-interface KelurahanItem {
-  id: string
-  nama: string
-}
-
-interface UploadedFile {
-  name: string
-  size: number
-  type: string
-  base64: string
-}
 
 const SUMBER_ASPIRASI: { id: string; title: string; desc?: string; icon?: LucideIcon }[] = [
   { id: 'LEMBAR_ASPIRASI_RESES', title: 'Lembar Aspirasi Reses', icon: Home },
@@ -282,12 +261,12 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     tanggal: string
   } | null>(null)
 
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+  const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
     kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
     fetcher
   )
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+  const { data: kelurahanList = [] } = useSWR<MasterKelurahan[]>(
     kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
     fetcher
   )

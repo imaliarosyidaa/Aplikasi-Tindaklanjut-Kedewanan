@@ -60,6 +60,11 @@ export interface TrackingAspirasi {
   created_at: string
 }
 
+export interface MasterKota {
+  id: string
+  nama: string
+}
+
 export interface MasterKecamatan {
   id: string
   nama: string
@@ -69,6 +74,13 @@ export interface MasterKelurahan {
   id: string
   kecamatan_id: string
   nama: string
+}
+
+export interface UploadedFile {
+  name: string
+  size: number
+  type: string
+  base64: string
 }
 
 export interface KecamatanStat {

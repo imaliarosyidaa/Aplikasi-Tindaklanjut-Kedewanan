@@ -1,0 +1,218 @@
+// generator client {
+//   provider = "prisma-client"
+//   output   = "../src/generated/prisma"
+//   binaryTargets = ["native","windows"]
+// }
+
+// // datasource db {
+// //   provider = "postgresql"
+// // }
+
+// datasource db {
+//   provider = "mysql"
+// }
+
+// enum UserRole {
+//   admin
+//   user
+// }
+
+// enum AspirasiStatus {
+//   BELUM_DITINDAKLANJUTI
+//   SEDANG_DITINDAKLANJUTI
+//   SUDAH_DITINDAKLANJUTI
+//   TIDAK_BISA_DITINDAKLANJUTI
+//   SELESAI
+// }
+
+// enum SumberAspirasi {
+//   LEMBAR_ASPIRASI_RESES
+//   LEMBAR_ASPIRASI_SOSPERDA
+//   ASPIRASI_PROPOSAL_LANGSUNG
+//   KOORDINASI_DINAS_TERKAIT
+//   USULAN_MUSRENBANG_DEWAN
+//   CALL_CENTER
+// }
+
+// model User {
+//   // id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   username  String     @unique
+//   email     String?    @unique
+//   password  String
+//   name      String
+//   role      UserRole
+//   aspirasis Aspirasis[]
+//   createdAt DateTime   @default(now()) @map("created_at")
+//   updatedAt DateTime   @updatedAt @map("updated_at")
+
+//   @@map("users")
+// }
+
+// model Kota {
+//   //id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   nama       String      @unique
+//   kecamatans Kecamatan[]
+//   kelurahans Kelurahan[]
+//   kunjungans Kunjungan[]
+//   relawans Relawan[]
+//   aspirasis Aspirasis[]
+
+//   @@map("kotas")
+// }
+
+// model Kecamatan {
+//   //id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   kota_id    String      //@db.Uuid
+//   nama       String      @unique
+//   kelurahans Kelurahan[]
+//   kunjungans Kunjungan[]
+//   kota       Kota        @relation(fields: [kota_id], references: [id])
+//   relawans Relawan[]
+//   aspirasis Aspirasis[]
+
+//   @@map("kecamatans")
+// }
+
+// model Kelurahan {
+//   //id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   kecamatan_id String   //@db.Uuid
+//   nama         String
+//   kecamatan    Kecamatan   @relation(fields: [kecamatan_id], references: [id])
+//   kunjungans   Kunjungan[]
+//   relawans Relawan[]
+//   aspirasis Aspirasis[]
+//   kotas Kota[]
+
+//   @@map("kelurahans")
+// }
+
+// model Kunjungan {
+//   //id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   tanggal        DateTime
+//   jam            String
+//   jalan          String
+//   kelurahan_id   String  //@db.Uuid
+//   kecamatan_id   String  //@db.Uuid
+//   kota_id        String  //@db.Uuid
+//   link_gmaps     String?    @default("")
+//   kelurahan    Kelurahan @relation(fields: [kelurahan_id], references: [id])
+//   kecamatan    Kecamatan @relation(fields: [kecamatan_id], references: [id])
+//   kota         Kota        @relation(fields: [kota_id], references: [id])
+//   kegiatans    Kegiatan[]
+//   created_at   DateTime  @default(now())
+//   updated_at   DateTime  @updatedAt
+
+//   @@map("kunjungans")
+// }
+
+// model Aspirasis {
+//   //id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   id_laporan           String?         @default("")
+//   nik                  String?          @default("")
+//   sumber               SumberAspirasi
+//   deskripsi            String
+//   status               AspirasiStatus
+//   pelapor_nama         String
+//   pelapor_email        String?    @default("")
+//   pelapor_telepon      String
+//   lampiran             Json?            @default("[]")
+//   kategori_usulan      String
+//   jenis_usulan         String
+//   jenis_reses          String
+//   tindak_lanjut        String
+//   tanggal_dibuat       DateTime
+//   kota_id              String?         //@db.Uuid
+//   kecamatan_id         String?         //@db.Uuid
+//   kelurahan_id         String?         //@db.Uuid
+//   alamat               String?
+//   user_id              String?         //@db.Uuid
+//   created_at           DateTime        @default(now())
+//   updated_at           DateTime        @updatedAt
+
+//   user                 User?           @relation(fields: [user_id], references: [id])
+//   kota                 Kota?           @relation(fields: [kota_id], references: [id])
+//   kecamatan            Kecamatan?      @relation(fields: [kecamatan_id], references: [id])
+//   kelurahan            Kelurahan?      @relation(fields: [kelurahan_id], references: [id])
+//   trackings            TrackingAspirasi[]
+//   @@map("aspirasis")
+// }
+
+// model TrackingAspirasi {
+//   //id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   aspirasi_id    String         //@db.Uuid
+//   status         AspirasiStatus
+//   catatan        String?
+//   lampiran       Json?          @default("[]")
+//   created_at     DateTime       @default(now())
+
+//   aspirasi       Aspirasis      @relation(fields: [aspirasi_id], references: [id], onDelete: Cascade)
+//   @@map("tracking_aspirasis")
+// }
+
+// enum JenisKelamin {
+//   LAKI_LAKI
+//   PEREMPUAN
+// }
+
+// enum PosisiRelawan {
+//   KOORDINATOR_RW
+//   KOORDINATOR_RT
+//   KOORDINATOR_KELURAHAN
+//   KOORDINATOR_KECAMATAN
+//   FKDM
+//   LMK
+//   TOKOH_MASYARAKAT
+//   PROFESIONAL
+// }
+
+// model Relawan {
+//   //id                   String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   nik                  String?        @unique
+//   nama                 String
+//   no_telepon           String?
+//   jenis_kelamin        JenisKelamin
+//   alamat               String
+//   domisili_sekarang    String?
+//   posisi               PosisiRelawan
+//   foto                 String? @db.MediumText
+//   created_at           DateTime      @default(now()) @map("created_at")
+//   updated_at           DateTime      @updatedAt @map("updated_at")
+//   kota_id              String  //@db.Uuid
+//   kecamatan_id         String  //@db.Uuid
+//   kelurahan_id         String  //@db.Uuid
+
+//   kota           Kota        @relation(fields: [kota_id], references: [id])
+//   kecamatan      Kecamatan   @relation(fields: [kecamatan_id], references: [id])
+//   kelurahan      Kelurahan   @relation(fields: [kelurahan_id], references: [id])
+//   @@map("relawans")
+// }
+
+// model Kegiatan {
+//   //id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   id String @id @default(uuid())
+//   jenis_kegiatan String    @default("")
+//   kunjungan_id   String  //@db.Uuid
+//   isi            String?
+//   hari           String?
+//   tanggal        DateTime?
+//   foto           String? @db.MediumText
+//   nama_kegiatan  String
+//   link_gmaps     String?
+//   tempat         String?
+//   alamat         String?
+//   rt             String?
+//   rw             String?
+//   jumlah_peserta Int?
+//   catatan        String?
+//   kunjungan      Kunjungan @relation(fields: [kunjungan_id], references: [id])
+
+//   @@map("kegiatans")
+// }
