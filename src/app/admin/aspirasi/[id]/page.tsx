@@ -273,10 +273,13 @@ export default function AspirasiDetailPage({
                 Belum ada riwayat tindak lanjut.
               </p>
             ) : (
-              <div className="relative pl-6 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-200 dark:before:bg-gray-700">
+                <div className="relative space-y-6">
                 {rawTrackings.map((t, index) => (
-                  <div key={t.id || index} className="relative group">
-                    <span className="absolute -left-[30px] top-1.5 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white dark:ring-gray-900 group-first:bg-blue-600" />
+                  <div key={t.id || index} className="flex gap-6 relative group">
+                    <div className="flex flex-col items-center">
+                      <span className="absolute top-1.5 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white dark:ring-gray-900 group-first:bg-blue-600" />
+                      <div className='w-0.5 -mb-4 mt-4 flex-1 bg-[var(--color-primary)]' />
+                    </div>
                     <div className="flex flex-col gap-1.5">
                       <div className="grid grid-cols-1 gap-1">
                         <span className="text-sm font-semibold text-[var(--color-text)]">
