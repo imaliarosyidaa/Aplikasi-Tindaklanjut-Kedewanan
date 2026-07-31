@@ -340,6 +340,7 @@ export default function AspirasiDetailPage({
         <div className="lg:col-span-1 lg:row-span-6 flex flex-col gap-5 lg:grid lg:grid-rows-6">
           {/* Update Tindak Lanjut (4 unit) */}
           <Card className="p-5 space-y-4 lg:row-span-4 flex flex-col justify-between overflow-y-auto">
+            <div className='h-fit'>
             <div className="space-y-4">
               <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">
                 Tindak Lanjut
@@ -387,14 +388,14 @@ export default function AspirasiDetailPage({
               </div>
 
               <p className="text-sm font-semibold text-[var(--color-text)]">
-                Catatan Tindak Lanjut
+                  Catatan Tindak Lanjut Terbaru
               </p>
               <p className="text-[var(--color-text)] text-sm">
                 {latestCatatan || '-'}
               </p>
 
               <p className="text-sm font-semibold text-[var(--color-text)]">
-                Bukti Tindak Lanjut
+                  Bukti Tindak Lanjut Terbaru
               </p>
               <div className="flex flex-wrap gap-2">
                 {activeLampiran.length > 0 ? (
@@ -435,11 +436,12 @@ export default function AspirasiDetailPage({
 
             <Button
               onClick={() => setSelectedAspirasi(aspirasi)}
-              className="w-full mt-2"
+                className="w-full mt-4"
             >
               <MdEdit size={18} className="mr-1" />
               Update Status
             </Button>
+            </div>
           </Card>
 
           {/* Informasi Tambahan (2 unit) */}

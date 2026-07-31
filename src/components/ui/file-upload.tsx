@@ -25,7 +25,8 @@ interface FileUploadProps {
 
 const toBase64String = (item: string | FileUploadItem | undefined): string => {
   if (typeof item === 'string') return item
-  if (item && typeof item === 'object' && typeof item.base64 === 'string') return item.base64
+  if (item && typeof item === 'object' && typeof item.base64 === 'string')
+    return item.base64
   return ''
 }
 
@@ -67,7 +68,10 @@ export const FileUpload = ({
   }
 
   // Helper untuk mendapatkan nama file dari Base64 atau URL
-  const getFileName = (item: string | FileUploadItem, index: number): string => {
+  const getFileName = (
+    item: string | FileUploadItem,
+    index: number
+  ): string => {
     const fileString = toBase64String(item)
     if (!fileString) return `File ${index + 1}`
 
@@ -97,7 +101,11 @@ export const FileUpload = ({
       const file = files[i]
       const ext = '.' + file.name.split('.').pop()?.toLowerCase()
 
-      if (acceptedTypes ? file.type.startsWith(acceptedTypes.split(',')[0]) : !ALLOWED_EXTENSIONS.includes(ext ?? '')) {
+      if (
+        acceptedTypes
+          ? file.type.startsWith(acceptedTypes.split(',')[0])
+          : !ALLOWED_EXTENSIONS.includes(ext ?? '')
+      ) {
         if (!ALLOWED_EXTENSIONS.includes(ext ?? '')) {
           continue
         }
@@ -111,7 +119,10 @@ export const FileUpload = ({
     }
 
     if (multiple) {
-      onChange([...value.map(toBase64String).filter(Boolean), ...newFileStrings])
+      onChange([
+        ...value.map(toBase64String).filter(Boolean),
+        ...newFileStrings,
+      ])
     } else {
       onChange(newFileStrings.slice(0, 1))
     }
@@ -143,33 +154,44 @@ export const FileUpload = ({
   }
 
   const removeFile = (index: number) => {
-    onChange(value.map(toBase64String).filter((s) => s !== '').filter((_, i) => i !== index))
+    onChange(
+      value
+        .map(toBase64String)
+        .filter((s) => s !== '')
+        .filter((_, i) => i !== index)
+    )
   }
 
   return (
-    <div className={cn('space-y-2', className)}>
-      <label className="block text-sm font-medium text-[var(--color-text)]">
+    <div className={cn('flex flex-col h-full w-full gap-2', className)}>
+      <label className="block text-sm font-medium text-[var(--color-text)] shrink-0">
         {label}
       </label>
 
+      {/* DROPZONE: Mengisi sisa ruang kosong (flex-1) & center alignment */}
       <div
         className={cn(
-          'border-2 bg-white border-dashed rounded-lg p-6 text-center transition-colors',
+          'flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 text-center transition-colors min-h-[160px]',
           isDragging
             ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
-            : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'
+            : 'border-[var(--color-border)] hover:border-[var(--color-primary)] bg-[var(--color-bg)]'
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <MdUploadFile size={32} className="mx-auto mb-2 text-[var(--color-text-secondary)]" />
-        <p className="text-sm text-[var(--color-text-secondary)] mb-2">
+        <MdUploadFile
+          size={36}
+          className="mx-auto mb-2 text-[var(--color-text-secondary)]"
+        />
+        <p className="text-sm font-medium text-[var(--color-text)] mb-1">
           Drag & drop file atau klik untuk pilih
         </p>
-        <p className="text-xs text-[var(--color-text-secondary)]">
-          PDF, Word, Excel, PPT, JPEG, PNG (Maks {maxSizeMB}MB per file, maks {maxFiles} file)
+        <p className="text-xs text-[var(--color-text-secondary)] mb-3">
+          PDF, Word, Excel, PPT, JPEG, PNG (Maks {maxSizeMB}MB per file, maks{' '}
+          {maxFiles} file)
         </p>
+
         <input
           type="file"
           multiple={multiple}
@@ -178,14 +200,17 @@ export const FileUpload = ({
           className="hidden"
           id={`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
         />
+
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="mt-3"
+          className="cursor-pointer"
           onClick={() =>
             document
-              .getElementById(`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`)
+              .getElementById(
+                `file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`
+              )
               ?.click()
           }
         >
@@ -193,17 +218,21 @@ export const FileUpload = ({
         </Button>
       </div>
 
+      {/* DAFTAR FILE TER-UPLOAD */}
       {value.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-2 mt-1 shrink-0 max-h-[140px] overflow-y-auto">
           {value.map((fileString, index) => (
             <div
               key={index}
-              className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 bg-[var(--color-bg-secondary)]"
+              className="flex items-center p-3 justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <MdInsertDriveFile className="text-blue-500 shrink-0" size={20} />
+                <MdInsertDriveFile
+                  className="text-blue-500 shrink-0"
+                  size={20}
+                />
                 <div className="truncate">
-                  <p className="text-sm font-medium truncate">
+                  <p className="text-xs font-medium truncate">
                     {getFileName(fileString, index)}
                   </p>
                 </div>
@@ -212,6 +241,7 @@ export const FileUpload = ({
                 type="button"
                 variant="ghost"
                 size="sm"
+                className="cursor-pointer h-7 w-7 p-0"
                 onClick={() => removeFile(index)}
               >
                 <MdDelete size={16} className="text-red-500" />
