@@ -1,15 +1,10 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
-  binaryTargets = ["native","windows"]
 }
 
-// datasource db {
-//   provider = "postgresql"
-// }
-
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 enum UserRole {
@@ -22,12 +17,10 @@ enum AspirasiStatus {
   SEDANG_DITINDAKLANJUTI
   SUDAH_DITINDAKLANJUTI
   TIDAK_BISA_DITINDAKLANJUTI
-  SELESAI
 }
 
 model User {
-  // id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username  String     @unique
   email     String?    @unique
   password  String
@@ -41,8 +34,7 @@ model User {
 }
 
 model Kota {
-  //id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nama       String      @unique
   kecamatans Kecamatan[]
   kelurahans Kelurahan[]
@@ -54,9 +46,8 @@ model Kota {
 }
 
 model Kecamatan {
-  //id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
-  kota_id    String      //@db.Uuid
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kota_id    String      @db.Uuid
   nama       String      @unique
   kelurahans Kelurahan[]
   kunjungans Kunjungan[]
@@ -68,9 +59,8 @@ model Kecamatan {
 }
 
 model Kelurahan {
-  //id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
-  kecamatan_id String   //@db.Uuid
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kecamatan_id String   @db.Uuid
   nama         String
   kecamatan    Kecamatan   @relation(fields: [kecamatan_id], references: [id])
   kunjungans   Kunjungan[]
@@ -82,14 +72,13 @@ model Kelurahan {
 }
 
 model Kunjungan {
-  //id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tanggal        DateTime
   jam            String
   jalan          String
-  kelurahan_id   String  //@db.Uuid
-  kecamatan_id   String  //@db.Uuid
-  kota_id        String  //@db.Uuid
+  kelurahan_id   String  @db.Uuid
+  kecamatan_id   String  @db.Uuid
+  kota_id        String  @db.Uuid
   link_gmaps     String?    @default("")
   kelurahan    Kelurahan @relation(fields: [kelurahan_id], references: [id])
   kecamatan    Kecamatan @relation(fields: [kecamatan_id], references: [id])
@@ -102,11 +91,10 @@ model Kunjungan {
 }
 
 model Aspirasis {
-  //id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
+  id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id_laporan           String?         @default("")
   nik                  String?          @default("")
-  sumber               String?
+  sumber               String
   deskripsi            String
   status               AspirasiStatus
   pelapor_nama         String
@@ -118,11 +106,11 @@ model Aspirasis {
   jenis_reses          String
   tindak_lanjut        String
   tanggal_dibuat       DateTime
-  kota_id              String?         //@db.Uuid
-  kecamatan_id         String?         //@db.Uuid
-  kelurahan_id         String?         //@db.Uuid
+  kota_id              String?         @db.Uuid
+  kecamatan_id         String?         @db.Uuid
+  kelurahan_id         String?         @db.Uuid
   alamat               String?
-  user_id              String?         //@db.Uuid
+  user_id              String?         @db.Uuid
   created_at           DateTime        @default(now())
   updated_at           DateTime        @updatedAt
 
@@ -135,9 +123,8 @@ model Aspirasis {
 }
 
 model TrackingAspirasi {
-  //id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
-  aspirasi_id    String         //@db.Uuid
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aspirasi_id    String         @db.Uuid
   status         AspirasiStatus
   catatan        String?
   lampiran       Json?          @default("[]")
@@ -164,21 +151,19 @@ enum PosisiRelawan {
 }
 
 model Relawan {
-  //id                   String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
-  nik                  String?        @unique
-  nama                 String
-  no_telepon           String?
-  jenis_kelamin        JenisKelamin
-  alamat               String
-  domisili_sekarang    String?
-  posisi               PosisiRelawan
-  foto                 String? @db.MediumText
-  created_at           DateTime      @default(now()) @map("created_at")
-  updated_at           DateTime      @updatedAt @map("updated_at")
-  kota_id              String  //@db.Uuid
-  kecamatan_id         String  //@db.Uuid
-  kelurahan_id         String  //@db.Uuid
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nik            String?        @unique
+  nama           String
+  no_telepon     String?
+  jenis_kelamin  JenisKelamin
+  alamat         String
+  posisi         PosisiRelawan
+  foto           String?
+  created_at     DateTime      @default(now()) @map("created_at")
+  updated_at     DateTime      @updatedAt @map("updated_at")
+  kota_id        String  @db.Uuid
+  kecamatan_id   String  @db.Uuid
+  kelurahan_id   String  @db.Uuid
 
   kota           Kota        @relation(fields: [kota_id], references: [id])
   kecamatan      Kecamatan   @relation(fields: [kecamatan_id], references: [id])
@@ -187,14 +172,13 @@ model Relawan {
 }
 
 model Kegiatan {
-  //id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id String @id @default(uuid())
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   jenis_kegiatan String    @default("")
-  kunjungan_id   String  //@db.Uuid
+  kunjungan_id   String  @db.Uuid
   isi            String?
   hari           String?
   tanggal        DateTime?
-  foto           String? @db.MediumText
+  foto           String?
   nama_kegiatan  String
   link_gmaps     String?
   tempat         String?

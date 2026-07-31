@@ -171,7 +171,7 @@ export default function KegiatanBaruPage() {
               )
             })}
           </div>
-          {jenisKegiatan === 'LAINYA' && (
+          {jenisKegiatan === 'lainya' && (
             <div className="mt-4">
               <Input id="jenis-lainnya" label="Jenis Kegiatan Lainnya" value={jenisLainnya} onChange={(e) => setJenisLainnya(e.target.value)} placeholder="Masukkan jenis kegiatan" />
             </div>
