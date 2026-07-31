@@ -291,7 +291,7 @@ export default function LaporanSayaPage(): React.ReactNode {
             <div className="min-w-[140px] flex-1">
               <Select
                 id="kota"
-                label="Kota"
+                label="Kota/Kabupaten"
                 placeholder="Semua Kota"
                 options={kotaOptions}
                 value={kotaId}

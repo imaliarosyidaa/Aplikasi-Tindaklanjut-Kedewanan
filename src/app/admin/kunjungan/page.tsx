@@ -147,7 +147,7 @@ export default function KunjunganPage() {
           <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
-              <Select id="kota" label="Kota" placeholder="Semua Kota" options={kotaOptions} value={kotaId}
+              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota" options={kotaOptions} value={kotaId}
                 onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -216,12 +216,12 @@ export default function KunjunganPage() {
                     <input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleSelect(item.id)} className="cursor-pointer" />
                   </td>
                   <td className="px-4 py-3 text-[var(--color-text-secondary)]">{(currentPage - 1) * PAGE_SIZE + i + 1}</td>
-                  <td className="px-4 py-3 font-medium text-[var(--color-text)]">{item.nama_kegiatan || item.isi}</td>
-                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">{formatTanggal(item.tanggal)}</td>
-                  <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi}</td>
-                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kota}</td>
-                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan}</td>
-                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan}</td>
+                  <td className="px-4 py-3 font-medium text-[var(--color-text)]">{item.nama_kegiatan || item.isi || '-'}</td>
+                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">{formatTanggal(item.tanggal) || '-'}</td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi || '-'}</td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kota || '-'}</td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan || '-'}</td>
+                  <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan || '-'}</td>
                   <td className="px-4 py-3 text-center">
                     <div className="inline-flex items-center gap-2">
                       <Link href={`/admin/kunjungan/kegiatan/${item.id}`} className="text-[var(--color-primary)] hover:underline cursor-pointer"><MdVisibility size={16} /></Link>

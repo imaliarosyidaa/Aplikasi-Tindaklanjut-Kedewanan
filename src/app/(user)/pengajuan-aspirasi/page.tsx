@@ -20,7 +20,7 @@ import {
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
 import { ClipboardList, Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
-import { MasterKecamatan, MasterKelurahan, MasterKota, UploadedFile } from '../../../types/index'
+import { MasterKecamatan, MasterKelurahan, MasterKota } from '../../../types/index'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -48,7 +48,7 @@ function TicketLaporan({
     alamat: string
     telepon: string
     pengaduan: string
-    lampiran: UploadedFile[]
+    lampiran: string[]
     tanggal: string
   }
   onReset: () => void
@@ -101,7 +101,7 @@ function TicketLaporan({
           <tr><td class="label">Alamat</td><td class="value">${data.alamat}</td></tr>
           <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal}</td></tr>
           <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan}</td></tr>
-          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map(f => f.base64.startsWith('data:application/pdf') ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF — ${f.name}</span>` : `<img src="${f.base64}" class="lampiran-img" alt="${f.name}" />`).join('')}</td></tr>` : ''}
+          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map((f) => f.startsWith('data:application/pdf') ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF</span>` : `<img src="${f}" class="lampiran-img" />`).join('')}</td></tr>` : ''}
         </table>
         <div class="footer">
           Dokumen ini dicetak pada ${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}<br/>
@@ -188,12 +188,12 @@ function TicketLaporan({
                 <span className="w-28 text-[var(--color-text-secondary)]">Lampiran</span>
                 <div className="flex flex-wrap gap-2">
                   {data.lampiran.map((f, i) => (
-                    f.base64.startsWith('data:application/pdf') ? (
+                    f.startsWith('data:application/pdf') ? (
                       <button
                         key={i}
                         type="button"
                         onClick={() => {
-                          fetch(f.base64).then(r => r.blob()).then(blob => {
+                          fetch(f).then(r => r.blob()).then(blob => {
                             window.open(URL.createObjectURL(blob), '_blank')
                           })
                         }}
@@ -203,7 +203,7 @@ function TicketLaporan({
                         Detail
                       </button>
                     ) : (
-                      <img key={i} src={f.base64} alt={f.name} className="w-20 h-20 object-cover rounded border border-[var(--color-border)]" />
+                      <img key={i} src={f} alt="Lampiran" className="w-20 h-20 object-cover rounded border border-[var(--color-border)]" />
                     )
                   ))}
                 </div>
@@ -245,7 +245,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [sumber, setSumber] = useState('')
   const [sumberLainya, setSumberLainya] = useState('')
   const [pengaduan, setPengaduan] = useState('')
-  const [lampiran, setLampiran] = useState<UploadedFile[]>([])
+  const [lampiran, setLampiran] = useState<string[]>([])
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -259,7 +259,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     alamat: string
     telepon: string
     pengaduan: string
-    lampiran: UploadedFile[]
+    lampiran: string[]
     tanggal: string
   } | null>(null)
 
@@ -335,7 +335,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           kelurahan,
           email,
           lokasi: alamat,
-          lampiran: lampiran.map(f => ({ name: f.name, size: f.size, type: f.type, base64: f.base64 })),
+          lampiran: lampiran,
         }),
       })
 

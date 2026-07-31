@@ -87,7 +87,7 @@ export default function AspirasiDetailPage({
   return (
     <div className="space-y-6 text-blue-500">
       <Link href="/admin/aspirasi">
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" className='mb-4'>
           <MdArrowBack size={18} className="mr-1" />
           Kembali Ke Daftar Laporan
         </Button>

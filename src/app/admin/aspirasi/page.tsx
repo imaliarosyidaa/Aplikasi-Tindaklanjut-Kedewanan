@@ -169,7 +169,7 @@ export default function AspirasiPage(): React.ReactNode {
           </div>
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
-              <Select id="kota" label="Kota" placeholder="Semua Kota" options={kotaOptions} value={kotaId}
+              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota" options={kotaOptions} value={kotaId}
                 onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -213,10 +213,10 @@ export default function AspirasiPage(): React.ReactNode {
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
-        <table className="w-full text-[10px] 2xl:text-sm text-xs">
+        <table className="w-full text-sm">
           <thead>
             <tr className="bg-[var(--color-bg-secondary)]">
-              <th className="w-10 px-2 py-2 lg:px-4 lg:py-3 text-left">
+              <th className="w-10 px-4 py-3 text-[var(--color-text-secondary)] text-left">
                 <input
                   type="checkbox"
                   checked={
@@ -228,15 +228,15 @@ export default function AspirasiPage(): React.ReactNode {
                 />
               </th>
 
-              <th className="w-12 px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)]">
+              <th className="w-12 px-4 py-3 text-[var(--color-text-secondary)] text-left font-medium text-[var(--color-text-secondary)]">
                 No
               </th>
 
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="px-4 py-3 text-[var(--color-text-secondary)] text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
                 Kecamatan
               </th>
 
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="px-4 py-3 text-[var(--color-text-secondary)] text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
                 Kota
               </th>
 
@@ -317,17 +317,17 @@ export default function AspirasiPage(): React.ReactNode {
                       </p>
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3">
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
                       <p className="max-w-[180px] lg:max-w-xs line-clamp-2">
                         {aspirasi.deskripsi}
                       </p>
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3 whitespace-nowrap">
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)] whitespace-nowrap">
                       {aspirasi.pelapor_nama}
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3 whitespace-nowrap">
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)] whitespace-nowrap">
                       {new Date(aspirasi.tanggal_dibuat).toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "short",
@@ -335,13 +335,13 @@ export default function AspirasiPage(): React.ReactNode {
                       })}
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3 text-center whitespace-nowrap">
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)] text-center whitespace-nowrap">
                       <Badge status={aspirasi.status} >
                         {statusLabel[aspirasi.status] || aspirasi.status}
                       </Badge>
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3">
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
                       <div className="inline-flex items-center justify-center gap-1 lg:gap-2">
                         <Link
                           href={`/admin/aspirasi/${aspirasi.id}`}
@@ -351,13 +351,7 @@ export default function AspirasiPage(): React.ReactNode {
                           <MdVisibility className="h-4 w-4" />
                         </Link>
 
-                        <button
-                          onClick={() => setSelectedAspirasi(aspirasi)}
-                          className="text-[var(--color-warning)] hover:underline"
-                          title="Update Status"
-                        >
-                          <MdEdit className="h-4 w-4" />
-                        </button>
+                        <Link href={`/admin/aspirasi/edit/${aspirasi.id}`} className="text-[var(--color-warning)] cursor-pointer hover:underline"><MdEdit size={16} /></Link>
 
                         <button
                           onClick={async () => {

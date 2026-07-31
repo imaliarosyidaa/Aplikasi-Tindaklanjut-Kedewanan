@@ -6,12 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { FileUpload } from '@/components/ui/file-upload'
 import type { AspirasiStatus, Aspirasi } from '@/types'
-interface UploadedFile {
-  name: string
-  size: number
-  type: string
-  base64: string
-}
 interface FormUpdateAspirasiProps {
   aspirasi: Aspirasi
   onSuccess?: () => void
@@ -32,14 +26,14 @@ export const FormUpdateAspirasi = ({
 
   const [status, setStatus] = useState<AspirasiStatus>(aspirasi.status)
   const [catatan, setCatatan] = useState('')
-  const [lampiranFiles, setLampiranFiles] = useState<UploadedFile[]>([])
+  const [lampiranFiles, setLampiranFiles] = useState<string[]>([])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await trigger({
       status: status as AspirasiStatus,
       catatan: catatan,
-      lampiran: lampiranFiles.map((f) => f.base64),
+      lampiran: lampiranFiles,
       kirim_email: false,
       kirim_telepon: false,
       pelapor_email: aspirasi.pelapor_email,

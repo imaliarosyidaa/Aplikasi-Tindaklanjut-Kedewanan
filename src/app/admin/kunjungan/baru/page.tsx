@@ -15,8 +15,6 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json())
 interface KotaItem { id: string; nama: string }
 interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
-interface UploadedFile { name: string; size: number; type: string; base64: string }
-
 const activities = [
   { id: 'reses', title: 'Reses', desc: 'Serap aspirasi masyarakat', icon: Home },
   { id: 'sosperda', title: 'Sosperda', desc: 'Fungsi pengawasan produk hukum daerah DKI Jakarta', icon: Handshake },
@@ -51,7 +49,7 @@ export default function KegiatanBaruPage() {
   const [catatan, setCatatan] = useState('')
   const [linkGmaps, setLinkGmaps] = useState('')
 
-  const [fotoFiles, setFotoFiles] = useState<UploadedFile[]>([])
+  const [fotoFiles, setFotoFiles] = useState<string[]>([])
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(kotaId ? `/api/kecamatan?kota=${kotaId}` : null, fetcher)
@@ -83,7 +81,7 @@ export default function KegiatanBaruPage() {
         catatan,
         isi: namaKegiatan,
         link_gmaps: linkGmaps,
-        foto: fotoFiles.map(f => f.base64),
+        foto: fotoFiles,
         jalan,
         rt,
         rw,

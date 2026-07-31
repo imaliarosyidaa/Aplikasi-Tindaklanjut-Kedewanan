@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -6,6 +8,7 @@
 @custom-variant yellow (&:where(.yellow, .yellow *));
 @custom-variant ramadan (&:where(.ramadan, .ramadan *));
 @custom-variant valentine (&:where(.valentine, .valentine *));
+
 
 :root {
   --color-primary: #2563eb;
@@ -136,7 +139,7 @@
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 @theme inline {

@@ -14,12 +14,6 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json())
 interface KotaItem { id: string; nama: string }
 interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
-interface UploadedFile {
-  name: string
-  size: number
-  type: string
-  base64: string
-}
 
 interface FormKunjunganInitialData {
   id: string
@@ -77,30 +71,20 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   const [rw, setRw] = useState(initialData?.rw ?? '')
   const [jumlahPeserta, setJumlahPeserta] = useState(initialData?.jumlah_peserta ? String(initialData.jumlah_peserta) : '')
   const [catatan, setCatatan] = useState(initialData?.catatan ?? '')
-  const [lampiran, setLampiran] = useState<UploadedFile[]>(() => {
+  const [lampiran, setLampiran] = useState<string[]>(() => {
     if (!initialData?.foto) return []
     try {
       const parsed = typeof initialData.foto === 'string' && initialData.foto.startsWith('[')
         ? JSON.parse(initialData.foto)
         : [initialData.foto]
-      return parsed.filter(Boolean).map((base64: string) => ({
-        name: 'foto-existing',
-        size: 0,
-        type: 'image/png',
-        base64,
-      }))
+      return parsed.filter(Boolean)
     } catch {
       const f = initialData.foto
       if (typeof f === 'string' && f.startsWith('data:')) {
-        return [{ name: 'foto-existing', size: 0, type: 'image/png', base64: f }]
+        return [f]
       }
       if (Array.isArray(f)) {
-        return f.filter(Boolean).map((base64: string) => ({
-          name: 'foto-existing',
-          size: 0,
-          type: 'image/png',
-          base64,
-        }))
+        return f.filter(Boolean)
       }
       return []
     }
@@ -161,7 +145,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             jumlah_peserta: jumlahPeserta,
             link_gmaps: linkGmaps,
             tanggal,
-            foto: lampiran.length > 0 ? lampiran.map(f => f.base64) : (() => {
+            foto: lampiran.length > 0 ? lampiran : (() => {
               if (!initialData?.foto) return []
               const f = initialData.foto
               if (typeof f === 'string' && f.startsWith('[')) return JSON.parse(f)
@@ -192,7 +176,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             rw,
             jumlah_peserta: jumlahPeserta,
             catatan,
-            foto: lampiran.length > 0 ? lampiran.map(f => f.base64) : [],
+            foto: lampiran.length > 0 ? lampiran : [],
           }),
         })
 

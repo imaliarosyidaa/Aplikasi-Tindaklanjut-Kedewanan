@@ -5,11 +5,11 @@ import { MdUploadFile, MdDelete, MdInsertDriveFile } from 'react-icons/md'
 import { cn } from '@/utils/cn'
 import { Button } from './button'
 
-interface UploadedFile {
-  name: string
-  size: number
-  type: string
-  base64: string
+interface FileUploadItem {
+  name?: string
+  size?: number
+  type?: string
+  base64?: string
 }
 
 interface FileUploadProps {
@@ -17,26 +17,31 @@ interface FileUploadProps {
   maxFiles?: number
   maxSizeMB?: number
   acceptedTypes?: string
-  value: UploadedFile[]
-  onChange: (files: UploadedFile[]) => void
+  value?: (string | FileUploadItem)[]
+  onChange: (files: string[]) => void
   className?: string
+  multiple?: boolean
 }
 
-const ACCEPTED_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/vnd.ms-powerpoint',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'image/jpeg',
-  'image/png',
-  'image/jpg',
-  'image/webp',
-]
+const toBase64String = (item: string | FileUploadItem | undefined): string => {
+  if (typeof item === 'string') return item
+  if (item && typeof item === 'object' && typeof item.base64 === 'string') return item.base64
+  return ''
+}
 
-const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.jpg', '.jpeg', '.png', '.webp']
+const ALLOWED_EXTENSIONS = [
+  '.pdf',
+  '.doc',
+  '.docx',
+  '.xls',
+  '.xlsx',
+  '.ppt',
+  '.pptx',
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.webp',
+]
 
 export const FileUpload = ({
   label,
@@ -46,34 +51,52 @@ export const FileUpload = ({
   value = [],
   onChange,
   className,
+  multiple = true,
 }: FileUploadProps): React.ReactNode => {
   const [isDragging, setIsDragging] = useState(false)
-
   const maxSize = maxSizeMB * 1024 * 1024
 
-  const convertToBase64 = (file: File): Promise<UploadedFile> => {
+  // Helper konversi file ke Base64 (string)
+  const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      reader.onload = () => {
-        resolve({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          base64: reader.result as string,
-        })
-      }
+      reader.onload = () => resolve(reader.result as string)
       reader.onerror = reject
       reader.readAsDataURL(file)
     })
   }
 
+  // Helper untuk mendapatkan nama file dari Base64 atau URL
+  const getFileName = (item: string | FileUploadItem, index: number): string => {
+    const fileString = toBase64String(item)
+    if (!fileString) return `File ${index + 1}`
+
+    // Jika Base64
+    if (fileString.startsWith('data:')) {
+      const mime = fileString.split(';')[0].split(':')[1] || ''
+      const ext = mime.split('/')[1] || 'file'
+      return `Berkas_${index + 1}.${ext}`
+    }
+
+    // Jika URL biasa
+    try {
+      const url = new URL(fileString)
+      const fileName = url.pathname.split('/').pop()
+      return fileName ? decodeURIComponent(fileName) : `File ${index + 1}`
+    } catch {
+      const cleanUrl = fileString.split('?')[0].split('#')[0]
+      const fileName = cleanUrl.split('/').pop()
+      return fileName ? decodeURIComponent(fileName) : `File ${index + 1}`
+    }
+  }
+
   const handleFiles = async (files: FileList) => {
-    const newFiles: UploadedFile[] = []
+    const newFileStrings: string[] = []
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
-
       const ext = '.' + file.name.split('.').pop()?.toLowerCase()
+
       if (acceptedTypes ? file.type.startsWith(acceptedTypes.split(',')[0]) : !ALLOWED_EXTENSIONS.includes(ext ?? '')) {
         if (!ALLOWED_EXTENSIONS.includes(ext ?? '')) {
           continue
@@ -81,13 +104,17 @@ export const FileUpload = ({
       }
 
       if (file.size > maxSize) continue
-      if (value.length + newFiles.length >= maxFiles) continue
+      if (value.length + newFileStrings.length >= maxFiles) continue
 
-      const uploadedFile = await convertToBase64(file)
-      newFiles.push(uploadedFile)
+      const base64String = await convertToBase64(file)
+      newFileStrings.push(base64String)
     }
 
-    onChange([...value, ...newFiles])
+    if (multiple) {
+      onChange([...value.map(toBase64String).filter(Boolean), ...newFileStrings])
+    } else {
+      onChange(newFileStrings.slice(0, 1))
+    }
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -116,18 +143,7 @@ export const FileUpload = ({
   }
 
   const removeFile = (index: number) => {
-    onChange(value.filter((_, i) => i !== index))
-  }
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + ' B'
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
-  }
-
-  const getFileIcon = (type: string): React.ReactNode => {
-    if (type.startsWith('image/')) return <MdInsertDriveFile />
-    return <MdInsertDriveFile />
+    onChange(value.map(toBase64String).filter((s) => s !== '').filter((_, i) => i !== index))
   }
 
   return (
@@ -156,18 +172,22 @@ export const FileUpload = ({
         </p>
         <input
           type="file"
-          multiple
+          multiple={multiple}
           accept={ALLOWED_EXTENSIONS.join(',')}
           onChange={handleInputChange}
           className="hidden"
-          id={`file-upload-${label}`}
+          id={`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
         />
         <Button
           type="button"
           variant="outline"
           size="sm"
           className="mt-3"
-          onClick={() => document.getElementById(`file-upload-${label}`)?.click()}
+          onClick={() =>
+            document
+              .getElementById(`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`)
+              ?.click()
+          }
         >
           Pilih File
         </Button>
@@ -175,17 +195,16 @@ export const FileUpload = ({
 
       {value.length > 0 && (
         <div className="space-y-2">
-          {value.map((file, index) => (
+          {value.map((fileString, index) => (
             <div
               key={index}
               className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 bg-[var(--color-bg-secondary)]"
             >
               <div className="flex items-center gap-2 min-w-0">
-                {getFileIcon(file.type)}
+                <MdInsertDriveFile className="text-blue-500 shrink-0" size={20} />
                 <div className="truncate">
-                  <p className="text-sm font-medium truncate">{file.name}</p>
-                  <p className="text-xs text-[var(--color-text-secondary)]">
-                    {formatFileSize(file.size)}
+                  <p className="text-sm font-medium truncate">
+                    {getFileName(fileString, index)}
                   </p>
                 </div>
               </div>
@@ -195,7 +214,7 @@ export const FileUpload = ({
                 size="sm"
                 onClick={() => removeFile(index)}
               >
-                <MdDelete size={16} />
+                <MdDelete size={16} className="text-red-500" />
               </Button>
             </div>
           ))}
