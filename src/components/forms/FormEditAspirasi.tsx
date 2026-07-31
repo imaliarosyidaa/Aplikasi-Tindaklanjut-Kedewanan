@@ -25,6 +25,7 @@ const sumberOptions = [
 export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps): React.ReactNode => {
   const [loading, setLoading] = useState(false)
   const [pelaporNama, setPelaporNama] = useState(aspirasi.pelapor_nama)
+  const [id_laporan] = useState(aspirasi.id_laporan)
   const [pelaporTelepon, setPelaporTelepon] = useState(aspirasi.pelapor_telepon)
   const [pelaporEmail, setPelaporEmail] = useState(aspirasi.pelapor_email)
   const [deskripsi, setDeskripsi] = useState(aspirasi.deskripsi)
@@ -90,6 +91,13 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <Input
+        id="id_laporan"
+        label="ID Laporan"
+        value={id_laporan}
+        disabled
+        className="bg-gray-100 text-gray-500"
+      />
       <Input
         id="pelapor_nama"
         label="Nama Pelapor"

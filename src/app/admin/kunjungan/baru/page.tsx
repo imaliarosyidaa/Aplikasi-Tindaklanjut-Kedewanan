@@ -199,8 +199,8 @@ export default function KegiatanBaruPage() {
                     className="w-full"
                   >
                     <Select
-                      id="kota"
-                      placeholder="Pilih Kota"
+                      id="kota/kabupaten"
+                      placeholder="Pilih Kota/Kabupaten"
                       options={kotaOptions}
                       value={kotaId}
                       onChange={(e) => {

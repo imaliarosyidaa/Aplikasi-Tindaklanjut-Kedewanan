@@ -16,6 +16,7 @@ import {
   MdDescription,
   MdSource,
   MdError,
+  MdEmail,
 } from 'react-icons/md'
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
@@ -42,6 +43,7 @@ function TicketLaporan({
     idLaporan: string
     nik: string
     nama: string
+    email: string
     kota: string
     kecamatan: string
     kelurahan: string
@@ -94,6 +96,7 @@ function TicketLaporan({
         <table>
           <tr><td class="label">Nama Pelapor</td><td class="value">${data.nama}</td></tr>
           <tr><td class="label">NIK</td><td class="value">${data.nik || '-'}</td></tr>
+          <tr><td class="label">Email</td><td class="value">${data.email || '-'}</td></tr>
           <tr><td class="label">No. Telepon</td><td class="value">${data.telepon}</td></tr>
           <tr><td class="label">Kota</td><td class="value">${data.kota}</td></tr>
           <tr><td class="label">Kecamatan</td><td class="value">${data.kecamatan}</td></tr>
@@ -146,6 +149,11 @@ function TicketLaporan({
               <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">NIK</span>
               <span className="text-[var(--color-text)]">{data.nik || '-'}</span>
+            </div>
+            <div className="flex gap-2">
+              <MdEmail size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-28 text-[var(--color-text-secondary)]">Email</span>
+              <span className="text-[var(--color-text)]">{data.email}</span>
             </div>
             <div className="flex gap-2">
               <MdPhone size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
@@ -253,6 +261,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     idLaporan: string
     nik: string
     nama: string
+    email: string
     kota: string
     kecamatan: string
     kelurahan: string
@@ -347,6 +356,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         idLaporan,
         nik,
         nama,
+        email,
         kota,
         kecamatan,
         kelurahan,
@@ -433,7 +443,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             })}
             {sumber === 'LAINYA' && (
               <div className="mt-4">
-                <Input id="jenis-lainnya" label="Jenis Kegiatan Lainnya" value={sumberLainya} onChange={(e) => setSumberLainya(e.target.value)} placeholder="Masukkan sumber kegiatan" />
+                <Input id="jenis-lainnya" label="Sumber Aspirasi Lainnya" value={sumberLainya} onChange={(e) => setSumberLainya(e.target.value)} placeholder="Masukkan sumber kegiatan" />
               </div>
             )}
           </div>
@@ -498,8 +508,8 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           <div className="grid md:grid-cols-2 gap-4">
             <Select
               id="kota"
-              label="Kota"
-              placeholder="Pilih kota"
+              label="Kota/Kabupaten"
+              placeholder="Pilih kota/kabupaten"
               options={kotaOptions}
               value={kotaId}
               onChange={handleKotaChange}

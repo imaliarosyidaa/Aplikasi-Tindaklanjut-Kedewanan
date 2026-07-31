@@ -147,7 +147,7 @@ export default function KunjunganPage() {
           <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
-              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota" options={kotaOptions} value={kotaId}
+              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota/Kabupaten" options={kotaOptions} value={kotaId}
                 onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -191,7 +191,7 @@ export default function KunjunganPage() {
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Nama Kegiatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tanggal</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Lokasi</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kota</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kota/Kabupaten</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>

@@ -157,7 +157,7 @@ export default function RelawanPage(): React.ReactNode {
           <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
-              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota" options={kotaOptions} value={kotaId}
+              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota/Kabupaten" options={kotaOptions} value={kotaId}
                 onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} />
             </div>
             <div className="min-w-[160px] flex-1">

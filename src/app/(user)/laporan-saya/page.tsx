@@ -292,7 +292,7 @@ export default function LaporanSayaPage(): React.ReactNode {
               <Select
                 id="kota"
                 label="Kota/Kabupaten"
-                placeholder="Semua Kota"
+                placeholder="Semua Kota/Kabupaten"
                 options={kotaOptions}
                 value={kotaId}
                 onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }}

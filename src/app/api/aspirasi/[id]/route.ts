@@ -20,6 +20,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
   return NextResponse.json({
     id: a.id,
+    id_laporan: a.id_laporan,
     nik: a.nik ?? '',
     sumber: a.sumber,
     deskripsi: a.deskripsi,

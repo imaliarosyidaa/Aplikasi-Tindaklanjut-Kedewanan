@@ -204,7 +204,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
       <Input id="jalan" label="Jalan" placeholder="Masukkan nama jalan" value={jalan} onChange={(e) => setJalan(e.target.value)} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Select id="kota" label="Kota" placeholder="Pilih kota" options={kotaOptions} value={kotaId} onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} error={errors.kota} />
+        <Select id="kota" label="Kota/Kabupaten" placeholder="Pilih kota/kabupaten" options={kotaOptions} value={kotaId} onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} error={errors.kota} />
         <Select id="kecamatan" label="Kecamatan" placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'} options={kecamatanOptions} value={kecamatanId} onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} error={errors.kecamatan} disabled={!kotaId} />
         <Select id="kelurahan" label="Kelurahan" placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'} options={kelurahanOptions} value={kelurahanId} onChange={(e) => setKelurahanId(e.target.value)} error={errors.kelurahan} disabled={!kecamatanId} />
       </div>

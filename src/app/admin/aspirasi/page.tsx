@@ -169,7 +169,7 @@ export default function AspirasiPage(): React.ReactNode {
           </div>
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
-              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota" options={kotaOptions} value={kotaId}
+              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota/Kabupaten" options={kotaOptions} value={kotaId}
                 onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -237,7 +237,7 @@ export default function AspirasiPage(): React.ReactNode {
               </th>
 
               <th className="px-4 py-3 text-[var(--color-text-secondary)] text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
-                Kota
+                Kota/Kabupaten
               </th>
 
               <th className="px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)]">
