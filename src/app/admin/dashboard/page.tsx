@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useEffect, useState } from 'react'
 
 import { useDashboardStats } from '@/hooks/useDashboard'
@@ -17,20 +18,27 @@ import { IoMdCloseCircle } from "react-icons/io";
 import type { KecamatanStat } from '@/types'
 import { Card } from '@/components/ui/card'
 import { TbCalendarWeek } from "react-icons/tb";
-import { BsBarChart } from "react-icons/bs";
 import { BsBinoculars } from "react-icons/bs";
 
-const SUMBER_COLORS: Record<string, string> = {
-  LEMBAR_ASPIRASI_RESES: '#3b82f6',
-  LEMBAR_ASPIRASI_SOSPERDA: '#f97316',
-  ASPIRASI_PROPOSAL_LANGSUNG: '#22c55e',
-  KOORDINASI_DINAS_TERKAIT: '#a855f7',
-  USULAN_MUSRENBANG_DEWAN: '#ef4444',
-  CALL_CENTER: '#f59e0b',
-}
+// 1. Master Legenda Status
+const LEGENDA_STATUS = [
+  { label: 'Belum Ditindaklanjuti', color: '#EF4444' }, // Merah
+  { label: 'Sedang Ditindaklanjuti', color: '#F59E0B' }, // Kuning/Amber
+  { label: 'Sudah Ditindaklanjuti', color: '#10B981' }, // Hijau
+  { label: 'Tidak Bisa Ditindaklanjuti', color: '#6B7280' }, // Abu-abu
+]
+
+// 2. Master Legenda Sumber & Warna Disatukan
+const LEGENDA_SUMBER = [
+  { key: 'LEMBAR_ASPIRASI_RESES', label: 'Lembar Aspirasi Reses', color: '#3B82F6' },
+  { key: 'LEMBAR_ASPIRASI_SOSPERDA', label: 'Lembar Aspirasi Sosperda', color: '#F97316' },
+  { key: 'ASPIRASI_PROPOSAL_LANGSUNG', label: 'Aspirasi Proposal Langsung', color: '#22C55E' },
+  { key: 'KOORDINASI_DINAS_TERKAIT', label: 'Koordinasi Dinas Terkait', color: '#A855F7' },
+  { key: 'USULAN_MUSRENBANG_DEWAN', label: 'Usulan Musrenbang Dewan', color: '#EF4444' },
+  { key: 'CALL_CENTER', label: 'Call Center', color: '#F59E0B' },
+]
 
 export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanStat[] }) => {
-
   const sortedStats = [...kecamatanStats].sort((a, b) => {
     const aVisited = a.kelurahan_dikunjungi > 0
     const bVisited = b.kelurahan_dikunjungi > 0
@@ -39,20 +47,16 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
     return b.kelurahan_dikunjungi - a.kelurahan_dikunjungi
   })
 
-
   return (
     <Card className="p-4 relative w-full h-full min-h-[340px]">
-      <div className="flex mb-4 items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-4">
         <BsBinoculars className='text-blue-600' />
         <h3 className="text-sm font-semibold text-[var(--color-text)]">
-        Status Kunjungan Kecamatan
-      </h3>
+          Status Kunjungan Kecamatan
+        </h3>
       </div>
       
-      <div 
-        className={`space-y-3 transition-all max-h-[260px] duration-500 ease-in-out overflow-y-auto pb-12
-        }`}
-      >
+      <div className="space-y-3 transition-all max-h-[260px] duration-500 ease-in-out overflow-y-auto pb-12">
         {sortedStats.map((k) => {
           const visited = k.kelurahan_dikunjungi > 0
           return (
@@ -74,8 +78,8 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
                 <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100}%` }}></div>
               </div>
               <p className="text-xs w-1/6">
-                    {k.kelurahan_dikunjungi}/{k.jumlah_kelurahan} kelurahan
-                  </p>
+                {k.kelurahan_dikunjungi}/{k.jumlah_kelurahan} kelurahan
+              </p>
               <p
                 className={`text-xs font-medium ${k.jumlah_kelurahan > 0
                   ? Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100) < 50
@@ -132,63 +136,66 @@ export default function AdminDashboardPage(): React.ReactNode {
     }))
 
   const aspirasiPerStatus =
-    (data?.aspirasi_per_status ?? []).map((a) => ({
-      label: a.status,
-      value: a.jumlah,
-      color:
-        a.status === 'BELUM_DITINDAKLANJUTI'
-          ? 'var(--color-danger)'
-          : a.status === 'SEDANG_DITINDAKLANJUTI'
-            ? 'var(--color-warning)'
-            : a.status === 'SUDAH_DITINDAKLANJUTI'
-              ? 'var(--color-success)'
-              : '#6b7280',
-    }))
+    (data?.aspirasi_per_status ?? []).map((a) => {
+      const matchLegenda = LEGENDA_STATUS.find(
+        (l) => l.label.toLowerCase() === a.status.toLowerCase()
+      )
+      return {
+        label: a.status,
+        value: a.jumlah,
+        color: matchLegenda?.color ?? '#6B7280',
+      }
+    })
 
   const aspirasiPerSumber =
-    (data?.aspirasi_per_sumber ?? []).map((a) => ({
-      label: a.sumber,
-      value: a.jumlah,
-      color: SUMBER_COLORS[a.sumber] ?? 'var(--color-primary)',
-    }))
+    (data?.aspirasi_per_sumber ?? []).map((a) => {
+      const matchLegenda = LEGENDA_SUMBER.find(
+        (s) => s.key === a.sumber || s.label.toLowerCase() === a.sumber.toLowerCase()
+      )
+      return {
+        label: matchLegenda?.label ?? a.sumber,
+        value: a.jumlah,
+        color: matchLegenda?.color ?? 'var(--color-primary)',
+      }
+    })
 
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+      setCurrentTime(new Date())
+    }, 1000)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   const date = currentTime.toLocaleDateString("id-ID", {
     day: "2-digit",
     month: "long",
     year: "numeric",
-  });
+  })
 
   const time = currentTime.toLocaleTimeString("id-ID", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  });
+  })
 
   return (
     <div className="space-y-6">
       <Card className="shadow-md bg-[url('/bg-stats.png')] bg-[length:130%] bg-left">
         <div className="flex flex-row justify-between items-center">
           <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Selamat Datang, Admin 👋
-        </h1>
-        <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
-          Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
-        </p>
+            <h1 className="text-2xl font-bold text-[var(--color-text)]">
+              Selamat Datang, Admin 👋
+            </h1>
+            <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
+              Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
+            </p>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-[var(--color-text-secondary)]">
             <TbCalendarWeek size={18} />
-            <span >{date}</span><span>|</span>
+            <span>{date}</span><span>|</span>
             <span>{time} WIB</span>
           </div>
         </div>
@@ -230,13 +237,10 @@ export default function AdminDashboardPage(): React.ReactNode {
       {/* Bagian Atas: Grid untuk List Kecamatan & 3 Stat Cards Utama */}
       <div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-          
-          {/* Slot 1 & 2: Diisi oleh list kecamatan agar tampil lebih lebar & rapi */}
           <div className="lg:col-span-2">
             <KecamatanList kecamatanStats={kecamatanStats} />
           </div>
 
-          {/* Slot 3 & 4: Diisi StatCards rangkuman kunjungan kecamatan */}
           <div className="flex flex-col gap-4 lg:col-span-2">
             <StatCard
               title="Kecamatan yang Banyak Dikunjungi"
@@ -268,7 +272,6 @@ export default function AdminDashboardPage(): React.ReactNode {
               onClick={() => setModalType('rata-rata')}
             />
           </div>
-          
         </div>
       </div>
 
@@ -289,6 +292,7 @@ export default function AdminDashboardPage(): React.ReactNode {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <PieChart
           title="Statistik Aspirasi per Status"
+          legenda={LEGENDA_STATUS}
           data={aspirasiPerStatus}
           onSliceClick={(label) => {
             router.push(`/admin/aspirasi?status=${encodeURIComponent(label)}`)
@@ -296,6 +300,7 @@ export default function AdminDashboardPage(): React.ReactNode {
         />
         <PieChart
           title="Statistik Aspirasi per Sumber"
+          legenda={LEGENDA_SUMBER}
           data={aspirasiPerSumber}
           onSliceClick={(label) => {
             router.push(`/admin/aspirasi?sumber=${encodeURIComponent(label)}`)
@@ -372,7 +377,6 @@ export default function AdminDashboardPage(): React.ReactNode {
           ))}
         </div>
       </Modal>
-
     </div>
   )
 }

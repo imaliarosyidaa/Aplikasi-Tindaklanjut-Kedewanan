@@ -435,7 +435,7 @@ export default function AspirasiDetailPage({
             </div>
 
             <Button
-              onClick={() => setSelectedAspirasi(aspirasi)}
+                onClick={() => setSelectedAspirasi(aspirasi || null)}
                 className="w-full mt-4"
             >
               <MdEdit size={18} className="mr-1" />
