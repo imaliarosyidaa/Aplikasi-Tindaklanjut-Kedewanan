@@ -10,6 +10,7 @@ import { Pagination } from '@/components/ui/pagination'
 import { Link } from '@/routing'
 import { MdVisibility, MdSearch, MdEdit, MdDelete, MdClose } from 'react-icons/md'
 import type { Kegiatan } from '@/types'
+import { useSearchParams } from 'next/navigation'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -18,16 +19,25 @@ interface KecamatanItem { id: string; nama: string }
 interface KelurahanItem { id: string; nama: string }
 
 export default function KunjunganPage() {
+  const searchParams = useSearchParams()
   const PAGE_SIZE = 50
   const [currentPage, setCurrentPage] = useState(1)
   const [kotaId, setKotaId] = useState('')
+  const [filterKecamatan, setFilterKecamatan] = useState(searchParams.get('kecamatan') ? searchParams.get('kecamatan') : '')
+  const [filterKelurahan, setFilterKelurahan] = useState(searchParams.get('kelurahan') ? searchParams.get('kelurahan') : '')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
-  const [searched, setSearched] = useState(false)
+  const [searched, setSearched] = useState(!!searchParams.get('kecamatan') || !!searchParams.get('kelurahan') || !!searchParams.get('search'))
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (searchParams.get('query')) {
+      setQuery(searchParams.get('query') || '')
+    }
+  }, [searchParams])
 
   const params = new URLSearchParams()
   params.set('page', String(currentPage))
@@ -63,15 +73,15 @@ export default function KunjunganPage() {
   const filteredData = useMemo(() => {
     if (!searched) return allKegiatan
     const kotaNama = kotaMap[kotaId] ?? ''
-    const kecamatanNama = kecamatanMap[kecamatanId] ?? ''
-    const kelurahanNama = kelurahanMap[kelurahanId] ?? ''
+    const kecamatanNama = filterKecamatan || (kecamatanMap[kecamatanId] ?? '')
+    const kelurahanNama = filterKelurahan || (kelurahanMap[kelurahanId] ?? '')
     return allKegiatan.filter((item) => {
       if (kotaNama && item.kota !== kotaNama) return false
       if (kecamatanNama && item.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && item.kelurahan !== kelurahanNama) return false
       return true
     })
-  }, [searched, allKegiatan, kotaMap, kecamatanMap, kelurahanMap, kotaId, kecamatanId, kelurahanId])
+  }, [searched, allKegiatan, kotaMap, kecamatanMap, kelurahanMap, filterKecamatan, filterKelurahan, kotaId, kecamatanId, kelurahanId])
 
   useEffect(() => { setCurrentPage(1) }, [filteredData.length])
 
@@ -151,11 +161,11 @@ export default function KunjunganPage() {
                 onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select id="kecamatan" label="Kecamatan" placeholder="Semua Kecamatan" options={kecamatanOptions} value={kecamatanId}
+              <Select id="kecamatan" label="Kecamatan" placeholder="Semua Kecamatan" options={kecamatanOptions} value={filterKecamatan ?? ''}
                 onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} disabled={!kotaId} />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select id="kelurahan" label="Kelurahan" placeholder="Semua Kelurahan" options={kelurahanOptions} value={kelurahanId}
+              <Select id="kelurahan" label="Kelurahan" placeholder="Semua Kelurahan" options={kelurahanOptions} value={filterKelurahan ?? ''}
                 onChange={(e) => setKelurahanId(e.target.value)} disabled={!kecamatanId} />
             </div>
           </div>

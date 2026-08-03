@@ -27,7 +27,7 @@ export async function GET() {
       select: { created_at: true, status: true, sumber: true },
     }),
     prisma.kecamatan.findMany({ select: { id: true, nama: true } }),
-    prisma.kelurahan.findMany({ select: { id: true, kecamatan_id: true } }),
+    prisma.kelurahan.findMany({ select: { id: true, nama: true, kecamatan_id: true } }),
     prisma.aspirasis.groupBy({ by: ['status'], _count: { status: true } }),
     prisma.aspirasis.groupBy({ by: ['sumber'], _count: { sumber: true } }),
   ])
@@ -83,6 +83,15 @@ export async function GET() {
         .filter((k) => kelIds.includes(k.kunjungan.kelurahan_id))
         .map((k) => k.kunjungan.kelurahan_id)
     )
+    const kelurahan_list = kelurahans
+      .filter((kel) => kel.kecamatan_id === kec.id)
+      .map((kel) => ({
+        nama: kel.nama,
+        dikunjungi: uniqueKel.has(kel.id),
+        jumlah_kunjungan: kegiatan_all.filter(
+          (k) => k.kunjungan.kelurahan_id === kel.id
+        ).length,
+      }))
     return {
       kecamatan: kec.nama,
       jumlah_kunjungan: kegiatan_all.filter((k) =>
@@ -90,6 +99,7 @@ export async function GET() {
       ).length,
       jumlah_kelurahan: kelIds.length,
       kelurahan_dikunjungi: uniqueKel.size,
+      kelurahan_list,
     }
   })
 

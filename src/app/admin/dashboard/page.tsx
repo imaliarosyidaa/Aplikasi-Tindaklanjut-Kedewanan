@@ -13,6 +13,7 @@ import {
   MdTrackChanges,
   MdCheckCircle,
   MdPending,
+  MdChevronRight,
 } from 'react-icons/md'
 import { IoMdCloseCircle } from "react-icons/io";
 import type { KecamatanStat } from '@/types'
@@ -38,7 +39,17 @@ const LEGENDA_SUMBER = [
   { key: 'CALL_CENTER', label: 'Call Center', color: '#F59E0B' },
 ]
 
-export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanStat[] }) => {
+export const KecamatanList = ({
+  kecamatanStats,
+}: {
+  kecamatanStats: KecamatanStat[]
+}) => {
+  const router = useRouter()
+
+  // State untuk mengontrol Modal & Kecamatan yang sedang dipilih
+  const [selectedKecamatan, setSelectedKecamatan] = useState<KecamatanStat | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   const sortedStats = [...kecamatanStats].sort((a, b) => {
     const aVisited = a.kelurahan_dikunjungi > 0
     const bVisited = b.kelurahan_dikunjungi > 0
@@ -47,58 +58,146 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
     return b.kelurahan_dikunjungi - a.kelurahan_dikunjungi
   })
 
+  const handleKecamatanClick = (k: KecamatanStat) => {
+    setSelectedKecamatan(k)
+    setIsModalOpen(true)
+  }
+
+  const handleKelurahanClick = (kelurahanNama: string) => {
+    if (!selectedKecamatan) return
+    setIsModalOpen(false)
+
+    // 🛠️ Jika selectedKecamatan.kota tidak ada, jangan isi 'Gambir', tapi biarkan kosong/undefined
+    const queryParams = new URLSearchParams()
+
+    if (selectedKecamatan.kota) {
+      queryParams.set('kota', selectedKecamatan.kota)
+    }
+    queryParams.set('kecamatan', selectedKecamatan.kecamatan)
+    queryParams.set('kelurahan', kelurahanNama)
+
+    router.push(`/admin/kunjungan?${queryParams.toString()}`)
+  }
+  const count = selectedKecamatan?.jumlah_kunjungan
+
   return (
-    <Card className="p-4 relative w-full h-full min-h-[340px]">
-      <div className="flex items-center gap-2 mb-4">
-        <BsBinoculars className='text-blue-600' />
-        <h3 className="text-sm font-semibold text-[var(--color-text)]">
-          Status Kunjungan Kecamatan
-        </h3>
-      </div>
-      
-      <div className="space-y-3 transition-all max-h-[260px] duration-500 ease-in-out overflow-y-auto pb-12">
-        {sortedStats.map((k) => {
-          const visited = k.kelurahan_dikunjungi > 0
-          return (
-            <div
-              key={k.kecamatan}
-              className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 bg-white"
-            >
-              <div className="w-2/6 flex items-center gap-3">
-                {visited ? (
-                  <MdCheckCircle size={24} color="var(--color-success)" />
-                ) : (
-                  <IoMdCloseCircle size={24} color="var(--color-danger)" />
-                )}
-                <div>
-                  <p className="font-medium text-[var(--color-text)] text-sm">{k.kecamatan}</p>
-                </div>
-              </div>
-              <div className="w-2/6 bg-gray-100 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100}%` }}></div>
-              </div>
-              <p className="text-xs w-1/6">
-                {k.kelurahan_dikunjungi}/{k.jumlah_kelurahan} kelurahan
-              </p>
-              <p
-                className={`text-xs font-medium ${k.jumlah_kelurahan > 0
-                  ? Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100) < 50
-                    ? "text-red-500"
-                    : Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100) < 75
-                      ? "text-yellow-500"
-                      : "text-green-500"
-                  : "text-red-500"
-                  }`}
+    <>
+      <Card className="p-4 relative w-full h-full min-h-[340px]">
+        <div className="flex items-center gap-2 mb-4">
+          <BsBinoculars className="text-blue-600" />
+          <h3 className="text-sm font-semibold text-[var(--color-text)]">
+            Status Kegiatan Per Wilayah Kecamatan
+          </h3>
+        </div>
+
+        <div className="space-y-3 transition-all max-h-[260px] duration-500 ease-in-out overflow-y-auto pb-12">
+          {sortedStats.map((k) => {
+            const visited = k.kelurahan_dikunjungi > 0
+            const percentage =
+              k.jumlah_kelurahan > 0
+                ? Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100)
+                : 0
+
+            return (
+              <div
+                key={k.kecamatan}
+                onClick={() => handleKecamatanClick(k)}
+                className="flex cursor-pointer items-center justify-between rounded-lg border border-[var(--color-border)] p-3 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm transition-all duration-150 ease-in-out"
               >
-                {k.jumlah_kelurahan > 0
-                  ? `${Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100)}%`
-                  : "0%"}
-              </p>
-            </div>
-          )
-        })}
-      </div>
-    </Card>
+                <div className="w-2/6 flex items-center gap-3">
+                  {visited ? (
+                    <MdCheckCircle size={24} className="text-green-500 shrink-0" />
+                  ) : (
+                    <IoMdCloseCircle size={24} className="text-red-500 shrink-0" />
+                  )}
+                  <div>
+                    <p className="font-medium text-[var(--color-text)] text-sm">
+                      {k.kecamatan}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-2/6 bg-gray-100 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    style={{
+                      width: `${(k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100}%`,
+                    }}
+                  />
+                </div>
+
+                <p className="text-xs w-1/6 text-[var(--color-text-secondary)]">
+                  {k.kelurahan_dikunjungi}/{k.jumlah_kelurahan} kelurahan
+                </p>
+
+                <p
+                  className={`text-xs font-medium ${percentage < 50
+                    ? 'text-red-500'
+                    : percentage < 75
+                      ? 'text-yellow-500'
+                      : 'text-green-500'
+                  }`}
+                >
+                  {percentage}%
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </Card>
+
+      {/* MODAL LIST KELURAHAN */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={`Daftar Kelurahan - Kecamatan ${selectedKecamatan?.kecamatan || ''}`}
+      >
+        <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+          <p className="text-xs mb-3">
+            Kelurahan yang sudah memiliki kegiatan: {count}
+          </p>
+
+          {(() => {
+            const list = selectedKecamatan?.kelurahan_list ?? []
+
+            return list.map((kel) => {
+              const isKelVisited = kel.dikunjungi || (kel.jumlah_kunjungan ?? 0) > 0
+
+              return (
+                <div
+                  key={kel.nama}
+                  onClick={() => handleKelurahanClick(kel.nama)}
+                  className="flex cursor-pointer items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-3 shadow-sm transition-all duration-150 hover:border-blue-200 hover:bg-blue-50/50 hover:shadow"
+                >
+                  <div className="flex items-center gap-2.5">
+                    {isKelVisited ? (
+                      <MdCheckCircle size={20} className="shrink-0 text-green-500" />
+                    ) : (
+                      <IoMdCloseCircle size={20} className="shrink-0 text-red-500" />
+                    )}
+                    <span className="text-sm font-medium text-[var(--color-text)]">
+                      {kel.nama}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${isKelVisited
+                        ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300'
+                        : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
+                        }`}
+                    >
+                      {kel.jumlah_kunjungan ?? 0} Kegiatan
+                    </span>
+                    <MdChevronRight size={18} className="text-gray-400" />
+                  </div>
+                </div>
+              )
+            })
+          })()}
+        </div>
+      </Modal>
+    </>
   )
 }
 
@@ -180,6 +279,18 @@ export default function AdminDashboardPage(): React.ReactNode {
     minute: "2-digit",
     second: "2-digit",
   })
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+    setCurrentTime(new Date())
+
+    const interval = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -195,8 +306,16 @@ export default function AdminDashboardPage(): React.ReactNode {
           </div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-[var(--color-text-secondary)]">
             <TbCalendarWeek size={18} />
-            <span>{date}</span><span>|</span>
+            {isMounted ? (
+              <>
+                <span>{date}</span>
+                <span>|</span>
             <span>{time} WIB</span>
+              </>
+            ) : (
+              /* Placeholder transparan/skeleton singkat saat SSR */
+              <span className="opacity-0">Loading time...</span>
+            )}
           </div>
         </div>
         {/* Rangkuman Data Total */}

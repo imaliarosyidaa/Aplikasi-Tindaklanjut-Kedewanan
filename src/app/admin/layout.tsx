@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Navbar } from '@/components/shared/Navbar'
 import { Sidebar } from '@/components/shared/Sidebar'
 import type { ReactNode } from 'react'
+import { SessionProvider } from 'next-auth/react'
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -21,6 +22,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <SessionProvider>
       <Navbar />
       <div className="relative flex flex-1">
         <div className="absolute inset-0 bg-[#F8FBFF] bg-cover bg-center bg-no-repeat opacity-100 pointer-events-none" />
@@ -32,6 +34,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </main>
         </div>
       </div>
+      </SessionProvider>
     </div>
   )
 }

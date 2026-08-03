@@ -34,11 +34,18 @@ interface KelurahanItem { id: string; nama: string }
 function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const trackings = aspirasi.trackings ?? []
 
-  // Ambil data tracking spesifik untuk tiap tahapan jika ada
-  const trackBelum = trackings.find((t) => t.status === 'BELUM_DITINDAKLANJUTI')
-  const trackSedang = trackings.find((t) => t.status === 'SEDANG_DITINDAKLANJUTI')
-  const trackSudah = trackings.find((t) => t.status === 'SUDAH_DITINDAKLANJUTI' || t.status === 'TIDAK_BISA_DITINDAKLANJUTI')
-  const trackSelesai = trackings.find((t) => t.status === 'SELESAI')
+  // Helper untuk mengambil tracking terbaru berdasarkan created_at untuk status tertentu
+  const getLatestTracking = (statuses: string[]) => {
+    return trackings
+      .filter((t) => statuses.includes(t.status))
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
+  }
+
+  // Ambil data tracking TERBARU untuk tiap tahapan
+  const trackBelum = getLatestTracking(['BELUM_DITINDAKLANJUTI'])
+  const trackSedang = getLatestTracking(['SEDANG_DITINDAKLANJUTI'])
+  const trackSudah = getLatestTracking(['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI'])
+  const trackSelesai = getLatestTracking(['SELESAI'])
 
   // Penentuan tahap aktif/sudah lewat berdasarkan status utama aspirasi
   const isSedangOrBeyond = ['SEDANG_DITINDAKLANJUTI', 'SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI', 'SELESAI'].includes(aspirasi.status)
@@ -123,6 +130,25 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
               <p className={`text-sm font-medium ${isSedangOrBeyond ? 'text-[var(--color-text)]' : 'text-gray-400'}`}>
                 Laporan Anda Sedang Diproses
               </p>
+              {trackSedang?.lampiran && trackSedang.lampiran.length > 0 && (
+                <div className="flex flex-col gap-2 mt-2">
+                  {trackSedang.lampiran.map((url, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        fetch(url).then(r => r.blob()).then(blob => {
+                          window.open(URL.createObjectURL(blob), '_blank')
+                        })
+                      }}
+                      className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
+                    >
+                      <MdDescription size={14} />
+                      Klik untuk Melihat Detail
+                    </button>
+                  ))}
+                </div>
+              )}
               {trackSedang?.catatan && (
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{trackSedang.catatan}"</p>
               )}
@@ -254,7 +280,20 @@ export default function LaporanSayaPage(): React.ReactNode {
   const handleSearch = () => {
     const q = query.toLowerCase().trim()
     const qId = queryId.trim().toUpperCase()
-    if (!q) return null
+
+    const hasActiveFilter =
+      kotaId !== '' ||
+      kecamatanId !== '' ||
+      kelurahanId !== '' ||
+      q !== '' ||
+      qId !== ''
+
+    if (!hasActiveFilter) {
+      setResults([])
+      setSearched(false)
+      return
+    }
+
     const kecamatanNama = kecamatanOptions.find(k => k.value === kecamatanId)?.label ?? ''
     const kelurahanOpts = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
     const kelurahanNama = kelurahanOpts.find(k => k.value === kelurahanId)?.label ?? ''
@@ -262,15 +301,18 @@ export default function LaporanSayaPage(): React.ReactNode {
     const filtered = (allAspirasi ?? []).filter((a) => {
       if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
+
       if (qId && (a.id_laporan ?? '').toUpperCase() !== qId) return false
+
       if (q) {
-        return (
-          a.pelapor_nama.toLowerCase().includes(q) ||
-          a.pelapor_telepon.includes(q)
-        )
+        const matchNama = a.pelapor_nama?.toLowerCase().includes(q)
+        const matchTelp = a.pelapor_telepon?.includes(q)
+        if (!matchNama && !matchTelp) return false
       }
+
       return true
     })
+
     setResults(filtered)
     setSearched(true)
   }

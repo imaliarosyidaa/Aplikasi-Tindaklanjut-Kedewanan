@@ -2,7 +2,12 @@ export type UserRole = 'admin' | 'user'
 
 export type Theme = 'light' | 'dark' | 'yellow' | 'ramadan' | 'valentine'
 
-export type AspirasiStatus = 'BELUM_DITINDAKLANJUTI' | 'SEDANG_DITINDAKLANJUTI' | 'SUDAH_DITINDAKLANJUTI' | 'TIDAK_BISA_DITINDAKLANJUTI' | 'SELESAI'
+export type AspirasiStatus =
+  | 'BELUM_DITINDAKLANJUTI'
+  | 'SEDANG_DITINDAKLANJUTI'
+  | 'SUDAH_DITINDAKLANJUTI'
+  | 'TIDAK_BISA_DITINDAKLANJUTI'
+  | 'SELESAI'
 
 export type SumberAspirasi =
   | 'LEMBAR_ASPIRASI_RESES'
@@ -83,11 +88,19 @@ export interface UploadedFile {
   base64: string
 }
 
+export interface KelurahanStat {
+  nama: string
+  dikunjungi: boolean
+  jumlah_kunjungan?: number
+}
+
 export interface KecamatanStat {
+  kota?: string
   kecamatan: string
   jumlah_kunjungan: number
   jumlah_kelurahan: number
   kelurahan_dikunjungi: number
+  kelurahan_list?: KelurahanStat[]
 }
 
 export interface DashboardStats {
