@@ -42,7 +42,10 @@ export async function GET(request: NextRequest) {
         kota: true,
         kecamatan: true,
         kelurahan: true,
-        trackings: { orderBy: { created_at: 'asc' } },
+        trackings: {
+          orderBy: { created_at: 'asc' },
+          include: { diverifikasiOleh: true },
+        },
       },
     }),
     prisma.aspirasis.count({ where }),
@@ -81,13 +84,8 @@ export async function GET(request: NextRequest) {
         ? t.lampiran.map((f: unknown) => (typeof f === 'string' ? f : ((f as Record<string, unknown>).base64 ?? '')))
         : []) as string[],
       created_at: t.created_at.toISOString(),
-      diverifikasi_oleh_id: {
-        select: {
-          id: true,
-          nama: true,
-          email: true,
-        },
-      },
+      diverifikasi_oleh_id: t.diverifikasiOleh?.id ?? '',
+      diverifikasi_oleh_nama: t.diverifikasiOleh?.name ?? '',
     })),
   }))
 

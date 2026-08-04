@@ -29,7 +29,7 @@ export const PieChart = ({
 }: PieChartProps): React.ReactNode => {
 
   // 1. Ambil semua item dari master legenda & cari match dari DB
-  const mergedList: { label: string; value: number; color: string; rawKey: string }[] = legenda.map(
+  const mergedList: { label: string; displayLabel: string; value: number; color: string; rawKey: string }[] = legenda.map(
     (fixed, idx) => {
       const fixedNorm = normalizeStr(fixed.label)
       const keyNorm = fixed.key ? normalizeStr(fixed.key) : ''
@@ -41,9 +41,10 @@ export const PieChart = ({
 
       return {
         label: fixed.label,
+        displayLabel: fixed.key || fixed.label,
         value: found ? found.value : 0,
         color: fixed.color || found?.color || "#888888",
-        rawKey: found ? found.label : (fixed.key || fixed.label),
+        rawKey: fixed.key || fixed.label,
       }
     }
   )
@@ -67,6 +68,7 @@ export const PieChart = ({
 
       mergedList.push({
         label: formattedLabel,
+        displayLabel: formattedLabel,
         value: dbItem.value,
         color: dbItem?.color || '#888888',
         rawKey: dbItem?.label,
@@ -147,7 +149,7 @@ export const PieChart = ({
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="truncate font-medium text-[var(--color-text)]">
-                    {item.label}
+                    {item.displayLabel}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0 text-[var(--color-text-secondary)]">

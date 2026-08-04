@@ -117,18 +117,35 @@ export default function KegiatanBaruPage() {
           <h1 className="text-3xl font-bold">Tambah Kegiatan</h1>
           <p className="text-slate-500">Langkah {step + 1} dari {stepLabels.length}</p>
         </div>
-        <div className="flex gap-3">
-          {step > 0 && (
-            <Button variant="outline" onClick={() => setStep(step - 1)}>
-              <MdArrowBack size={18} className="mr-1" /> Sebelumnya
-            </Button>
-          )}
-          {step < stepLabels.length - 1 ? (
-            <Button onClick={() => setStep(step + 1)} disabled={!canNext()}>
-              Selanjutnya <MdArrowForward size={18} className="ml-1" />
+        <div className="flex w-full items-center justify-between gap-2 sm:gap-3">
+          {step > 0 ? (
+            <Button
+              variant="outline"
+              onClick={() => setStep(step - 1)}
+              className="flex-1 sm:flex-initial"
+            >
+              <MdArrowBack size={18} className="mr-1 shrink-0" />
+              <span>Sebelumnya</span>
             </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={loading}>
+            < div className="hidden sm:block" />
+          )}
+
+          {step < stepLabels.length - 1 ? (
+            <Button
+              onClick={() => setStep(step + 1)}
+              disabled={!canNext()}
+              className="flex-1 sm:flex-initial"
+            >
+              <span>Selanjutnya</span>
+              <MdArrowForward size={18} className="ml-1 shrink-0" />
+            </Button>
+          ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="flex-1 sm:flex-initial"
+              >
               {loading ? 'Menyimpan...' : 'Simpan'}
             </Button>
           )}
@@ -136,21 +153,67 @@ export default function KegiatanBaruPage() {
       </div>
 
       {/* Step indicator */}
-      <div className="flex items-center">
-        {stepLabels.map((label, i) => (
-          <React.Fragment key={label}>
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${i <= step ? 'bg-blue-600' : 'bg-slate-300'}`}>
-                {i + 1}
-              </div>
-              <div className="text-start">
-                <div className={`font-medium ${i <= step ? 'text-blue-600' : 'text-slate-400'}`}>{label}</div>
-                <div className="text-sm text-slate-400">{['Pilih jenis kegiatan', 'Pilih lokasi kegiatan', 'Informasi kegiatan', 'Dokumentasi kegiatan'][i]}</div>
-              </div>
+      <div className="w-full">
+        {/* STEPPER CONTAINER */}
+        <div className="flex items-center justify-between md:justify-start">
+          {stepLabels.map((label, i) => (
+            <React.Fragment key={label}>
+        <div className="flex items-center gap-2 lg:gap-3">
+          {/* Angka Circle */}
+          <div
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white transition-colors sm:h-10 sm:w-10 sm:text-sm ${i <= step ? 'bg-blue-600' : 'bg-slate-300'
+              }`}
+          >
+            {i + 1}
+          </div>
+
+          {/* Label & Subtitle (Hanya tampil penuh di Desktop/Tablet) */}
+          <div className="hidden text-start md:block">
+            <div
+              className={`text-xs font-semibold sm:text-sm ${i <= step ? 'text-blue-600' : 'text-slate-400'
+                }`}
+            >
+              {label}
             </div>
-            {i < stepLabels.length - 1 && <div className={`flex-1 h-1 mx-4 ${i < step ? 'bg-blue-600' : 'bg-slate-200'}`} />}
-          </React.Fragment>
-        ))}
+            <div className="text-[11px] text-slate-400 sm:text-xs">
+              {
+                [
+                  'Pilih jenis kegiatan',
+                  'Pilih lokasi kegiatan',
+                  'Informasi kegiatan',
+                  'Dokumentasi kegiatan',
+                ][i]
+              }
+            </div>
+          </div>
+        </div>
+
+        {/* Garis Penghubung antar Step */}
+        {i < stepLabels.length - 1 && (
+          <div
+            className={`mx-2 h-0.5 flex-1 transition-colors sm:mx-4 sm:h-1 ${i < step ? 'bg-blue-600' : 'bg-slate-200'
+              }`}
+          />
+        )}
+      </React.Fragment>
+    ))}
+        </div>
+
+        {/* KETERANGAN STEP AKTIF UNTUK MOBILE (Layar Kecil) */}
+        <div className="mt-3 block rounded-lg bg-slate-50 p-2.5 text-center text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300 md:hidden">
+          <span className="font-bold text-blue-600">Langkah {step + 1} dari {stepLabels.length}:</span>{' '}
+          {stepLabels[step]} —{' '}
+          <span className="text-slate-400">
+            {
+              [
+                'Pilih jenis kegiatan',
+                'Pilih lokasi kegiatan',
+                'Informasi kegiatan',
+                'Dokumentasi kegiatan',
+              ][step]
+            }
+          </span>
+        </div>
       </div>
 
       {/* Step 1: Jenis Kegiatan */}

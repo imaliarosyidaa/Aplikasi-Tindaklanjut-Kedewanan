@@ -389,7 +389,7 @@ export default function AspirasiPage(): React.ReactNode {
         )}
       </div>
 
-      <div className="w-full overflow-hidden rounded-lg border border-[var(--color-border)] shadow-sm">
+      <div className="w-full overflow-x-auto lg:overflow-hidden rounded-lg border border-[var(--color-border)] shadow-sm">
         {/* 🛠️ PERBAIKAN 1: Gunakan text-xs untuk font ringkas & compact */}
         <table className="w-full table-auto text-xs">
           <thead>
@@ -593,12 +593,15 @@ export default function AspirasiPage(): React.ReactNode {
                     </td>
 
                     {/* Diverifikasi oleh */}
-                    <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
-                      <Badge status={aspirasi.status}>
-                        <span className="text-[10px]">
-                          {statusLabel[aspirasi.status] || aspirasi.status}
-                        </span>
-                      </Badge>
+                    <td className="px-2 py-2 text-center text-xs text-[var(--color-text-secondary)]">
+                      {(() => {
+                        const trackings = aspirasi.trackings
+                        if (!trackings || trackings.length === 0) return '-'
+                        const latest = trackings.reduce((a, b) =>
+                          new Date(a.created_at) > new Date(b.created_at) ? a : b
+                        )
+                        return latest.diverifikasi_oleh_nama || '-'
+                      })()}
                     </td>
                   </tr>
                 ))
