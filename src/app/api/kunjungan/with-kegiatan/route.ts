@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         rw: body.rw ?? '',
         jumlah_peserta: body.jumlah_peserta ? parseInt(body.jumlah_peserta) : null,
         catatan: body.catatan ?? '',
+        dibuat_oleh_id: body.dibuat_oleh_id ?? null,
       },
       include: {
         kunjungan: {

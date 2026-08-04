@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { FileUpload } from '@/components/ui/file-upload'
 import type { AspirasiStatus, Aspirasi } from '@/types'
+import { Input } from '../ui/input'
+import { useSession } from 'next-auth/react'
 
 interface FormUpdateAspirasiProps {
   aspirasi: Aspirasi
@@ -28,12 +30,14 @@ export const FormUpdateAspirasi = ({
   const [status, setStatus] = useState<AspirasiStatus>(aspirasi.status)
   const [catatan, setCatatan] = useState('')
   const [lampiranFiles, setLampiranFiles] = useState<string[]>([])
+  const session = useSession()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await trigger({
       status: status as AspirasiStatus,
       catatan: catatan,
+      diverifikasi_oleh_id: session.data?.user?.id,
       lampiran: lampiranFiles,
       kirim_email: false,
       kirim_telepon: false,
@@ -84,6 +88,14 @@ export const FormUpdateAspirasi = ({
           />
         </div>
       </div>
+      <Input
+        id="id_user"
+        label="Diverifikasi Oleh"
+        placeholder={session.data?.user?.name || ''}
+        value={''}
+        disabled
+        className="bg-gray-100 text-gray-500"
+      />
 
       {/* FOOTER ACTION: Tombol Simpan di Bawah Melintang Rapi */}
       <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">

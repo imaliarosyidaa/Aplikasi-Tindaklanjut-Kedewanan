@@ -20,6 +20,7 @@ import type { KecamatanStat } from '@/types'
 import { Card } from '@/components/ui/card'
 import { TbCalendarWeek } from "react-icons/tb";
 import { BsBinoculars } from "react-icons/bs";
+import { useSession } from 'next-auth/react'
 
 // 1. Master Legenda Status
 const LEGENDA_STATUS = [
@@ -291,6 +292,7 @@ export default function AdminDashboardPage(): React.ReactNode {
 
     return () => clearInterval(interval)
   }, [])
+  const { data: session } = useSession()
 
   return (
     <div className="space-y-6">
@@ -298,7 +300,7 @@ export default function AdminDashboardPage(): React.ReactNode {
         <div className="flex flex-row justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-text)]">
-              Selamat Datang, Admin 👋
+              Selamat Datang, {session?.user?.name} 👋
             </h1>
             <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
               Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
@@ -399,11 +401,17 @@ export default function AdminDashboardPage(): React.ReactNode {
         <BarChart
           title="Statistik Kegiatan per Bulan"
           data={kunjunganPerBulan}
+          onBarClick={(bulan) => {
+            router.push(`/admin/kunjungan?bulan=${encodeURIComponent(bulan)}`)
+          }}
         />
         <BarChart
           title="Statistik Aspirasi per Bulan"
           data={aspirasiPerBulan}
           color="var(--color-warning)"
+          onBarClick={(bulan) => {
+            router.push(`/admin/aspirasi?bulan=${encodeURIComponent(bulan)}`)
+          }}
         />
       </div>
 
@@ -421,8 +429,8 @@ export default function AdminDashboardPage(): React.ReactNode {
           title="Statistik Aspirasi per Sumber"
           legenda={LEGENDA_SUMBER}
           data={aspirasiPerSumber}
-          onSliceClick={(label) => {
-            router.push(`/admin/aspirasi?sumber=${encodeURIComponent(label)}`)
+          onSliceClick={(key) => {
+            router.push(`/admin/aspirasi?sumber=${key}`)
           }}
         />
       </div>

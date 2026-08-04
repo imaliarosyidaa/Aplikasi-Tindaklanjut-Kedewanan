@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, useEffect, useCallback } from 'react'
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { useAspirasiList } from '@/hooks/useAspirasi'
@@ -12,14 +13,30 @@ import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
 import { Link } from '@/routing'
 import { Pagination } from '@/components/ui/pagination'
 import { Card } from '@/components/ui/card'
-import { MdVisibility, MdFilterList, MdEdit, MdDelete } from 'react-icons/md'
+import {
+  MdVisibility,
+  MdFilterList,
+  MdEdit,
+  MdDelete,
+  MdSearch,
+} from 'react-icons/md'
 import type { Aspirasi } from '@/types'
 import { useSearchParams } from 'next/navigation'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
-interface KotaItem { id: string; nama: string }
-interface KecamatanItem { id: string; nama: string }
-interface KelurahanItem { id: string; nama: string }
+
+interface KotaItem {
+  id: string
+  nama: string
+}
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 
 export default function AspirasiPage(): React.ReactNode {
   const searchParams = useSearchParams()
@@ -32,56 +49,151 @@ export default function AspirasiPage(): React.ReactNode {
     USULAN_MUSRENBANG_DEWAN: 'Usulan Musrenbang Dewan',
     CALL_CENTER: 'Call Center',
   }
+
   const statusLabel: Record<string, string> = {
     BELUM_DITINDAKLANJUTI: 'Belum Ditindaklanjuti',
     SEDANG_DITINDAKLANJUTI: 'Sedang Ditindaklanjuti',
     SUDAH_DITINDAKLANJUTI: 'Sudah Ditindaklanjuti',
     TIDAK_BISA_DITINDAKLANJUTI: 'Tidak Bisa Ditindaklanjuti',
   }
+
   const PAGE_SIZE = 50
   const [currentPage, setCurrentPage] = useState(1)
-  const [searchText, setSearchText] = useState('')
-  const [filterSumber, setFilterSumber] = useState(searchParams.get('sumber') ? searchParams.get('sumber') : '')
-  const [filterStatus, setFilterStatus] = useState(searchParams.get('status') ? searchParams.get('status') : '')
+
+  // State Form Inputs & Filter
+  const [searchText, setSearchText] = useState(
+    searchParams.get('search') || searchParams.get('query') || ''
+  )
+  const [filterSumber, setFilterSumber] = useState(
+    searchParams.get('sumber') || ''
+  )
+  const [filterStatus, setFilterStatus] = useState(
+    searchParams.get('status') || ''
+  )
+  const [filterBulan, setFilterBulan] = useState(
+    searchParams.get('bulan') || ''
+  )
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
+
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
 
+  // Sinkronisasi URL searchParams saat terjadi navigasi dari luar (Chart/Dashboard)
+  useEffect(() => {
+    setFilterSumber(searchParams.get('sumber') || '')
+    setFilterStatus(searchParams.get('status') || '')
+    setFilterBulan(searchParams.get('bulan') || '')
+    setSearchText(searchParams.get('search') || searchParams.get('query') || '')
+  }, [searchParams])
+
+  // Master Data Wilayah
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : null, fetcher
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    fetcher
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null, fetcher
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher
+  )
+
+  const kotaMap = useMemo(
+    () => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])),
+    [kotaList]
+  )
+  const kecamatanMap = useMemo(
+    () => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])),
+    [kecamatanList]
+  )
+  const kelurahanMap = useMemo(
+    () => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])),
+    [kelurahanList]
   )
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
-  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.map((k) => ({
+    value: k.id,
+    label: k.nama,
+  }))
+  const kelurahanOptions = kelurahanList.map((k) => ({
+    value: k.id,
+    label: k.nama,
+  }))
 
-  const { data: aspirasiList, total, isLoading, mutate } = useAspirasiList({
+  // Hook List Aspirasi
+  const {
+    data: rawAspirasiList = [],
+    total,
+    isLoading,
+    mutate,
+  } = useAspirasiList({
     page: currentPage,
     limit: PAGE_SIZE,
     search: searchText || undefined,
     sumber: filterSumber || undefined,
     status: filterStatus || undefined,
-    kota: kotaId || undefined,
-    kecamatan: kecamatanId || undefined,
-    kelurahan: kelurahanId || undefined,
+    kota: kotaMap[kotaId] || searchParams.get('kota') || undefined,
+    kecamatan:
+      kecamatanMap[kecamatanId] || searchParams.get('kecamatan') || undefined,
+    kelurahan:
+      kelurahanMap[kelurahanId] || searchParams.get('kelurahan') || undefined,
   })
 
-  const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
+  // Filter tambahan untuk bulan jika dikirim via URL / Chart
+  const aspirasiList = useMemo(() => {
+    if (!filterBulan) return rawAspirasiList
 
-  const hasFilter = filterSumber || filterStatus || searchText.trim() || kotaId || kecamatanId || kelurahanId
-  useEffect(() => { setCurrentPage(1); setSelectedIds(new Set()) }, [filterSumber, filterStatus, searchText, kotaId, kecamatanId, kelurahanId])
+    const targetBulan = filterBulan.toLowerCase().trim()
+    return rawAspirasiList.filter((item) => {
+      if (!item.tanggal_dibuat) return true
+      const date = new Date(item.tanggal_dibuat)
+      if (isNaN(date.getTime())) return true
+
+      const monthShort = date
+        .toLocaleDateString('id-ID', { month: 'short' })
+        .toLowerCase()
+      const monthLong = date
+        .toLocaleDateString('id-ID', { month: 'long' })
+        .toLowerCase()
+
+      return (
+        monthShort.includes(targetBulan) || monthLong.includes(targetBulan)
+      )
+    })
+  }, [rawAspirasiList, filterBulan])
+
+  const hasFilter =
+    Boolean(filterSumber) ||
+    Boolean(filterStatus) ||
+    Boolean(filterBulan) ||
+    Boolean(searchText.trim()) ||
+    Boolean(kotaId) ||
+    Boolean(kecamatanId) ||
+    Boolean(kelurahanId) ||
+    Boolean(searchParams.get('kecamatan')) ||
+    Boolean(searchParams.get('kelurahan'))
+
+  const handleResetFilter = () => {
+    setSearchText('')
+    setFilterSumber('')
+    setFilterStatus('')
+    setFilterBulan('')
+    setKotaId('')
+    setKecamatanId('')
+    setKelurahanId('')
+    setCurrentPage(1)
+    setSelectedIds(new Set())
+  }
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id); else next.add(id)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
   }
@@ -116,7 +228,10 @@ export default function AspirasiPage(): React.ReactNode {
   const sumberOptions = [
     { value: 'LEMBAR_ASPIRASI_RESES', label: 'Lembar Aspirasi Reses' },
     { value: 'LEMBAR_ASPIRASI_SOSPERDA', label: 'Lembar Aspirasi Sosperda' },
-    { value: 'ASPIRASI_PROPOSAL_LANGSUNG', label: 'Aspirasi Proposal Langsung' },
+    {
+      value: 'ASPIRASI_PROPOSAL_LANGSUNG',
+      label: 'Aspirasi Proposal Langsung',
+    },
     { value: 'KOORDINASI_DINAS_TERKAIT', label: 'Koordinasi Dinas Terkait' },
     { value: 'USULAN_MUSRENBANG_DEWAN', label: 'Usulan Musrenbang Dewan' },
     { value: 'CALL_CENTER', label: 'Call Center' },
@@ -126,7 +241,10 @@ export default function AspirasiPage(): React.ReactNode {
     { value: 'BELUM_DITINDAKLANJUTI', label: 'Belum Ditindaklanjuti' },
     { value: 'SEDANG_DITINDAKLANJUTI', label: 'Sedang Ditindaklanjuti' },
     { value: 'SUDAH_DITINDAKLANJUTI', label: 'Sudah Ditindaklanjuti' },
-    { value: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Bisa Ditindaklanjuti' },
+    {
+      value: 'TIDAK_BISA_DITINDAKLANJUTI',
+      label: 'Tidak Bisa Ditindaklanjuti',
+    },
   ]
 
   return (
@@ -144,7 +262,17 @@ export default function AspirasiPage(): React.ReactNode {
 
       <Card className="p-6">
         <div className="space-y-4">
-          <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-[var(--color-text)]">
+              Filter & Pencarian
+            </p>
+            {filterBulan && (
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                Filter Bulan: {filterBulan}
+              </span>
+            )}
+          </div>
+
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
               <Select
@@ -153,7 +281,10 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Sumber"
                 options={sumberOptions}
                 value={filterSumber ?? ''}
-                onChange={(e) => { setFilterSumber(e.target.value); setCurrentPage(1) }}
+                onChange={(e) => {
+                  setFilterSumber(e.target.value)
+                  setCurrentPage(1)
+                }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -163,36 +294,75 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Status"
                 options={statusOptions}
                 value={filterStatus ?? ''}
-                onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
+                onChange={(e) => {
+                  setFilterStatus(e.target.value)
+                  setCurrentPage(1)
+                }}
               />
             </div>
           </div>
+
           <div className="flex flex-wrap gap-3">
             <div className="min-w-[140px] flex-1">
-              <Select id="kota" label="Kota/Kabupaten" placeholder="Semua Kota/Kabupaten" options={kotaOptions} value={kotaId}
-                onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} />
+              <Select
+                id="kota"
+                label="Kota/Kabupaten"
+                placeholder="Semua Kota/Kabupaten"
+                options={kotaOptions}
+                value={kotaId}
+                onChange={(e) => {
+                  setKotaId(e.target.value)
+                  setKecamatanId('')
+                  setKelurahanId('')
+                }}
+              />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select id="kecamatan" label="Kecamatan" placeholder="Semua Kecamatan" options={kecamatanOptions} value={kecamatanId}
-                onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} disabled={!kotaId} />
+              <Select
+                id="kecamatan"
+                label="Kecamatan"
+                placeholder="Semua Kecamatan"
+                options={kecamatanOptions}
+                value={kecamatanId}
+                onChange={(e) => {
+                  setKecamatanId(e.target.value)
+                  setKelurahanId('')
+                }}
+              />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select id="kelurahan" label="Kelurahan" placeholder="Semua Kelurahan" options={kelurahanOptions} value={kelurahanId}
-                onChange={(e) => setKelurahanId(e.target.value)} disabled={!kecamatanId} />
+              <Select
+                id="kelurahan"
+                label="Kelurahan"
+                placeholder="Semua Kelurahan"
+                options={kelurahanOptions}
+                value={kelurahanId}
+                onChange={(e) => setKelurahanId(e.target.value)}
+                disabled={!kecamatanId}
+              />
             </div>
           </div>
-          <div className="flex gap-3 items-end">
+
+          <div className="flex items-end gap-3">
             <div className="flex-1">
               <Input
                 id="search"
                 label="Cari Nama atau No. Telepon"
                 value={searchText}
-                onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1) }}
+                onChange={(e) => {
+                  setSearchText(e.target.value)
+                  setCurrentPage(1)
+                }}
                 placeholder="Ketik nama atau telepon..."
               />
             </div>
             {hasFilter && (
-              <Button variant="outline" size="sm" className="mb-0.5" onClick={() => { setSearchText(''); setFilterSumber(''); setFilterStatus(''); setKotaId(''); setKecamatanId(''); setKelurahanId(''); setCurrentPage(1) }}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mb-0.5"
+                onClick={handleResetFilter}
+              >
                 <MdFilterList size={16} className="mr-1" />
                 Tampilkan Semua
               </Button>
@@ -201,22 +371,29 @@ export default function AspirasiPage(): React.ReactNode {
         </div>
       </Card>
 
-      <div className="flex items-center justify-end mb-2">
+      <div className="mb-2 flex items-center justify-end">
         {selectedIds.size > 0 && (
-          <Button variant="danger" size="sm" onClick={handleBulkDelete} disabled={deleting}>
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={handleBulkDelete}
+            disabled={deleting}
+          >
             {deleting ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-1" />
-            ) : <MdDelete size={16} className="mr-1" />}
+              <div className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <MdDelete size={16} className="mr-1" />
+            )}
             Hapus {selectedIds.size} Terpilih
           </Button>
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+      <div className="w-full overflow-x-auto overflow-hidden rounded-lg border border-[var(--color-border)] shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[var(--color-bg-secondary)]">
-              <th className="w-10 px-4 py-3 text-[var(--color-text-secondary)] text-left">
+              <th className="w-10 px-4 py-3 text-left">
                 <input
                   type="checkbox"
                   checked={
@@ -227,40 +404,31 @@ export default function AspirasiPage(): React.ReactNode {
                   className="cursor-pointer"
                 />
               </th>
-
-              <th className="w-12 px-4 py-3 text-[var(--color-text-secondary)] text-left font-medium text-[var(--color-text-secondary)]">
+              <th className="w-12 px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
                 No
               </th>
-
-              <th className="px-4 py-3 text-[var(--color-text-secondary)] text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="whitespace-nowrap px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
                 Kecamatan
               </th>
-
-              <th className="px-4 py-3 text-[var(--color-text-secondary)] text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="whitespace-nowrap px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
                 Kota/Kabupaten
               </th>
-
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)]">
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
                 Sumber
               </th>
-
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)]">
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
                 Deskripsi
               </th>
-
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
                 Pelapor
               </th>
-
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-left font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
                 Tanggal
               </th>
-
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-center font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="whitespace-nowrap px-2 py-2 text-center font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
                 Status
               </th>
-
-              <th className="px-2 py-2 lg:px-4 lg:py-3 text-center font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+              <th className="whitespace-nowrap px-2 py-2 text-center font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
                 Aksi
               </th>
             </tr>
@@ -280,8 +448,8 @@ export default function AspirasiPage(): React.ReactNode {
                     className="px-4 py-8 text-center text-[var(--color-text-secondary)]"
                   >
                     {hasFilter
-                      ? "Tidak ada aspirasi dengan filter tersebut"
-                      : "Belum ada data aspirasi"}
+                      ? 'Tidak ada aspirasi dengan filter tersebut'
+                      : 'Belum ada data aspirasi'}
                   </td>
                 </tr>
               ) : (
@@ -299,44 +467,47 @@ export default function AspirasiPage(): React.ReactNode {
                       />
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3 text-[var(--color-text-secondary)]">
+                    <td className="px-2 py-2 text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
                       {(currentPage - 1) * PAGE_SIZE + i + 1}
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3 whitespace-nowrap">
-                      {aspirasi.kecamatan || "-"}
+                    <td className="whitespace-nowrap px-2 py-2 lg:px-4 lg:py-3">
+                      {aspirasi.kecamatan || '-'}
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3 whitespace-nowrap">
-                      {aspirasi.kota || "-"}
+                    <td className="whitespace-nowrap px-2 py-2 lg:px-4 lg:py-3">
+                      {aspirasi.kota || '-'}
                     </td>
 
                     <td className="px-2 py-2 lg:px-4 lg:py-3">
-                      <p className="max-w-[140px] lg:max-w-[220px] truncate">
+                      <p className="max-w-[140px] truncate lg:max-w-[220px]">
                         {sumberLabel[aspirasi.sumber] || aspirasi.sumber}
                       </p>
                     </td>
 
                     <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                      <p className="max-w-[180px] lg:max-w-xs line-clamp-2">
+                      <p className="line-clamp-2 max-w-[180px] lg:max-w-xs">
                         {aspirasi.deskripsi}
                       </p>
                     </td>
 
-                    <td className="px-4 py-3 text-[var(--color-text-secondary)] whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-3 text-[var(--color-text-secondary)]">
                       {aspirasi.pelapor_nama}
                     </td>
 
-                    <td className="px-4 py-3 text-[var(--color-text-secondary)] whitespace-nowrap">
-                      {new Date(aspirasi.tanggal_dibuat).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
+                    <td className="whitespace-nowrap px-4 py-3 text-[var(--color-text-secondary)]">
+                      {new Date(aspirasi.tanggal_dibuat).toLocaleDateString(
+                        'id-ID',
+                        {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        }
+                      )}
                     </td>
 
-                    <td className="px-4 py-3 text-[var(--color-text-secondary)] text-center whitespace-nowrap">
-                      <Badge status={aspirasi.status} >
+                    <td className="whitespace-nowrap px-4 py-3 text-center text-[var(--color-text-secondary)]">
+                      <Badge status={aspirasi.status}>
                         {statusLabel[aspirasi.status] || aspirasi.status}
                       </Badge>
                     </td>
@@ -351,28 +522,34 @@ export default function AspirasiPage(): React.ReactNode {
                           <MdVisibility className="h-4 w-4" />
                         </Link>
 
-                        <Link href={`/admin/aspirasi/edit/${aspirasi.id}`} className="text-[var(--color-warning)] cursor-pointer hover:underline"><MdEdit size={16} /></Link>
+                        <Link
+                          href={`/admin/aspirasi/edit/${aspirasi.id}`}
+                          className="cursor-pointer text-[var(--color-warning)] hover:underline"
+                          title="Edit"
+                        >
+                          <MdEdit size={16} />
+                        </Link>
 
                         <button
                           onClick={async () => {
                             if (
                               deletingId ||
-                              !window.confirm("Hapus aspirasi ini?")
+                              !window.confirm('Hapus aspirasi ini?')
                             )
-                              return;
+                              return
 
-                            setDeletingId(aspirasi.id);
+                            setDeletingId(aspirasi.id)
 
                             try {
                               await fetch(`/api/aspirasi/${aspirasi.id}`, {
-                                method: "DELETE",
-                              });
+                                method: 'DELETE',
+                              })
 
-                              await mutate();
+                              await mutate()
                             } catch {
-                              alert("Gagal menghapus");
+                              alert('Gagal menghapus')
                             } finally {
-                              setDeletingId(null);
+                              setDeletingId(null)
                             }
                           }}
                           disabled={deletingId === aspirasi.id}
@@ -393,15 +570,28 @@ export default function AspirasiPage(): React.ReactNode {
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-end mt-4">
-        <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
+
+      <div className="mt-4 flex items-center justify-end">
+        <Pagination
+          currentPage={currentPage}
+          totalItems={total}
+          pageSize={PAGE_SIZE}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
-      <Modal isOpen={!!selectedAspirasi} onClose={() => setSelectedAspirasi(null)} title="Update Status">
+      <Modal
+        isOpen={!!selectedAspirasi}
+        onClose={() => setSelectedAspirasi(null)}
+        title="Update Status"
+      >
         {selectedAspirasi && (
           <FormUpdateAspirasi
             aspirasi={selectedAspirasi}
-            onSuccess={() => { setSelectedAspirasi(null); mutate() }}
+            onSuccess={() => {
+              setSelectedAspirasi(null)
+              mutate()
+            }}
           />
         )}
       </Modal>

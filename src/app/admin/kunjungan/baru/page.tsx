@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import useSWR from 'swr'
+import { useSession } from 'next-auth/react'
 import { useRouter } from '@/routing'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,6 +29,7 @@ const stepLabels = ['Jenis Kegiatan', 'Lokasi', 'Detail', 'Upload']
 
 export default function KegiatanBaruPage() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
 
@@ -89,6 +91,7 @@ export default function KegiatanBaruPage() {
         kota: kotaMap[kotaId],
         kecamatan: kecamatanMap[kecamatanId],
         kelurahan: kelurahanMap[kelurahanId],
+        dibuat_oleh_id: session?.user?.id,
       }
       const res = await fetch('/api/kunjungan/with-kegiatan', {
         method: 'POST',

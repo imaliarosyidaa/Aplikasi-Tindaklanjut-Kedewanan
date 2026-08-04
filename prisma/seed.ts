@@ -43,6 +43,9 @@ async function main() {
   await prisma.kelurahan.deleteMany()
   await prisma.kecamatan.deleteMany()
   await prisma.kota.deleteMany()
+  await prisma.rolePermission.deleteMany()
+  await prisma.role.deleteMany()
+  await prisma.permission.deleteMany()
   await prisma.user.deleteMany()
 
   // 1. Parse CSV & Create Wilayah
@@ -352,6 +355,80 @@ async function main() {
     }),
   )
   console.log(`  ${kegiatanData.length} kegiatan created`)
+
+  // 6. RBAC: Roles & Permissions
+  const permissionData = [
+    { name: 'dashboard:read', resource: 'dashboard', action: 'read', description: 'Melihat dashboard' },
+    { name: 'aspirasi:read', resource: 'aspirasi', action: 'read', description: 'Melihat aspirasi' },
+    { name: 'aspirasi:write', resource: 'aspirasi', action: 'write', description: 'Input & edit aspirasi' },
+    { name: 'aspirasi:delete', resource: 'aspirasi', action: 'delete', description: 'Menghapus aspirasi' },
+    { name: 'kunjungan:read', resource: 'kunjungan', action: 'read', description: 'Melihat kunjungan' },
+    { name: 'kunjungan:write', resource: 'kunjungan', action: 'write', description: 'Input & edit kunjungan' },
+    { name: 'kunjungan:delete', resource: 'kunjungan', action: 'delete', description: 'Menghapus kunjungan' },
+    { name: 'relawan:read', resource: 'relawan', action: 'read', description: 'Melihat relawan' },
+    { name: 'relawan:write', resource: 'relawan', action: 'write', description: 'Input & edit relawan' },
+    { name: 'relawan:delete', resource: 'relawan', action: 'delete', description: 'Menghapus relawan' },
+    { name: 'pengaturan:read', resource: 'pengaturan', action: 'read', description: 'Melihat pengaturan' },
+    { name: 'pengaturan:write', resource: 'pengaturan', action: 'write', description: 'Ubah pengaturan' },
+  ]
+
+  const permissionRecords = []
+  for (const p of permissionData) {
+    permissionRecords.push(await prisma.permission.create({ data: p }))
+  }
+  const permissionByName = new Map(permissionRecords.map((p) => [p.name, p.id]))
+  console.log(`  ${permissionRecords.length} permissions created`)
+
+  const roleData = [
+    {
+      name: 'Super Admin',
+      description: 'Akses penuh ke semua fitur aplikasi',
+      permissions: permissionData.map((p) => p.name),
+    },
+    {
+      name: 'Admin DPRD',
+      description: 'Mengelola data aspirasi, kunjungan, dan relawan',
+      permissions: ['dashboard:read', 'aspirasi:read', 'aspirasi:write', 'aspirasi:delete', 'kunjungan:read', 'kunjungan:write', 'kunjungan:delete', 'relawan:read', 'relawan:write', 'relawan:delete', 'pengaturan:read'],
+    },
+    {
+      name: 'Masyarakat Umum',
+      description: 'Melihat informasi dashboard, aspirasi, kunjungan, dan relawan',
+      permissions: ['dashboard:read', 'aspirasi:read', 'kunjungan:read', 'relawan:read'],
+    },
+  ]
+
+  const roleByName = new Map<string, string>()
+  for (const r of roleData) {
+    const role = await prisma.role.create({
+      data: {
+        name: r.name,
+        description: r.description,
+        permissions: {
+          create: r.permissions.map((name) => ({ permissionId: permissionByName.get(name)! })),
+        },
+      },
+    })
+    roleByName.set(r.name, role.id)
+  }
+  console.log(`  ${roleData.length} roles created`)
+
+  // 7. Hubungkan user admin dengan role Super Admin
+  const superAdminRoleId = roleByName.get('Super Admin')
+  const adminUser = await prisma.user.findUnique({ where: { username: 'admin' } })
+  if (adminUser && superAdminRoleId) {
+    await prisma.user.update({
+      where: { id: adminUser.id },
+      data: { role_id: superAdminRoleId },
+    })
+  }
+  const superAdminUser = await prisma.user.findUnique({ where: { username: 'superadmin' } })
+  if (superAdminUser && superAdminRoleId) {
+    await prisma.user.update({
+      where: { id: superAdminUser.id },
+      data: { role_id: superAdminRoleId },
+    })
+  }
+  console.log('  users linked to Super Admin role')
 
   console.log('Seeding complete successfully!')
 }

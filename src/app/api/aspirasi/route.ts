@@ -58,7 +58,9 @@ export async function GET(request: NextRequest) {
     pelapor_nama: a.pelapor_nama,
     pelapor_email: a.pelapor_email ?? '',
     pelapor_telepon: a.pelapor_telepon,
-    lampiran: (Array.isArray(a.lampiran) ? a.lampiran.map((f: unknown) => typeof f === 'string' ? f : (f as Record<string, unknown>).base64 ?? '') : []) as string[],
+    lampiran: (Array.isArray(a.lampiran)
+      ? a.lampiran.map((f: unknown) => (typeof f === 'string' ? f : ((f as Record<string, unknown>).base64 ?? '')))
+      : []) as string[],
     kategori_usulan: a.kategori_usulan,
     jenis_usulan: a.jenis_usulan,
     jenis_reses: a.jenis_reses,
@@ -75,8 +77,17 @@ export async function GET(request: NextRequest) {
       aspirasi_id: t.aspirasi_id,
       status: t.status,
       catatan: t.catatan ?? '',
-      lampiran: (Array.isArray(t.lampiran) ? t.lampiran.map((f: unknown) => typeof f === 'string' ? f : (f as Record<string, unknown>).base64 ?? '') : []) as string[],
+      lampiran: (Array.isArray(t.lampiran)
+        ? t.lampiran.map((f: unknown) => (typeof f === 'string' ? f : ((f as Record<string, unknown>).base64 ?? '')))
+        : []) as string[],
       created_at: t.created_at.toISOString(),
+      diverifikasi_oleh_id: {
+        select: {
+          id: true,
+          nama: true,
+          email: true,
+        },
+      },
     })),
   }))
 

@@ -7,7 +7,7 @@ import type { AspirasiStatus } from '@/types'
 interface BadgeProps {
   variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
   status?: AspirasiStatus
-  children: string
+  children: React.ReactNode
 }
 
 const statusVariants: Record<AspirasiStatus, string> = {

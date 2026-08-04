@@ -63,6 +63,8 @@ export interface TrackingAspirasi {
   catatan?: string
   lampiran: string[]
   created_at: string
+  diverifikasi_oleh_id?: string
+  diverifikasi_oleh_nama?: string
 }
 
 export interface MasterKota {
@@ -164,4 +166,5 @@ export interface Kegiatan {
   kecamatan?: string
   kelurahan?: string
   kota?: string
+  dibuat_oleh?: string
 }

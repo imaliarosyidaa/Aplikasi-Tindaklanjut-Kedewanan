@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/routing'
-import { MdArrowBack, MdDescription, MdEdit } from 'react-icons/md'
+import { MdArrowBack, MdDescription, MdEdit, MdFlag } from 'react-icons/md'
 import { Aspirasi } from '@/types'
 import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
@@ -110,11 +110,11 @@ export default function AspirasiDetailPage({
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:grid-rows-6 lg:min-h-screen">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* KOLOM 1: Perbandingan 3:3 (row-span-3 & row-span-3) */}
-        <div className="lg:col-span-1 lg:row-span-6 flex flex-col gap-5 lg:grid lg:grid-rows-6">
+        <div className="flex flex-col gap-5">
           {/* Informasi Pelapor (3 unit) */}
-          <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)] lg:row-span-3 flex flex-col justify-between">
+          <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)] flex flex-col justify-between">
             <div>
               <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
                 Informasi Pelapor
@@ -155,7 +155,7 @@ export default function AspirasiDetailPage({
           </Card>
 
           {/* Alamat Usulan (3 unit) */}
-          <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)] lg:row-span-3 flex flex-col justify-between">
+          <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)] flex flex-col justify-between h-fit">
             <div>
               <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
                 Alamat Usulan
@@ -185,7 +185,7 @@ export default function AspirasiDetailPage({
         </div>
 
         {/* KOLOM 2: Perbandingan 2:4 (row-span-2 & row-span-4) */}
-        <div className="lg:col-span-1 lg:row-span-6 flex flex-col gap-5 lg:grid lg:grid-rows-6">
+        <div className="lg:col-span-1 flex flex-col gap-5">
           {/* Isi Aspirasi (2 unit) */}
           <Card className="p-5 space-y-4 lg:row-span-2 flex flex-col overflow-y-auto">
             <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">
@@ -273,7 +273,7 @@ export default function AspirasiDetailPage({
                 Belum ada riwayat tindak lanjut.
               </p>
             ) : (
-                <div className="relative space-y-6">
+                <div className="relative space-y-6 mb-4">
                 {rawTrackings.map((t, index) => (
                   <div key={t.id || index} className="flex gap-6 relative group">
                     <div className="flex flex-col items-center">
@@ -281,7 +281,8 @@ export default function AspirasiDetailPage({
                       <div className='w-0.5 -mb-4 mt-4 flex-1 bg-[var(--color-primary)]' />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <div className="grid grid-cols-1 gap-1">
+                      <div className="grid grid-cols-2 gap-1">
+                        <div className="flex flex-col gap-0.5">
                         <span className="text-sm font-semibold text-[var(--color-text)]">
                           {statusLabel[t.status] || t.status?.replace(/_/g, ' ')}
                         </span>
@@ -289,6 +290,18 @@ export default function AspirasiDetailPage({
                           <span className="text-xs text-[var(--color-text-secondary)]">
                             {formatDate(t.created_at)}
                           </span>
+                        )}
+                        </div>
+                        {t.diverifikasi_oleh_id && (
+                          <div className="flex flex-col items-end gap-0.5">
+                            <div className="text-xs text-[var(--color-text-secondary)]">
+                              <MdFlag size={14} className="inline mr-1" />
+                              Diverifikasi oleh
+                            </div>
+                            <div className="text-xs text-[var(--color-text-secondary)]">
+                              {t.diverifikasi_oleh_nama}
+                            </div>
+                          </div>
                         )}
                       </div>
                       {t.catatan && (
@@ -337,7 +350,7 @@ export default function AspirasiDetailPage({
         </div>
 
         {/* KOLOM 3: Perbandingan 4:2 (row-span-4 & row-span-2) */}
-        <div className="lg:col-span-1 lg:row-span-6 flex flex-col gap-5 lg:grid lg:grid-rows-6">
+        <div className="lg:col-span-1 flex flex-col gap-5">
           {/* Update Tindak Lanjut (4 unit) */}
           <Card className="p-5 space-y-4 lg:row-span-4 flex flex-col justify-between overflow-y-auto">
             <div className='h-fit'>

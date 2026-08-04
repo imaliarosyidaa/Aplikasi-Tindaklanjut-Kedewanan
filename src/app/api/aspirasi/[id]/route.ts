@@ -10,7 +10,12 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       kota: true,
       kecamatan: true,
       kelurahan: true,
-      trackings: { orderBy: { created_at: 'asc' } },
+      trackings: {
+        orderBy: { created_at: 'asc' },
+        include: {
+          diverifikasiOleh: true,
+        },
+      },
     },
   })
 
@@ -43,6 +48,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     trackings: a.trackings.map((t) => ({
       id: t.id,
       aspirasi_id: t.aspirasi_id,
+      diverifikasi_oleh_id: t.diverifikasiOleh?.id ?? '',
+      diverifikasi_oleh_nama: t.diverifikasiOleh?.name ?? '',
       status: t.status,
       catatan: t.catatan ?? '',
       lampiran: (t.lampiran as string[]) ?? [],
@@ -67,6 +74,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         status: body.status,
         catatan: body.catatan ?? '',
         lampiran: body.lampiran ?? [],
+        diverifikasi_oleh_id: body.diverifikasi_oleh_id,
       },
     })
   }

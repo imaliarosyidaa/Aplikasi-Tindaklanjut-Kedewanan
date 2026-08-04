@@ -56,6 +56,7 @@ export function useAspirasi(id: string) {
 interface UpdateStatusPayload {
   status: AspirasiStatus
   catatan?: string
+  diverifikasi_oleh_id?: string
   lampiran?: string[]
   kirim_email?: boolean
   kirim_telepon?: boolean

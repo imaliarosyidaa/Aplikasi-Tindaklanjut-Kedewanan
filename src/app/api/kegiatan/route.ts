@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
             kota: true,
           },
         },
+        dibuatOleh: { select: { name: true } },
       },
       orderBy: { tanggal: 'desc' },
       ...(hasPagination ? { skip: (page - 1) * limit, take: limit } : {}),
@@ -66,6 +67,7 @@ export async function GET(request: NextRequest) {
     kelurahan: k.kunjungan.kelurahan.nama,
     kecamatan: k.kunjungan.kecamatan.nama,
     kota: k.kunjungan.kota.nama,
+    dibuat_oleh: k.dibuatOleh?.name ?? '',
   }))
 
   return NextResponse.json(hasPagination ? { data: result, total, page, limit } : result)
@@ -92,6 +94,7 @@ export async function POST(request: Request) {
       rw: body.rw ?? '',
       jumlah_peserta: body.jumlah_peserta ? parseInt(body.jumlah_peserta) : null,
       catatan: body.catatan ?? '',
+      dibuat_oleh_id: body.dibuat_oleh_id ?? null,
     },
     include: {
       kunjungan: {

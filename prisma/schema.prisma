@@ -12,6 +12,41 @@ enum UserRole {
   user
 }
 
+model Role {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String        @unique
+  description String        @default("")
+  permissions RolePermission[]
+  users       User[]        @relation("UserRoleRef")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String           @unique
+  resource    String           @default("")
+  action      String           @default("")
+  description String           @default("")
+  roles       RolePermission[]
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String      @map("role_id") @db.Uuid
+  permissionId String      @map("permission_id") @db.Uuid
+  role         Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
 enum AspirasiStatus {
   BELUM_DITINDAKLANJUTI
   SEDANG_DITINDAKLANJUTI
@@ -26,7 +61,11 @@ model User {
   password  String
   name      String
   role      UserRole
+  role_id   String?    @map("role_id") @db.Uuid
+  roleRef   Role?      @relation("UserRoleRef", fields: [role_id], references: [id])
   aspirasis Aspirasis[]
+  kegiatans Kegiatan[]
+  trackings TrackingAspirasi[]
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
 
@@ -131,6 +170,8 @@ model TrackingAspirasi {
   created_at     DateTime       @default(now())
 
   aspirasi       Aspirasis      @relation(fields: [aspirasi_id], references: [id], onDelete: Cascade)
+  diverifikasi_oleh_id String?  @db.Uuid
+  diverifikasiOleh     User?    @relation(fields: [diverifikasi_oleh_id], references: [id])
   @@map("tracking_aspirasis")
 }
 
@@ -187,7 +228,9 @@ model Kegiatan {
   rw             String?
   jumlah_peserta Int?
   catatan        String?
+  dibuat_oleh_id String?  @db.Uuid
   kunjungan      Kunjungan @relation(fields: [kunjungan_id], references: [id])
+  dibuatOleh     User?    @relation(fields: [dibuat_oleh_id], references: [id])
 
   @@map("kegiatans")
 }

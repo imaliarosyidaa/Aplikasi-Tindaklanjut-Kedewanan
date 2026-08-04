@@ -22,6 +22,8 @@ export const Navbar = (): React.ReactNode => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  const isSuperAdmin = session?.user?.roleName === 'Super Admin'
+
   const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard' },
     { href: '/admin/aspirasi', label: 'Daftar Aspirasi' },
@@ -121,14 +123,16 @@ export const Navbar = (): React.ReactNode => {
                 </div>
 
                 <div className="py-1">
-                  <Link
-                    href="/admin/pengaturan"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-[var(--color-text)] transition-colors hover:bg-[var(--color-bg-secondary)]"
-                  >
-                    <MdSettings size={16} className="text-[var(--color-text-secondary)]" />
-                    Pengaturan
-                  </Link>
+                  {isSuperAdmin && (
+                    <Link
+                      href="/admin/pengaturan"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-[var(--color-text)] transition-colors hover:bg-[var(--color-bg-secondary)]"
+                    >
+                      <MdSettings size={16} className="text-[var(--color-text-secondary)]" />
+                      Pengaturan
+                    </Link>
+                  )}
 
                   <button
                     onClick={handleLogout}
@@ -172,14 +176,16 @@ export const Navbar = (): React.ReactNode => {
           ))}
 
           <div className="pt-2 mt-2 border-t border-[var(--color-border)] space-y-1">
-            <Link
-              href="/admin/pengaturan"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
-            >
-              <MdSettings size={18} />
-              Pengaturan
-            </Link>
+            {isSuperAdmin && (
+              <Link
+                href="/admin/pengaturan"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
+              >
+                <MdSettings size={18} />
+                Pengaturan
+              </Link>
+            )}
 
             <button
               onClick={handleLogout}

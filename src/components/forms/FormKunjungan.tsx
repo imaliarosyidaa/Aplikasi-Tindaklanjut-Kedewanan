@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import useSWR from 'swr'
+import { useSession } from 'next-auth/react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -49,6 +50,7 @@ const JENIS_KEGIATAN_OPTIONS = [
 
 export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInitialData }): React.ReactNode => {
   const router = useRouter()
+  const { data: session } = useSession()
   const [loading, setLoading] = useState(false)
   const isEdit = !!initialData
 
@@ -177,6 +179,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             jumlah_peserta: jumlahPeserta,
             catatan,
             foto: lampiran.length > 0 ? lampiran : [],
+            dibuat_oleh_id: session?.user?.id,
           }),
         })
 

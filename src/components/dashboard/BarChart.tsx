@@ -1,21 +1,26 @@
 'use client'
+
 import React from 'react'
-// 1. Import komponen chart asli dengan nama alias (misal: MuiBarChart)
 import { BarChart as MuiBarChart } from '@mui/x-charts/BarChart'
 import { Card } from '@/components/ui/card'
+import { useRouter } from '@/routing'
 
 interface BarChartProps {
   title: string
   data: { label: string; value: number }[]
   color?: string
+  targetUrl?: string
+  onBarClick?: (monthLabel: string) => void
 }
 
 export const BarChart = ({
   title,
   data,
   color = 'var(--color-primary)',
+  targetUrl,
+  onBarClick,
 }: BarChartProps): React.ReactNode => {
-  const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1
+  const router = useRouter()
 
   const chartSetting = {
     yAxis: [
@@ -27,6 +32,21 @@ export const BarChart = ({
     height: 300,
   }
 
+  const handleItemClick = (_: unknown, itemIdentifier: { dataIndex: number }) => {
+    const selectedItem = data[itemIdentifier.dataIndex]
+    if (!selectedItem) return
+
+    const monthLabel = selectedItem.label
+
+    if (onBarClick) {
+      onBarClick(monthLabel)
+    }
+
+    if (targetUrl) {
+      router.push(`${targetUrl}?bulan=${encodeURIComponent(monthLabel)}`)
+    }
+  }
+
   return (
     <Card className="p-4">
       <h3 className="mb-4 text-sm font-semibold text-[var(--color-text)]">
@@ -34,8 +54,9 @@ export const BarChart = ({
       </h3>
       <MuiBarChart
         dataset={data.map((item) => ({ month: item.label, value: item.value }))}
-        xAxis={[{ scaleType: 'band', dataKey: 'month' }]} // Beberapa library chart butuh scaleType: 'band' untuk sumbu X berupa teks
-        series={[{ dataKey: 'value', color: color }]} // Memanfaatkan prop color yang dilewati ke komponen
+        xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
+        series={[{ dataKey: 'value', color: color }]}
+        onItemClick={handleItemClick} // 🛠️ Menambahkan Event Listener Click MUI Chart
         {...chartSetting}
       />
     </Card>
