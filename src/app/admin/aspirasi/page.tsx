@@ -389,11 +389,13 @@ export default function AspirasiPage(): React.ReactNode {
         )}
       </div>
 
-      <div className="w-full overflow-x-auto overflow-hidden rounded-lg border border-[var(--color-border)] shadow-sm">
-        <table className="w-full text-sm">
+      <div className="w-full overflow-hidden rounded-lg border border-[var(--color-border)] shadow-sm">
+        {/* 🛠️ PERBAIKAN 1: Gunakan text-xs untuk font ringkas & compact */}
+        <table className="w-full table-auto text-xs">
           <thead>
             <tr className="bg-[var(--color-bg-secondary)]">
-              <th className="w-10 px-4 py-3 text-left">
+              {/* Checkbox */}
+              <th className="w-8 px-2 py-2 text-left">
                 <input
                   type="checkbox"
                   checked={
@@ -404,32 +406,47 @@ export default function AspirasiPage(): React.ReactNode {
                   className="cursor-pointer"
                 />
               </th>
-              <th className="w-12 px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
+
+              {/* No */}
+              <th className="w-8 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 No
               </th>
-              <th className="whitespace-nowrap px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
+
+              {/* Wilayah */}
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Kecamatan
               </th>
-              <th className="whitespace-nowrap px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Kota/Kabupaten
               </th>
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
+
+              {/* Sumber */}
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Sumber
               </th>
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
+
+              {/* Deskripsi */}
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Deskripsi
               </th>
-              <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
+
+              {/* Pelapor & Tanggal */}
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Pelapor
               </th>
-              <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
+              <th className="w-24 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Tanggal
               </th>
-              <th className="whitespace-nowrap px-2 py-2 text-center font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
+
+              {/* Status & Aksi */}
+              <th className="w-28 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
                 Status
               </th>
-              <th className="whitespace-nowrap px-2 py-2 text-center font-medium text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
+              <th className="w-20 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
                 Aksi
+              </th>
+              <th className="w-28 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
+                Diverifikasi Oleh 
               </th>
             </tr>
           </thead>
@@ -438,7 +455,7 @@ export default function AspirasiPage(): React.ReactNode {
             {isLoading ? (
               <tr>
                 <td colSpan={10} className="px-4 py-8 text-center">
-                  <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-primary)] border-t-transparent" />
+                  <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[var(--color-primary)] border-t-transparent" />
                 </td>
               </tr>
             ) : aspirasiList.length === 0 ? (
@@ -458,7 +475,8 @@ export default function AspirasiPage(): React.ReactNode {
                     key={aspirasi.id}
                     className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
                   >
-                    <td className="px-2 py-2 lg:px-4 lg:py-3">
+                    {/* Checkbox */}
+                    <td className="px-2 py-2">
                       <input
                         type="checkbox"
                         checked={selectedIds.has(aspirasi.id)}
@@ -467,59 +485,73 @@ export default function AspirasiPage(): React.ReactNode {
                       />
                     </td>
 
-                    <td className="px-2 py-2 text-[var(--color-text-secondary)] lg:px-4 lg:py-3">
+                    {/* No */}
+                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
                       {(currentPage - 1) * PAGE_SIZE + i + 1}
                     </td>
 
-                    <td className="whitespace-nowrap px-2 py-2 lg:px-4 lg:py-3">
+                    {/* Kecamatan */}
+                    <td className="px-2 py-2">
+                      <span className="line-clamp-1 max-w-[100px]" title={aspirasi.kecamatan || '-'}>
                       {aspirasi.kecamatan || '-'}
+                      </span>
                     </td>
 
-                    <td className="whitespace-nowrap px-2 py-2 lg:px-4 lg:py-3">
+                    {/* Kota */}
+                    <td className="px-2 py-2">
+                      <span className="line-clamp-1 max-w-[110px]" title={aspirasi.kota || '-'}>
                       {aspirasi.kota || '-'}
+                      </span>
                     </td>
 
-                    <td className="px-2 py-2 lg:px-4 lg:py-3">
-                      <p className="max-w-[140px] truncate lg:max-w-[220px]">
+                    {/* Sumber */}
+                    <td className="px-2 py-2">
+                      <p className="line-clamp-2 max-w-[130px]">
                         {sumberLabel[aspirasi.sumber] || aspirasi.sumber}
                       </p>
                     </td>
 
-                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                      <p className="line-clamp-2 max-w-[180px] lg:max-w-xs">
+                    {/* Deskripsi */}
+                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                      <p className="line-clamp-2 max-w-[180px]">
                         {aspirasi.deskripsi}
                       </p>
                     </td>
 
-                    <td className="whitespace-nowrap px-4 py-3 text-[var(--color-text-secondary)]">
+                    {/* Pelapor */}
+                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                      <span className="line-clamp-1 max-w-[110px]" title={aspirasi.pelapor_nama}>
                       {aspirasi.pelapor_nama}
+                      </span>
                     </td>
 
-                    <td className="whitespace-nowrap px-4 py-3 text-[var(--color-text-secondary)]">
-                      {new Date(aspirasi.tanggal_dibuat).toLocaleDateString(
-                        'id-ID',
-                        {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        }
-                      )}
+                    {/* Tanggal */}
+                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                      {new Date(aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: '2-digit', // Format singkat (misal: 14 Feb 26)
+                      })}
                     </td>
 
-                    <td className="whitespace-nowrap px-4 py-3 text-center text-[var(--color-text-secondary)]">
+                    {/* Status */}
+                    <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
                       <Badge status={aspirasi.status}>
+                        <span className="text-[10px]">
                         {statusLabel[aspirasi.status] || aspirasi.status}
+                        </span>
                       </Badge>
                     </td>
 
-                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                      <div className="inline-flex items-center justify-center gap-1 lg:gap-2">
+                    {/* Aksi */}
+                    <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
+                      <div className="inline-flex items-center justify-center gap-1.5">
                         <Link
                           href={`/admin/aspirasi/${aspirasi.id}`}
                           className="text-[var(--color-primary)] hover:underline"
                           title="Lihat detail"
                         >
-                          <MdVisibility className="h-4 w-4" />
+                          <MdVisibility className="h-3.5 w-3.5" />
                         </Link>
 
                         <Link
@@ -527,24 +559,19 @@ export default function AspirasiPage(): React.ReactNode {
                           className="cursor-pointer text-[var(--color-warning)] hover:underline"
                           title="Edit"
                         >
-                          <MdEdit size={16} />
+                          <MdEdit className="h-3.5 w-3.5" />
                         </Link>
 
                         <button
                           onClick={async () => {
-                            if (
-                              deletingId ||
-                              !window.confirm('Hapus aspirasi ini?')
-                            )
+                            if (deletingId || !window.confirm('Hapus aspirasi ini?'))
                               return
 
                             setDeletingId(aspirasi.id)
-
                             try {
                               await fetch(`/api/aspirasi/${aspirasi.id}`, {
                                 method: 'DELETE',
                               })
-
                               await mutate()
                             } catch {
                               alert('Gagal menghapus')
@@ -557,12 +584,21 @@ export default function AspirasiPage(): React.ReactNode {
                           title="Hapus"
                         >
                           {deletingId === aspirasi.id ? (
-                            <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-danger)] border-t-transparent" />
+                            <div className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--color-danger)] border-t-transparent" />
                           ) : (
-                            <MdDelete className="h-4 w-4 lg:h-5 lg:w-5" />
+                              <MdDelete className="h-3.5 w-3.5" />
                           )}
                         </button>
                       </div>
+                    </td>
+
+                    {/* Diverifikasi oleh */}
+                    <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
+                      <Badge status={aspirasi.status}>
+                        <span className="text-[10px]">
+                          {statusLabel[aspirasi.status] || aspirasi.status}
+                        </span>
+                      </Badge>
                     </td>
                   </tr>
                 ))

@@ -17,6 +17,8 @@ import {
   MdMenuBook,
   MdPerson,
   MdGroup,
+  MdVisibilityOff,
+  MdVisibility,
 } from 'react-icons/md'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -388,6 +390,7 @@ function UsersTab() {
     '/api/rbac/users',
     fetcher
   )
+  const [showPassword, setShowPassword] = useState(false)
   const roles = data?.roles ?? []
   const users = data?.users ?? []
 
@@ -398,7 +401,6 @@ function UsersTab() {
     email: '',
     password: '',
     name: '',
-    role: 'user',
     role_id: '',
   })
   const [saving, setSaving] = useState(false)
@@ -410,7 +412,6 @@ function UsersTab() {
       email: '',
       password: '',
       name: '',
-      role: 'user',
       role_id: '',
     })
     setError('')
@@ -424,7 +425,6 @@ function UsersTab() {
       email: u.email,
       password: '',
       name: u.name,
-      role: u.role,
       role_id: u.role_id,
     })
     setError('')
@@ -443,7 +443,6 @@ function UsersTab() {
         username: form.username,
         email: form.email,
         name: form.name,
-        role: form.role,
         role_id: form.role_id,
       }
       if (form.password) payload.password = form.password
@@ -572,37 +571,44 @@ function UsersTab() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
-                id="user-email"
+                id="email"
                 label="Email"
                 type="email"
                 placeholder="contoh: budi@email.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
-              <Input
-                id="user-password"
-                label={editing ? 'Password Baru (opsional)' : 'Password'}
-                type="password"
-                placeholder={editing ? 'Kosongkan jika tidak diganti' : 'Password akun'}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-              />
+              <div className="space-y-1">
+                <label htmlFor="password" className="block text-sm font-medium text-[var(--color-text)]">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    name="password"
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder={editing ? 'Kosongkan jika tidak diganti' : 'Password akun'}
+                    required
+                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 pr-11 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-0"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                    className="absolute inset-y-0 right-0 flex cursor-pointer items-center px-3 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+                  >
+                    {showPassword ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Select
-                id="user-role"
-                label="Tingkat Akses"
-                options={[
-                  { value: 'admin', label: 'Admin' },
-                  { value: 'user', label: 'User' },
-                ]}
-                value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-              />
-              <Select
                 id="user-role-rbac"
-                label="Role (RBAC)"
-                placeholder="Pilih role RBAC (opsional)"
+                label="Role"
+                placeholder="Pilih role (RBAC)"
                 options={roles.map((r) => ({ value: r.id, label: r.name }))}
                 value={form.role_id}
                 onChange={(e) => setForm({ ...form, role_id: e.target.value })}

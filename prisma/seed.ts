@@ -258,6 +258,7 @@ async function main() {
     await prisma.aspirasis.create({
       data: {
         ...a,
+        tanggal_dibuat: created_at,
         created_at,
         kota_id: kotaId,
         kecamatan_id: kecamatanId,
