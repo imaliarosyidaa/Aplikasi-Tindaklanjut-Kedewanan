@@ -198,6 +198,7 @@ model Relawan {
   no_telepon     String?
   jenis_kelamin  JenisKelamin
   alamat         String
+  domisili_sekarang String?
   posisi         PosisiRelawan
   foto           String?
   created_at     DateTime      @default(now()) @map("created_at")

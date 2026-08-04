@@ -169,7 +169,7 @@ export default function KunjunganPage() {
 
       // 4. Filter Bulan (Dari BarChart / Query Params)
       if (activeFilters.bulan) {
-        const dateVal = item.tanggal || (item as unknown as Record<string, string>).tanggal_kegiatan || item.created_at
+        const dateVal = item.tanggal || (item as unknown as Record<string, string>).tanggal_kegiatan || ''
         if (!isMatchingMonth(dateVal, activeFilters.bulan)) {
           return false
         }

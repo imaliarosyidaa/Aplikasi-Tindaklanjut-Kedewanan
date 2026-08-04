@@ -105,7 +105,7 @@ export default function AspirasiDetailPage({
         </div>
         <div>
           <Badge status={aspirasi?.status as any}>
-            {statusLabel[aspirasi?.status] || aspirasi?.status}
+            {statusLabel[aspirasi?.status ?? ''] || aspirasi?.status || '-'}
           </Badge>
         </div>
       </Card>

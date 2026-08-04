@@ -58,20 +58,20 @@ export default function DetailKegiatanPage({
   })} WIB`
 }
   const fields = [
-    { label: 'Tanggal', value: formatTanggalJam(kegiatan.tanggal) },
-    { label: 'Jenis Kegiatan', value: kegiatan.jenis_kegiatan },
-    { label: 'Catatan Kegiatan', value: kegiatan.catatan },
-    { label: 'Lokasi Kegiatan', value: kegiatan.lokasi },
+    { label: 'Tanggal', value: formatTanggalJam(kegiatan?.tanggal || '') },
+    { label: 'Jenis Kegiatan', value: kegiatan?.jenis_kegiatan },
+    { label: 'Catatan Kegiatan', value: kegiatan?.catatan },
+    { label: 'Lokasi Kegiatan', value: kegiatan?.lokasi },
     {
       label: 'Link GMaps',
-      value: kegiatan.link_gmaps,
+      value: kegiatan?.link_gmaps,
       isLink: true,
     },
-    { label: 'Kecamatan', value: kegiatan.kecamatan ?? '-' },
-    { label: 'Kelurahan', value: kegiatan.kelurahan ?? '-' },
-    { label: 'RT', value: kegiatan.rt },
-    { label: 'RW', value: kegiatan.rw },
-    { label: 'Jumlah Peserta', value: String(kegiatan.jumlah_peserta) },
+    { label: 'Kecamatan', value: kegiatan?.kecamatan ?? '-' },
+    { label: 'Kelurahan', value: kegiatan?.kelurahan ?? '-' },
+    { label: 'RT', value: kegiatan?.rt },
+    { label: 'RW', value: kegiatan?.rw },
+    { label: 'Jumlah Peserta', value: String(kegiatan?.jumlah_peserta) },
   ]
 
   return (
@@ -96,10 +96,10 @@ export default function DetailKegiatanPage({
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">Kegiatan</p>
                 <p className="text-lg font-semibold text-[var(--color-text)]">
-                  {kegiatan.nama_kegiatan}
+                  {kegiatan?.nama_kegiatan}
                 </p>
               </div>
-              <Badge variant="primary">{kegiatan.jenis_kegiatan}</Badge>
+              <Badge variant="primary">{kegiatan?.jenis_kegiatan}</Badge>
             </div>
 
             {fields.map((field) => (
@@ -132,19 +132,19 @@ export default function DetailKegiatanPage({
             <p className="font-medium text-[var(--color-text)]">Informasi Kegiatan</p>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdCalendarToday size={16} />
-              <span>{formatTanggalJam(kegiatan.tanggal)}</span>
+              <span>{formatTanggalJam(kegiatan?.tanggal || '')}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdLocationOn size={16} />
-              <span>{kegiatan.lokasi}</span>
+              <span>{kegiatan?.lokasi}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdPeople size={16} />
-              <span>{kegiatan.jumlah_peserta} peserta</span>
+              <span>{kegiatan?.jumlah_peserta} peserta</span>
             </div>
             {(() => {
               let fotoList: string[] = []
-              const f = kegiatan.foto
+              const f = kegiatan?.foto
               if (f) {
                 if (typeof f === 'string') {
                   try {
@@ -179,12 +179,12 @@ export default function DetailKegiatanPage({
             })()}
             <div className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdNotes size={16} className="mt-0.5" />
-              <span>{kegiatan.catatan}</span>
+              <span>{kegiatan?.catatan}</span>
             </div>
           </Card>
 
           <a
-            href={kegiatan.link_gmaps}
+            href={kegiatan?.link_gmaps}
             target="_blank"
             rel="noopener noreferrer"
           >
