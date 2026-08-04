@@ -413,15 +413,16 @@ async function main() {
   }
   console.log(`  ${roleData.length} roles created`)
 
-  // 7. Hubungkan user admin dengan role Super Admin
-  const superAdminRoleId = roleByName.get('Super Admin')
+  // 7. Hubungkan user admin ke role Admin DPRD, superadmin ke Super Admin
+  const adminDprdRoleId = roleByName.get('Admin DPRD')
   const adminUser = await prisma.user.findUnique({ where: { username: 'admin' } })
-  if (adminUser && superAdminRoleId) {
+  if (adminUser && adminDprdRoleId) {
     await prisma.user.update({
       where: { id: adminUser.id },
-      data: { role_id: superAdminRoleId },
+      data: { role_id: adminDprdRoleId },
     })
   }
+  const superAdminRoleId = roleByName.get('Super Admin')
   const superAdminUser = await prisma.user.findUnique({ where: { username: 'superadmin' } })
   if (superAdminUser && superAdminRoleId) {
     await prisma.user.update({
@@ -429,7 +430,7 @@ async function main() {
       data: { role_id: superAdminRoleId },
     })
   }
-  console.log('  users linked to Super Admin role')
+  console.log('  admin → Admin DPRD, superadmin → Super Admin')
 
   console.log('Seeding complete successfully!')
 }

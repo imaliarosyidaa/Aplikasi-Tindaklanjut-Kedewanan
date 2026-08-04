@@ -79,7 +79,10 @@ export default function LoginPage(): React.ReactNode {
       <div className="flex w-full items-center justify-center px-6 lg:w-1/2">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:hidden">
-            <img src="/Lambang_DPRD_Generik.png" alt="Logo DPRD" className="mx-auto h-16 w-auto" />
+            <div className="relative z-10 flex items-center justify-center gap-5 p-10">
+              <img src="/Lambang_DPRD_Generik.png" alt="Logo DPRD" className="h-20 w-auto drop-shadow-lg" />
+              <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo PDI Perjuangan" className="h-20 w-auto drop-shadow-lg" />
+            </div>
             <h1 className="mt-4 text-2xl font-bold text-[var(--color-text)]">
               Aplikasi Koordinasi Tindak Lanjut Kedewanan
             </h1>

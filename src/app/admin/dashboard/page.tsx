@@ -296,8 +296,8 @@ export default function AdminDashboardPage(): React.ReactNode {
 
   return (
     <div className="space-y-6">
-      <Card className="shadow-md bg-[url('/bg-stats.png')] bg-[length:130%] bg-left">
-        <div className="flex flex-row justify-between items-center">
+      <Card className="shadow-md bg-[url('/bg-stats.png')] bg-cover bg-no-repeat lg:bg-[length:120%] bg-right">
+        <div className="grid lg:grid-cols-2 grid-cols-1 justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-text)]">
               Selamat Datang, {session?.user?.name} 👋
@@ -306,6 +306,7 @@ export default function AdminDashboardPage(): React.ReactNode {
               Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
             </p>
           </div>
+          <div className="flex items-end justify-end gap-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-[var(--color-text-secondary)]">
             <TbCalendarWeek size={18} />
             {isMounted ? (
@@ -318,6 +319,7 @@ export default function AdminDashboardPage(): React.ReactNode {
               /* Placeholder transparan/skeleton singkat saat SSR */
               <span className="opacity-0">Loading time...</span>
             )}
+          </div>
           </div>
         </div>
         {/* Rangkuman Data Total */}
@@ -430,7 +432,7 @@ export default function AdminDashboardPage(): React.ReactNode {
           legenda={LEGENDA_SUMBER}
           data={aspirasiPerSumber}
           onSliceClick={(key) => {
-            router.push(`/admin/aspirasi?sumber=${key}`)
+            router.push(`/admin/aspirasi?sumber=${encodeURIComponent(key)}`)
           }}
         />
       </div>

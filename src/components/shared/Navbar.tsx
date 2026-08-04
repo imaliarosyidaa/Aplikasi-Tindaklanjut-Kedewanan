@@ -23,7 +23,6 @@ export const Navbar = (): React.ReactNode => {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const isSuperAdmin = session?.user?.roleName === 'Super Admin'
-
   const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard' },
     { href: '/admin/aspirasi', label: 'Daftar Aspirasi' },

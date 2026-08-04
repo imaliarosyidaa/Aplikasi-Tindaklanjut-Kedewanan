@@ -326,7 +326,7 @@ export default function LaporanSayaPage(): React.ReactNode {
         highlight="Status Aspirasi"
         subtitle="Masukkan nomor registrasi atau identitas pelapor untuk melihat perkembangan aspirasi yang telah diajukan."
       />
-      <div className="px-16 w-full mx-auto bg-white border-purple-200">
+      <div className="lg:px-16 p-4 w-full mx-auto bg-white border-purple-200">
         <div className="space-y-4">
           <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian Laporan</p>
           <div className="flex flex-wrap gap-3">
@@ -391,8 +391,8 @@ export default function LaporanSayaPage(): React.ReactNode {
           </div>
         </div>
         {!searched && (
-        <div className='h-screen flex items-end justify-center'>
-          <img src="/laporan.png" alt="Logo" className="w-2/5 opacity-60 h-auto" />
+          <div className='lg:h-screen flex items-end justify-center'>
+            <img src="/laporan.png" alt="Logo" className="lg:w-2/5 opacity-60 h-auto" />
         </div>
         )}
       </div>
