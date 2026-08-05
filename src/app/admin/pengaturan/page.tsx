@@ -444,6 +444,7 @@ function UsersTab() {
         email: form.email,
         name: form.name,
         role_id: form.role_id,
+        role: 'admin'
       }
       if (form.password) payload.password = form.password
 
@@ -554,7 +555,7 @@ function UsersTab() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
-                id="user-username"
+                id="username"
                 label="Username"
                 placeholder="contoh: staff1"
                 value={form.username}

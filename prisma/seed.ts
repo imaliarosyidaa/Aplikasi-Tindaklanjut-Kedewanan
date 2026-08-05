@@ -103,7 +103,7 @@ async function main() {
   await prisma.user.createMany({
     data: [
       {
-        id: randomUUID(),
+        id: 'b4e89bf1-d692-47e3-b312-18d273ed1efe',
         username: 'admin',
         email: 'admin@dprd-jaksel.go.id',
         password: 'admin123',
@@ -111,7 +111,7 @@ async function main() {
         role: 'admin',
       },
       {
-        id: randomUUID(),
+        id: '85b1bee3-c244-4797-8f71-daf56bf42c98',
         username: 'superadmin',
         email: 'superadmin@dprd-jaksel.go.id',
         password: 'superadmin123',
@@ -195,6 +195,7 @@ async function main() {
   const aspirasiData = [
     {
       id: randomUUID(),
+      id_laporan: 'LAP-1A2B3C4D5E',
       sumber: 'LEMBAR_ASPIRASI_RESES' as const,
       deskripsi:
         'Warga mengusulkan perbaikan drainase di RW 03 Kelurahan Bukit Duri karena sering banjir saat hujan deras.',
@@ -214,6 +215,7 @@ async function main() {
     },
     {
       id: randomUUID(),
+      id_laporan: 'LAP-D80I0T7I97',
       sumber: 'LEMBAR_ASPIRASI_SOSPERDA' as const,
       deskripsi: 'Usulan pembangunan posyandu untuk melayani balita dan lansia di Kelurahan Bangka.',
       status: 'SEDANG_DITINDAKLANJUTI' as const,
@@ -233,6 +235,7 @@ async function main() {
     },
     {
       id: randomUUID(),
+      id_laporan: 'LAP-CW17WRM893',
       sumber: 'ASPIRASI_PROPOSAL_LANGSUNG' as const,
       deskripsi: 'Pengajuan bantuan modal usaha untuk kelompok UMKM binaan Kelurahan Pejaten Barat.',
       status: 'SUDAH_DITINDAKLANJUTI' as const,
@@ -277,15 +280,27 @@ async function main() {
         status: 'SEDANG_DITINDAKLANJUTI',
         catatan: catatan_tindak_lanjut,
         created_at: new Date(),
+        diverifikasi_oleh_id: '85b1bee3-c244-4797-8f71-daf56bf42c98',
       })
     } else if (a.status === 'SUDAH_DITINDAKLANJUTI') {
-      trackings.push({ aspirasi_id: a.id, status: 'BELUM_DITINDAKLANJUTI', created_at })
-      trackings.push({ aspirasi_id: a.id, status: 'SEDANG_DITINDAKLANJUTI', catatan: 'Proses koordinasi', created_at })
+      trackings.push({
+        aspirasi_id: a.id,
+        status: 'BELUM_DITINDAKLANJUTI',
+        created_at,
+      })
+      trackings.push({
+        aspirasi_id: a.id,
+        status: 'SEDANG_DITINDAKLANJUTI',
+        catatan: 'Proses koordinasi',
+        created_at,
+        diverifikasi_oleh_id: 'b4e89bf1-d692-47e3-b312-18d273ed1efe',
+      })
       trackings.push({
         aspirasi_id: a.id,
         status: 'SUDAH_DITINDAKLANJUTI',
         catatan: catatan_tindak_lanjut,
         created_at: new Date(),
+        diverifikasi_oleh_id: 'b4e89bf1-d692-47e3-b312-18d273ed1efe',
       })
     }
 
@@ -341,6 +356,7 @@ async function main() {
       rw: '05',
       jumlah_peserta: 45,
       catatan: 'Kegiatan berjalan lancar, warga antusias mengikuti',
+      dibuat_oleh_id: '85b1bee3-c244-4797-8f71-daf56bf42c98',
     },
   ]
 
@@ -389,12 +405,19 @@ async function main() {
     {
       name: 'Admin DPRD',
       description: 'Mengelola data aspirasi, kunjungan, dan relawan',
-      permissions: ['dashboard:read', 'aspirasi:read', 'aspirasi:write', 'aspirasi:delete', 'kunjungan:read', 'kunjungan:write', 'kunjungan:delete', 'relawan:read', 'relawan:write', 'relawan:delete', 'pengaturan:read'],
-    },
-    {
-      name: 'Masyarakat Umum',
-      description: 'Melihat informasi dashboard, aspirasi, kunjungan, dan relawan',
-      permissions: ['dashboard:read', 'aspirasi:read', 'kunjungan:read', 'relawan:read'],
+      permissions: [
+        'dashboard:read',
+        'aspirasi:read',
+        'aspirasi:write',
+        'aspirasi:delete',
+        'kunjungan:read',
+        'kunjungan:write',
+        'kunjungan:delete',
+        'relawan:read',
+        'relawan:write',
+        'relawan:delete',
+        'pengaturan:read',
+      ],
     },
   ]
 

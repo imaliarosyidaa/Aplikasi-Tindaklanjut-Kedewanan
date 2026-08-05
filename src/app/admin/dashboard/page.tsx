@@ -24,10 +24,10 @@ import { useSession } from 'next-auth/react'
 
 // 1. Master Legenda Status
 const LEGENDA_STATUS = [
-  { label: 'Belum Ditindaklanjuti', color: '#EF4444' }, // Merah
-  { label: 'Sedang Ditindaklanjuti', color: '#F59E0B' }, // Kuning/Amber
-  { label: 'Sudah Ditindaklanjuti', color: '#10B981' }, // Hijau
-  { label: 'Tidak Bisa Ditindaklanjuti', color: '#6B7280' }, // Abu-abu
+  { key: 'BELUM_DITINDAKLANJUTI', label: 'Belum Ditindaklanjuti', color: '#EF4444' }, // Merah
+  { key: 'SEDANG_DITINDAKLANJUTI', label: 'Sedang Ditindaklanjuti', color: '#F59E0B' }, // Kuning/Amber
+  { key: 'SUDAH_DITINDAKLANJUTI', label: 'Sudah Ditindaklanjuti', color: '#10B981' }, // Hijau
+  { key: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Bisa Ditindaklanjuti', color: '#6B7280' }, // Abu-abu
 ]
 
 // 2. Master Legenda Sumber & Warna Disatukan
@@ -423,8 +423,8 @@ export default function AdminDashboardPage(): React.ReactNode {
           title="Statistik Aspirasi per Status"
           legenda={LEGENDA_STATUS}
           data={aspirasiPerStatus}
-          onSliceClick={(label) => {
-            router.push(`/admin/aspirasi?status=${encodeURIComponent(label)}`)
+          onSliceClick={(key) => {
+            router.push(`/admin/aspirasi?status=${encodeURIComponent(key)}`)
           }}
         />
         <PieChart

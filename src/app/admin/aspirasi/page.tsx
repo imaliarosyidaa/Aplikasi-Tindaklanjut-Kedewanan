@@ -294,8 +294,9 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Status"
                 options={statusOptions}
                 value={filterStatus ?? ''}
-                onChange={(e) => {
-                  setFilterStatus(e.target.value)
+                onChange={(val) => {
+                  const selectedValue = typeof val === 'string' ? val : val?.target?.value
+                  setFilterStatus(selectedValue)
                   setCurrentPage(1)
                 }}
               />

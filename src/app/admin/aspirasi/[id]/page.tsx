@@ -37,11 +37,9 @@ export default function AspirasiDetailPage({
 
   const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
-  console.log(aspirasi)
 
   const rawTrackings = aspirasi?.trackings ?? []
   const latestTracking = rawTrackings.length > 0 ? rawTrackings[rawTrackings.length - 1] : null
-  console.log(latestTracking)
   const latestCatatan = latestTracking?.catatan ?? 'Belum ada catatan'
 
 
