@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import useSWR from 'swr'
 
-import { useAspirasiList } from '@/hooks/useAspirasi'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -70,34 +69,41 @@ export default function AspirasiPage(): React.ReactNode {
   const [filterStatus, setFilterStatus] = useState(
     searchParams.get('status') || ''
   )
-  const [filterBulan, setFilterBulan] = useState(
-    searchParams.get('bulan') || ''
-  )
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
+
+  // State Filter Aktif (Sync dengan URL SearchParams)
+  const [activeFilters, setActiveFilters] = useState({
+    kota: searchParams.get('kota') || '',
+    kecamatan: searchParams.get('kecamatan') || '',
+    kelurahan: searchParams.get('kelurahan') || '',
+    search: searchParams.get('search') || searchParams.get('query') || '',
+    sumber: searchParams.get('sumber') || '',
+    status: searchParams.get('status') || '',
+    bulan: searchParams.get('bulan') || '',
+  })
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [selectedAspirasi, setSelectedAspirasi] = useState<Aspirasi | null>(null)
 
-  // Sinkronisasi URL searchParams saat terjadi navigasi dari luar (Chart/Dashboard)
+  // Debounce pencarian agar tidak fetch tiap ketikan (auto-apply tanpa tombol Cari)
+  const [debouncedSearch, setDebouncedSearch] = useState(searchText)
   useEffect(() => {
-    setFilterSumber(searchParams.get('sumber') || '')
-    setFilterStatus(searchParams.get('status') || '')
-    setFilterBulan(searchParams.get('bulan') || '')
-    setSearchText(searchParams.get('search') || searchParams.get('query') || '')
-  }, [searchParams])
+    const t = setTimeout(() => setDebouncedSearch(searchText), 400)
+    return () => clearTimeout(t)
+  }, [searchText])
 
-  // Master Data Wilayah
+  // Master Data Wilayah (masing-masing independen, tidak saling cascade)
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    '/api/kecamatan',
     fetcher
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    '/api/kelurahan',
     fetcher
   )
 
@@ -124,30 +130,98 @@ export default function AspirasiPage(): React.ReactNode {
     label: k.nama,
   }))
 
-  // Hook List Aspirasi
-  const {
-    data: rawAspirasiList = [],
-    total,
-    isLoading,
-    mutate,
-  } = useAspirasiList({
-    page: currentPage,
-    limit: PAGE_SIZE,
-    search: searchText || undefined,
-    sumber: filterSumber || undefined,
-    status: filterStatus || undefined,
-    kota: kotaMap[kotaId] || searchParams.get('kota') || undefined,
-    kecamatan:
-      kecamatanMap[kecamatanId] || searchParams.get('kecamatan') || undefined,
-    kelurahan:
-      kelurahanMap[kelurahanId] || searchParams.get('kelurahan') || undefined,
-  })
+  // Referensi map wilayah agar tidak perlu dependency di efek auto-apply
+  const kotaMapRef = useRef(kotaMap)
+  const kecamatanMapRef = useRef(kecamatanMap)
+  const kelurahanMapRef = useRef(kelurahanMap)
+
+  useEffect(() => {
+    kotaMapRef.current = kotaMap
+    kecamatanMapRef.current = kecamatanMap
+    kelurahanMapRef.current = kelurahanMap
+  }, [kotaMap, kecamatanMap, kelurahanMap])
+
+  // Bulan dari URL dipertahankan saat filter lain berubah
+  const bulanRef = useRef(activeFilters.bulan)
+  useEffect(() => {
+    bulanRef.current = activeFilters.bulan
+  }, [activeFilters.bulan])
+
+  // Auto-apply: cukup pilih select / ketik, data langsung berubah
+  useEffect(() => {
+    setActiveFilters({
+      kota: kotaMapRef.current[kotaId] || '',
+      kecamatan: kecamatanMapRef.current[kecamatanId] || '',
+      kelurahan: kelurahanMapRef.current[kelurahanId] || '',
+      search: debouncedSearch.trim(),
+      sumber: filterSumber,
+      status: filterStatus,
+      bulan: bulanRef.current,
+    })
+    setCurrentPage(1)
+    setSelectedIds(new Set())
+  }, [kotaId, kecamatanId, kelurahanId, debouncedSearch, filterSumber, filterStatus])
+
+  // Sinkronisasi URL searchParams ke state internal saat URL berubah
+  useEffect(() => {
+    const paramKota = searchParams.get('kota') || ''
+    const paramKec = searchParams.get('kecamatan') || ''
+    const paramKel = searchParams.get('kelurahan') || ''
+    const paramQuery =
+      searchParams.get('search') || searchParams.get('query') || ''
+    const paramSumber = searchParams.get('sumber') || ''
+    const paramStatus = searchParams.get('status') || ''
+    const paramBulan = searchParams.get('bulan') || ''
+
+    setSearchText(paramQuery)
+    setFilterSumber(paramSumber)
+    setFilterStatus(paramStatus)
+    setActiveFilters({
+      kota: paramKota,
+      kecamatan: paramKec,
+      kelurahan: paramKel,
+      search: paramQuery,
+      sumber: paramSumber,
+      status: paramStatus,
+      bulan: paramBulan,
+    })
+  }, [searchParams])
+
+  // Fetching Data Aspirasi Utama
+  const params = new URLSearchParams()
+  params.set('page', String(currentPage))
+  params.set('limit', String(PAGE_SIZE))
+  if (activeFilters.kota) {
+    params.set('kota', activeFilters.kota)
+  }
+  if (activeFilters.kecamatan) {
+    params.set('kecamatan', activeFilters.kecamatan)
+  }
+  if (activeFilters.kelurahan) {
+    params.set('kelurahan', activeFilters.kelurahan)
+  }
+  if (activeFilters.sumber) {
+    params.set('sumber', activeFilters.sumber)
+  }
+  if (activeFilters.status) {
+    params.set('status', activeFilters.status)
+  }
+  if (activeFilters.search.trim()) {
+    params.set('search', activeFilters.search.trim())
+  }
+
+  const { data: res, isLoading, mutate } = useSWR<{
+    data: Aspirasi[]
+    total: number
+  }>(`/api/aspirasi?${params.toString()}`, fetcher)
+  const rawAspirasiList = res?.data ?? []
+  const total = res?.total ?? 0
 
   // Filter tambahan untuk bulan jika dikirim via URL / Chart
   const aspirasiList = useMemo(() => {
-    if (!filterBulan) return rawAspirasiList
+    if (!activeFilters.bulan) return rawAspirasiList
 
-    const targetBulan = filterBulan.toLowerCase().trim()
+    const targetBulan = activeFilters.bulan.toLowerCase().trim()
     return rawAspirasiList.filter((item) => {
       if (!item.tanggal_dibuat) return true
       const date = new Date(item.tanggal_dibuat)
@@ -164,29 +238,28 @@ export default function AspirasiPage(): React.ReactNode {
         monthShort.includes(targetBulan) || monthLong.includes(targetBulan)
       )
     })
-  }, [rawAspirasiList, filterBulan])
+  }, [rawAspirasiList, activeFilters.bulan])
 
   const hasFilter =
-    Boolean(filterSumber) ||
-    Boolean(filterStatus) ||
-    Boolean(filterBulan) ||
-    Boolean(searchText.trim()) ||
+    Boolean(activeFilters.kota) ||
+    Boolean(activeFilters.kecamatan) ||
+    Boolean(activeFilters.kelurahan) ||
+    Boolean(activeFilters.sumber) ||
+    Boolean(activeFilters.status) ||
+    Boolean(activeFilters.bulan) ||
+    Boolean(activeFilters.search.trim()) ||
     Boolean(kotaId) ||
     Boolean(kecamatanId) ||
     Boolean(kelurahanId) ||
-    Boolean(searchParams.get('kecamatan')) ||
-    Boolean(searchParams.get('kelurahan'))
+    Boolean(searchText.trim())
 
   const handleResetFilter = () => {
     setSearchText('')
     setFilterSumber('')
     setFilterStatus('')
-    setFilterBulan('')
     setKotaId('')
     setKecamatanId('')
     setKelurahanId('')
-    setCurrentPage(1)
-    setSelectedIds(new Set())
   }
 
   const toggleSelect = (id: string) => {
@@ -266,9 +339,9 @@ export default function AspirasiPage(): React.ReactNode {
             <p className="text-sm font-medium text-[var(--color-text)]">
               Filter & Pencarian
             </p>
-            {filterBulan && (
+            {activeFilters.bulan && (
               <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                Filter Bulan: {filterBulan}
+                Filter Bulan: {activeFilters.bulan}
               </span>
             )}
           </div>
@@ -283,7 +356,6 @@ export default function AspirasiPage(): React.ReactNode {
                 value={filterSumber ?? ''}
                 onChange={(e) => {
                   setFilterSumber(e.target.value)
-                  setCurrentPage(1)
                 }}
               />
             </div>
@@ -297,7 +369,6 @@ export default function AspirasiPage(): React.ReactNode {
                 onChange={(val) => {
                   const selectedValue = typeof val === 'string' ? val : val?.target?.value
                   setFilterStatus(selectedValue)
-                  setCurrentPage(1)
                 }}
               />
             </div>
@@ -313,8 +384,6 @@ export default function AspirasiPage(): React.ReactNode {
                 value={kotaId}
                 onChange={(e) => {
                   setKotaId(e.target.value)
-                  setKecamatanId('')
-                  setKelurahanId('')
                 }}
               />
             </div>
@@ -327,7 +396,6 @@ export default function AspirasiPage(): React.ReactNode {
                 value={kecamatanId}
                 onChange={(e) => {
                   setKecamatanId(e.target.value)
-                  setKelurahanId('')
                 }}
               />
             </div>
@@ -338,8 +406,9 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(e) => setKelurahanId(e.target.value)}
-                disabled={!kecamatanId}
+                onChange={(e) => {
+                  setKelurahanId(e.target.value)
+                }}
               />
             </div>
           </div>
@@ -352,7 +421,6 @@ export default function AspirasiPage(): React.ReactNode {
                 value={searchText}
                 onChange={(e) => {
                   setSearchText(e.target.value)
-                  setCurrentPage(1)
                 }}
                 placeholder="Ketik nama atau telepon..."
               />

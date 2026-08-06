@@ -49,12 +49,13 @@ const POSISI_LABEL: Record<string, string> = {
 }
 
 export default function RelawanPage(): React.ReactNode {
+  // 1. State Input Form (Sementara)
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
   const [query, setQuery] = useState('')
 
-  // State filter terkonfirmasi (aktif setelah klik tombol Cari)
+  // 2. State Filter Terkonfirmasi (Di-trigger oleh Tombol Cari)
   const [activeFilters, setActiveFilters] = useState({
     kotaId: '',
     kecamatanId: '',
@@ -69,19 +70,24 @@ export default function RelawanPage(): React.ReactNode {
   const PAGE_SIZE = 50
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Fetch data relawan berdasarkan search query aktif
-  const { data: allRelawans, total, isLoading, mutate: mutateRelawan } = useRelawanList(
-    activeFilters.query.trim()
-      ? { page: currentPage, limit: PAGE_SIZE, search: activeFilters.query.trim() }
-      : { page: currentPage, limit: PAGE_SIZE }
-  )
-
   const [preview, setPreview] = useState<Relawan | null>(null)
   const [fullscreenFoto, setFullscreenFoto] = useState('')
   const [edit, setEdit] = useState<Relawan | null>(null)
   const [saving, setSaving] = useState(false)
 
-  // 1. Fetch Master Wilayah tanpa memblokir Kecamatan/Kelurahan jika Kota kosong
+  // 3. Fetch Data Relawan berdasarkan search query aktif
+  const {
+    data: allRelawans = [],
+    total,
+    isLoading,
+    mutate: mutateRelawan,
+  } = useRelawanList(
+    activeFilters.query.trim()
+      ? { page: currentPage, limit: PAGE_SIZE, search: activeFilters.query.trim() }
+      : { page: currentPage, limit: PAGE_SIZE }
+  )
+
+  // 4. Master Data Wilayah
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
     kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
@@ -92,64 +98,109 @@ export default function RelawanPage(): React.ReactNode {
     fetcher
   )
 
-  const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
-  const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
-  const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
+  const kotaMap = useMemo(
+    () => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])),
+    [kotaList]
+  )
+  const kecamatanMap = useMemo(
+    () => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])),
+    [kecamatanList]
+  )
+  const kelurahanMap = useMemo(
+    () => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])),
+    [kelurahanList]
+  )
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
-  // 2. Filter Hasil berdasarkan Active Filters saat tombol Cari diklik
+  // Helper extractor nilai Select (aman untuk custom component / e.target.value)
+  const getSelectValue = (val: unknown): string => {
+    if (typeof val === 'string') return val
+    if (val && typeof val === 'object' && 'target' in val) {
+      return (val as React.ChangeEvent<HTMLSelectElement>).target.value ?? ''
+    }
+    return ''
+  }
+
+  // 5. Filter Hasil berdasarkan Active Filters saat tombol Cari diklik
   const results = useMemo(() => {
     if (!allRelawans) return []
 
-  const kotaNama = kotaMap[activeFilters.kotaId] ?? ''
-  const kecamatanNama = kecamatanMap[activeFilters.kecamatanId] ?? ''
-  const kelurahanNama = kelurahanMap[activeFilters.kelurahanId] ?? ''
+    const kotaNama = kotaMap[activeFilters.kotaId] ?? ''
+    const kecamatanNama = kecamatanMap[activeFilters.kecamatanId] ?? ''
+    const kelurahanNama = kelurahanMap[activeFilters.kelurahanId] ?? ''
 
-  return allRelawans.filter((r) => {
-    // 🛠️ PERBAIKAN: Hanya filter kota jika kotaNama benar-benar diisi dan valid
-    if (activeFilters.kotaId && kotaNama && r.kota_kabupaten !== kotaNama) {
-      return false
-    }
+    return allRelawans.filter((r) => {
+      // Filter Kota
+      if (activeFilters.kotaId && kotaNama && r.kota_kabupaten !== kotaNama) {
+        return false
+      }
 
-    // Filter Kecamatan (Paling Utama)
-    if (kecamatanNama && r.kecamatan !== kecamatanNama) {
-      return false
-    }
+      // Filter Kecamatan
+      if (activeFilters.kecamatanId && kecamatanNama && r.kecamatan !== kecamatanNama) {
+        return false
+      }
 
-    // Filter Kelurahan (Paling Utama)
-    if (kelurahanNama && r.kelurahan !== kelurahanNama) {
-      return false
-    }
+      // Filter Kelurahan
+      if (activeFilters.kelurahanId && kelurahanNama && r.kelurahan !== kelurahanNama) {
+        return false
+      }
 
-    return true
-  })
-}, [allRelawans, kotaMap, kecamatanMap, kelurahanMap, activeFilters])
+      return true
+    })
+  }, [allRelawans, kotaMap, kecamatanMap, kelurahanMap, activeFilters])
+
+  // Handler Tombol Cari
   const handleSearch = () => {
     setActiveFilters({
       kotaId,
       kecamatanId,
       kelurahanId,
-      query,
+      query: query.trim(),
     })
     setCurrentPage(1)
     setSelectedIds(new Set())
   }
 
-  const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim()
+  // Handler Reset Filter
+  const handleResetFilter = () => {
+    setKotaId('')
+    setKecamatanId('')
+    setKelurahanId('')
+    setQuery('')
+    setActiveFilters({
+      kotaId: '',
+      kecamatanId: '',
+      kelurahanId: '',
+      query: '',
+    })
+    setCurrentPage(1)
+    setSelectedIds(new Set())
+  }
+
+  const hasFilter =
+    Boolean(activeFilters.kotaId) ||
+    Boolean(activeFilters.kecamatanId) ||
+    Boolean(activeFilters.kelurahanId) ||
+    Boolean(activeFilters.query.trim()) ||
+    Boolean(kotaId) ||
+    Boolean(kecamatanId) ||
+    Boolean(kelurahanId) ||
+    Boolean(query.trim())
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id); else next.add(id)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
   }
 
   const toggleAll = useCallback(() => {
-    if (selectedIds.size === results.length) {
+    if (selectedIds.size === results.length && results.length > 0) {
       setSelectedIds(new Set())
     } else {
       setSelectedIds(new Set(results.map((r) => r.id)))
@@ -177,79 +228,64 @@ export default function RelawanPage(): React.ReactNode {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">Data Relawan</h1>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">Kelola data relawan DPRD DKI Jakarta</p>
+      {/* SECTION FILTER */}
+      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-4 shadow-sm">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Select
+            id="filter-kota"
+            label="Kota/Kabupaten"
+            placeholder="Semua Kota"
+            options={kotaOptions}
+            value={kotaId}
+            onChange={(val) => {
+              setKotaId(getSelectValue(val))
+              setKecamatanId('')
+              setKelurahanId('')
+            }}
+          />
+
+          <Select
+            id="filter-kecamatan"
+            label="Kecamatan"
+            placeholder="Semua Kecamatan"
+            options={kecamatanOptions}
+            value={kecamatanId}
+            onChange={(val) => {
+              setKecamatanId(getSelectValue(val))
+              setKelurahanId('')
+            }}
+          />
+
+          <Select
+            id="filter-kelurahan"
+            label="Kelurahan"
+            placeholder="Semua Kelurahan"
+            options={kelurahanOptions}
+            value={kelurahanId}
+            onChange={(val) => setKelurahanId(getSelectValue(val))}
+            disabled={!kecamatanId}
+          />
+
+          <Input
+            id="filter-query"
+            label="Cari Nama/Telepon"
+            placeholder="Ketik pencarian..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </div>
-        <Link href="/admin/relawan/baru">
-          <Button><MdAdd size={18} className="mr-1" />Tambah Relawan</Button>
-        </Link>
-      </div>
 
-      <Card className="p-6">
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
-          <div className="flex flex-wrap gap-3">
-            <div className="min-w-[140px] flex-1">
-              <Select
-                id="kota"
-                label="Kota/Kabupaten"
-                placeholder="Semua Kota/Kabupaten"
-                options={kotaOptions}
-                value={kotaId}
-                onChange={(e) => {
-                  setKotaId(e.target.value)
-                  setKecamatanId('')
-                  setKelurahanId('')
-                }}
-              />
-            </div>
-
-            <div className="min-w-[160px] flex-1">
-              <Select
-                id="kecamatan"
-                label="Kecamatan"
-                placeholder="Semua Kecamatan"
-                options={kecamatanOptions}
-                value={kecamatanId}
-                onChange={(e) => {
-                  setKecamatanId(e.target.value)
-                  setKelurahanId('')
-                }}
-              />
-            </div>
-
-            <div className="min-w-[160px] flex-1">
-              <Select
-                id="kelurahan"
-                label="Kelurahan"
-                placeholder="Semua Kelurahan"
-                options={kelurahanOptions}
-                value={kelurahanId}
-                onChange={(e) => setKelurahanId(e.target.value)}
-                disabled={!kecamatanId}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <Input
-                id="query"
-                label="Cari relawan"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Nama, NIK, atau No. Telepon"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
-              />
-            </div>
-            <Button onClick={handleSearch} disabled={!hasFilter}>
-              <MdSearch size={18} className="mr-1" />Cari
+        <div className="mt-4 flex items-center justify-end gap-2">
+          {hasFilter && (
+            <Button variant="outline" size="sm" onClick={handleResetFilter}>
+              Reset Filter
             </Button>
-          </div>
+          )}
+          <Button size="sm" onClick={handleSearch}>
+            Cari Data
+          </Button>
         </div>
-      </Card>
+      </div>
 
       <div>
         <div className="mb-2 flex items-center justify-end">

@@ -10,17 +10,39 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('search')?.trim()
   const sumber = searchParams.get('sumber')
   const status = searchParams.get('status')
-  const kotaId = searchParams.get('kota')
-  const kecamatanId = searchParams.get('kecamatan')
-  const kelurahanId = searchParams.get('kelurahan')
+  const kotaNama = searchParams.get('kota')
+  const kecamatanNama = searchParams.get('kecamatan')
+  const kelurahanNama = searchParams.get('kelurahan')
 
   const where: Record<string, unknown> = {}
 
   if (sumber) where.sumber = sumber
   if (status) where.status = status
-  if (kotaId) where.kota_id = kotaId
-  if (kecamatanId) where.kecamatan_id = kecamatanId
-  if (kelurahanId) where.kelurahan_id = kelurahanId
+  if (kotaNama) {
+    const kotas = await prisma.kota.findMany({
+      where: { nama: kotaNama },
+      select: { id: true },
+    })
+    where.kota_id = kotas.length ? { in: kotas.map((k) => k.id) } : { in: [] }
+  }
+  if (kecamatanNama) {
+    const kecamatans = await prisma.kecamatan.findMany({
+      where: { nama: kecamatanNama },
+      select: { id: true },
+    })
+    where.kecamatan_id = kecamatans.length
+      ? { in: kecamatans.map((k) => k.id) }
+      : { in: [] }
+  }
+  if (kelurahanNama) {
+    const kelurahans = await prisma.kelurahan.findMany({
+      where: { nama: kelurahanNama },
+      select: { id: true },
+    })
+    where.kelurahan_id = kelurahans.length
+      ? { in: kelurahans.map((k) => k.id) }
+      : { in: [] }
+  }
   if (search) {
     const mode = { mode: 'insensitive' as const }
     where.OR = [

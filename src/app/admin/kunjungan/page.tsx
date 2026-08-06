@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import useSWR from 'swr'
 
 import { Select } from '@/components/ui/select'
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Pagination } from '@/components/ui/pagination'
 import { Link } from '@/routing'
-import { MdVisibility, MdSearch, MdEdit, MdDelete, MdClose } from 'react-icons/md'
+import { MdVisibility, MdEdit, MdDelete, MdClose } from 'react-icons/md'
 import type { Kegiatan } from '@/types'
 import { useSearchParams } from 'next/navigation'
 
@@ -71,6 +71,62 @@ export default function KunjunganPage() {
   const [deleting, setDeleting] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
+  // Master Data Wilayah (masing-masing independen, tidak saling cascade)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    '/api/kecamatan',
+    fetcher
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    '/api/kelurahan',
+    fetcher
+  )
+
+  const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
+  const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
+  const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
+
+  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
+
+  // Referensi map wilayah agar tidak perlu dependency di efek auto-apply
+  const kotaMapRef = useRef(kotaMap)
+  const kecamatanMapRef = useRef(kecamatanMap)
+  const kelurahanMapRef = useRef(kelurahanMap)
+
+  useEffect(() => {
+    kotaMapRef.current = kotaMap
+    kecamatanMapRef.current = kecamatanMap
+    kelurahanMapRef.current = kelurahanMap
+  }, [kotaMap, kecamatanMap, kelurahanMap])
+
+  // Bulan dari URL dipertahankan saat filter lain berubah
+  const bulanRef = useRef(activeFilters.bulan)
+  useEffect(() => {
+    bulanRef.current = activeFilters.bulan
+  }, [activeFilters.bulan])
+
+  // Debounce query pencarian (auto-apply tanpa tombol Cari)
+  const [debouncedQuery, setDebouncedQuery] = useState(query)
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query), 400)
+    return () => clearTimeout(t)
+  }, [query])
+
+  // Auto-apply: cukup pilih select / ketik, data langsung berubah
+  useEffect(() => {
+    setActiveFilters({
+      kota: kotaMapRef.current[kotaId] || '',
+      kecamatan: kecamatanMapRef.current[kecamatanId] || '',
+      kelurahan: kelurahanMapRef.current[kelurahanId] || '',
+      search: debouncedQuery.trim(),
+      bulan: bulanRef.current,
+    })
+    setCurrentPage(1)
+    setSelectedIds(new Set())
+  }, [kotaId, kecamatanId, kelurahanId, debouncedQuery])
+
   // Sinkronisasi URL searchParams ke state internal saat URL berubah
   useEffect(() => {
     const paramKota = searchParams.get('kota') || ''
@@ -93,6 +149,15 @@ export default function KunjunganPage() {
   const params = new URLSearchParams()
   params.set('page', String(currentPage))
   params.set('limit', String(PAGE_SIZE))
+  if (activeFilters.kota) {
+    params.set('kota', activeFilters.kota)
+  }
+  if (activeFilters.kecamatan) {
+    params.set('kecamatan', activeFilters.kecamatan)
+  }
+  if (activeFilters.kelurahan) {
+    params.set('kelurahan', activeFilters.kelurahan)
+  }
   if (activeFilters.search.trim()) {
     params.set('search', activeFilters.search.trim())
   }
@@ -106,43 +171,6 @@ export default function KunjunganPage() {
 
   const [editingItem, setEditingItem] = useState<Kegiatan | null>(null)
   const [editForm, setEditForm] = useState({ nama_kegiatan: '', lokasi: '', catatan: '' })
-
-  // Master Data Wilayah (Bisa diakses independen)
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
-    fetcher
-  )
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
-    fetcher
-  )
-
-  const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
-  const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
-  const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
-
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
-  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
-
-  // Logika Eksekusi Pencarian
-  const handleSearch = () => {
-    const selectedKota = kotaMap[kotaId] || ''
-    const selectedKec = kecamatanMap[kecamatanId] || ''
-    const selectedKel = kelurahanMap[kelurahanId] || ''
-
-    setActiveFilters({
-      kota: selectedKota,
-      kecamatan: selectedKec,
-      kelurahan: selectedKel,
-      search: query,
-      bulan: activeFilters.bulan, // Tetapkan param bulan dari URL jika ada
-    })
-
-    setCurrentPage(1)
-    setSelectedIds(new Set())
-  }
 
   const hasFilter =
     kotaId ||
@@ -277,11 +305,7 @@ export default function KunjunganPage() {
                 placeholder="Semua Kota/Kabupaten"
                 options={kotaOptions}
                 value={kotaId}
-                onChange={(e) => {
-                  setKotaId(e.target.value)
-                  setKecamatanId('')
-                  setKelurahanId('')
-                }}
+                onChange={(e) => setKotaId(e.target.value)}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -291,10 +315,7 @@ export default function KunjunganPage() {
                 placeholder="Semua Kecamatan"
                 options={kecamatanOptions}
                 value={kecamatanId}
-                onChange={(e) => {
-                  setKecamatanId(e.target.value)
-                  setKelurahanId('')
-                }}
+                onChange={(e) => setKecamatanId(e.target.value)}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -305,7 +326,6 @@ export default function KunjunganPage() {
                 options={kelurahanOptions}
                 value={kelurahanId}
                 onChange={(e) => setKelurahanId(e.target.value)}
-                disabled={!kecamatanId}
               />
             </div>
           </div>
@@ -318,15 +338,8 @@ export default function KunjunganPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Cari nama kegiatan, lokasi..."
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSearch()
-                }}
               />
             </div>
-            <Button onClick={handleSearch} disabled={!hasFilter}>
-              <MdSearch size={18} className="mr-1" />
-              Cari
-            </Button>
           </div>
         </div>
       </Card>

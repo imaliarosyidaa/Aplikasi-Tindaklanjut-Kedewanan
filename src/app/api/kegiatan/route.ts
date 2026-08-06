@@ -7,13 +7,49 @@ export async function GET(request: NextRequest) {
   const hasPagination = pageParam !== null
   const page = Math.max(1, parseInt(pageParam ?? '1'))
   const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50')))
+  const kotaNama = searchParams.get('kota')
+  const kecamatanNama = searchParams.get('kecamatan')
   const kelurahanNama = searchParams.get('kelurahan')
   const kunjunganId = searchParams.get('kunjungan_id')
+  const search = searchParams.get('search')?.trim()
 
   const where: Record<string, unknown> = {}
 
+  const kunjunganConstraints: Record<string, unknown>[] = []
+
   if (kunjunganId) {
-    where.kunjungan_id = kunjunganId
+    kunjunganConstraints.push({ kunjungan_id: kunjunganId })
+  }
+
+  // Filter lokasi: kumpulkan ID kunjungan yang cocok untuk tiap filter lalu irisan
+  const matchSets: string[][] = []
+
+  if (kotaNama) {
+    const kotas = await prisma.kota.findMany({
+      where: { nama: kotaNama },
+      select: { id: true },
+    })
+    const kunjungans = kotas.length
+      ? await prisma.kunjungan.findMany({
+          where: { kota_id: { in: kotas.map((k) => k.id) } },
+          select: { id: true },
+        })
+      : []
+    matchSets.push(kunjungans.map((k) => k.id))
+  }
+
+  if (kecamatanNama) {
+    const kecamatans = await prisma.kecamatan.findMany({
+      where: { nama: kecamatanNama },
+      select: { id: true },
+    })
+    const kunjungans = kecamatans.length
+      ? await prisma.kunjungan.findMany({
+          where: { kecamatan_id: { in: kecamatans.map((k) => k.id) } },
+          select: { id: true },
+        })
+      : []
+    matchSets.push(kunjungans.map((k) => k.id))
   }
 
   if (kelurahanNama) {
@@ -21,13 +57,42 @@ export async function GET(request: NextRequest) {
       where: { nama: kelurahanNama },
       select: { id: true },
     })
-    const kelIds = kelurahans.map((k) => k.id)
+    const kunjungans = kelurahans.length
+      ? await prisma.kunjungan.findMany({
+          where: { kelurahan_id: { in: kelurahans.map((k) => k.id) } },
+          select: { id: true },
+        })
+      : []
+    matchSets.push(kunjungans.map((k) => k.id))
+  }
 
-    const kunjungans = await prisma.kunjungan.findMany({
-      where: { kelurahan_id: { in: kelIds } },
-      select: { id: true },
-    })
-    where.kunjungan_id = { in: kunjungans.map((k) => k.id) }
+  if (matchSets.length) {
+    const intersection = matchSets.reduce((acc, cur) =>
+      acc.filter((x) => cur.includes(x))
+    )
+    kunjunganConstraints.push({ kunjungan_id: { in: intersection } })
+  }
+
+  if (kunjunganConstraints.length === 1) {
+    where.kunjungan_id = kunjunganConstraints[0].kunjungan_id
+  } else if (kunjunganConstraints.length > 1) {
+    where.AND = kunjunganConstraints
+  }
+
+  if (search) {
+    const searchOr = {
+      OR: [
+        { nama_kegiatan: { contains: search, mode: 'insensitive' as const } },
+        { jenis_kegiatan: { contains: search, mode: 'insensitive' as const } },
+        { tempat: { contains: search, mode: 'insensitive' as const } },
+        { isi: { contains: search, mode: 'insensitive' as const } },
+      ],
+    }
+    if (where.AND) {
+      where.AND = [searchOr, ...(where.AND as Record<string, unknown>[])]
+    } else {
+      where.AND = [searchOr]
+    }
   }
 
   const [data, total] = await Promise.all([
