@@ -232,11 +232,6 @@ export default function RelawanPage(): React.ReactNode {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
-            {activeFilters.bulan && (
-              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                Filter Bulan: {activeFilters.bulan}
-              </span>
-            )}
           </div>
 
           <div className="flex flex-wrap gap-3">
