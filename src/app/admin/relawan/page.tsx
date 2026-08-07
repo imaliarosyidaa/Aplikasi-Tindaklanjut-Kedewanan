@@ -464,14 +464,14 @@ export default function RelawanPage(): React.ReactNode {
                 <span className="text-[var(--color-text-secondary)]">Nama:</span>
                 <span className="text-[var(--color-text)]">{preview.nama}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="col-span-2 flex items-center gap-2">
                 <MdPhone size={16} className="text-[var(--color-text-secondary)]" />
                 <span className="text-[var(--color-text-secondary)]">Telepon:</span>
                 <span className="text-[var(--color-text)]">{preview.no_telepon}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="col-span-2 flex items-center gap-2">
                 <MdWc size={16} className="text-[var(--color-text-secondary)]" />
-                <span className="text-[var(--color-text-secondary)]">JK:</span>
+                <span className="text-[var(--color-text-secondary)]">Jenis Kelamin:</span>
                 <span className="text-[var(--color-text)]">
                   {preview.jenis_kelamin === 'LAKI_LAKI' ? 'Laki-laki' : 'Perempuan'}
                 </span>
@@ -484,7 +484,7 @@ export default function RelawanPage(): React.ReactNode {
               <div className="col-span-2">
                 <span className="text-[var(--color-text-secondary)]">Wilayah:</span>
                 <span className="ml-1 text-[var(--color-text)]">
-                  {preview.kota_kabupaten}, {preview.kecamatan}, {preview.kelurahan}
+                  {preview.kelurahan},{preview.kecamatan}, {preview.kota_kabupaten}
                 </span>
               </div>
               <div className="col-span-2">
