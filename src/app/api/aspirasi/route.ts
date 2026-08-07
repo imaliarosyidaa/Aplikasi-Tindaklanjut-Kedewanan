@@ -30,18 +30,14 @@ export async function GET(request: NextRequest) {
       where: { nama: kecamatanNama },
       select: { id: true },
     })
-    where.kecamatan_id = kecamatans.length
-      ? { in: kecamatans.map((k) => k.id) }
-      : { in: [] }
+    where.kecamatan_id = kecamatans.length ? { in: kecamatans.map((k) => k.id) } : { in: [] }
   }
   if (kelurahanNama) {
     const kelurahans = await prisma.kelurahan.findMany({
       where: { nama: kelurahanNama },
       select: { id: true },
     })
-    where.kelurahan_id = kelurahans.length
-      ? { in: kelurahans.map((k) => k.id) }
-      : { in: [] }
+    where.kelurahan_id = kelurahans.length ? { in: kelurahans.map((k) => k.id) } : { in: [] }
   }
   if (search) {
     const mode = { mode: 'insensitive' as const }
@@ -58,10 +54,7 @@ export async function GET(request: NextRequest) {
   const [data, total] = await Promise.all([
     prisma.aspirasis.findMany({
       where,
-      orderBy: [
-        { status: 'asc' },
-        { created_at: 'desc' },
-      ],
+      orderBy: [{ status: 'asc' }, { created_at: 'desc' }],
       ...(hasPagination ? { skip: (page - 1) * limit, take: limit } : {}),
       include: {
         kota: true,
@@ -167,23 +160,30 @@ export async function POST(request: Request) {
     },
   })
 
-  return NextResponse.json({
-    id: created.id,
-    id_laporan: created.id_laporan ?? '',
-    nik: created.nik ?? '',
-    sumber: created.sumber,
-    deskripsi: created.deskripsi,
-    status: created.status,
-    pelapor_nama: created.pelapor_nama,
-    pelapor_email: created.pelapor_email ?? '',
-    pelapor_telepon: created.pelapor_telepon,
-    lampiran: (Array.isArray(created.lampiran) ? created.lampiran.map((f: unknown) => typeof f === 'string' ? f : (f as Record<string, unknown>).base64 ?? '') : []) as string[],
-    kategori_usulan: created.kategori_usulan,
-    jenis_usulan: created.jenis_usulan,
-    jenis_reses: created.jenis_reses,
-    tindak_lanjut: created.tindak_lanjut,
-    tanggal_dibuat: created.tanggal_dibuat.toISOString(),
-    created_at: created.created_at.toISOString(),
-    updated_at: created.updated_at.toISOString(),
-  }, { status: 201 })
+  return NextResponse.json(
+    {
+      id: created.id,
+      id_laporan: created.id_laporan ?? '',
+      nik: created.nik ?? '',
+      sumber: created.sumber,
+      deskripsi: created.deskripsi,
+      status: created.status,
+      pelapor_nama: created.pelapor_nama,
+      pelapor_email: created.pelapor_email ?? '',
+      pelapor_telepon: created.pelapor_telepon,
+      lampiran: (Array.isArray(created.lampiran)
+        ? created.lampiran.map((f: unknown) =>
+            typeof f === 'string' ? f : ((f as Record<string, unknown>).base64 ?? ''),
+          )
+        : []) as string[],
+      kategori_usulan: created.kategori_usulan,
+      jenis_usulan: created.jenis_usulan,
+      jenis_reses: created.jenis_reses,
+      tindak_lanjut: created.tindak_lanjut,
+      tanggal_dibuat: created.tanggal_dibuat.toISOString(),
+      created_at: created.created_at.toISOString(),
+      updated_at: created.updated_at.toISOString(),
+    },
+    { status: 201 },
+  )
 }

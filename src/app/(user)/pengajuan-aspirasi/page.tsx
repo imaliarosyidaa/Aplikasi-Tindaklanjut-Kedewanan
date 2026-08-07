@@ -104,7 +104,7 @@ function TicketLaporan({
           <tr><td class="label">Alamat</td><td class="value">${data.alamat}</td></tr>
           <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal}</td></tr>
           <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan}</td></tr>
-          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map((f) => f.startsWith('data:application/pdf') ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF</span>` : `<img src="${f}" class="lampiran-img" />`).join('')}</td></tr>` : ''}
+          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map((f) => (f.startsWith('data:application/pdf') ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF</span>` : `<img src="${f}" class="lampiran-img" />`)).join('')}</td></tr>` : ''}
         </table>
         <div class="footer">
           Dokumen ini dicetak pada ${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}<br/>
@@ -195,15 +195,17 @@ function TicketLaporan({
                 <MdDescription size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
                 <span className="w-28 text-[var(--color-text-secondary)]">Lampiran</span>
                 <div className="flex flex-wrap gap-2">
-                  {data.lampiran.map((f, i) => (
+                  {data.lampiran.map((f, i) =>
                     f.startsWith('data:application/pdf') ? (
                       <button
                         key={i}
                         type="button"
                         onClick={() => {
-                          fetch(f).then(r => r.blob()).then(blob => {
-                            window.open(URL.createObjectURL(blob), '_blank')
-                          })
+                          fetch(f)
+                            .then((r) => r.blob())
+                            .then((blob) => {
+                              window.open(URL.createObjectURL(blob), '_blank')
+                            })
                         }}
                         className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
                       >
@@ -211,9 +213,14 @@ function TicketLaporan({
                         Detail
                       </button>
                     ) : (
-                      <img key={i} src={f} alt="Lampiran" className="w-20 h-20 object-cover rounded border border-[var(--color-border)]" />
-                    )
-                  ))}
+                      <img
+                        key={i}
+                        src={f}
+                        alt="Lampiran"
+                        className="w-20 h-20 object-cover rounded border border-[var(--color-border)]"
+                      />
+                    ),
+                  )}
                 </div>
               </div>
             )}
@@ -228,7 +235,9 @@ function TicketLaporan({
               Ajukan Lagi
             </Button>
             <Link href="/laporan-saya" className="flex-1">
-              <Button variant="outline" className="w-full">Cek Laporan Saya</Button>
+              <Button variant="outline" className="w-full">
+                Cek Laporan Saya
+              </Button>
             </Link>
           </div>
         </Card>
@@ -238,10 +247,10 @@ function TicketLaporan({
 }
 
 export default function PengajuanAspirasiPage(): React.ReactNode {
-  const [idLaporan] = useState(() =>
-    'LAP-' + Array.from({ length: 10 }, () =>
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
-    ).join('')
+  const [idLaporan] = useState(
+    () =>
+      'LAP-' +
+      Array.from({ length: 10 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join(''),
   )
   const [nik, setNik] = useState('')
   const [nama, setNama] = useState('')
@@ -257,6 +266,9 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [kategoriUsulan, setKategoriUsulan] = useState('')
+  const [jenisUsulan, setJenisUsulan] = useState('')
+  const [jenisReses, setJenisReses] = useState('')
   const [ticketData, setTicketData] = useState<{
     idLaporan: string
     nik: string
@@ -275,11 +287,11 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
     kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
-    fetcher
+    fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<MasterKelurahan[]>(
     kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
-    fetcher
+    fetcher,
   )
   const [email, setEmail] = useState('')
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
@@ -339,6 +351,9 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           pelapor_nama: nama,
           pelapor_email: email,
           pelapor_telepon: telepon,
+          kategori_usulan: kategoriUsulan,
+          jenis_usulan: jenisUsulan,
+          jenis_reses: jenisReses,
           kota,
           kecamatan,
           kelurahan,
@@ -365,8 +380,12 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         pengaduan,
         lampiran,
         tanggal: new Date().toLocaleDateString('id-ID', {
-          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-          hour: '2-digit', minute: '2-digit',
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
         }),
       })
       setSubmitted(true)
@@ -378,7 +397,16 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   }
 
   if (submitted && ticketData) {
-    return <TicketLaporan data={ticketData} onReset={() => { setSubmitted(false); setTicketData(null); setError('') }} />
+    return (
+      <TicketLaporan
+        data={ticketData}
+        onReset={() => {
+          setSubmitted(false)
+          setTicketData(null)
+          setError('')
+        }}
+      />
+    )
   }
 
   const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -401,13 +429,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         </p>
       </div>
 
-      <Input
-        id="id_laporan"
-        label="ID Laporan"
-        value={idLaporan}
-        disabled
-        className="bg-gray-100 text-gray-500"
-      />
+      <Input id="id_laporan" label="ID Laporan" value={idLaporan} disabled className="bg-gray-100 text-gray-500" />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
@@ -426,13 +448,17 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                   key={item.id}
                   type="button"
                   onClick={() => setSumber(item.id)}
-                  className={`cursor-pointer text-center flex h-40 flex-col justify-center items-center rounded-xl border-2 p-4 transition-all duration-200 ${active
+                  className={`cursor-pointer text-center flex h-40 flex-col justify-center items-center rounded-xl border-2 p-4 transition-all duration-200 ${
+                    active
                       ? 'border-blue-600 bg-blue-50 shadow-sm'
                       : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-blue-300 hover:bg-blue-50/50'
-                    }`}
+                  }`}
                 >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
-                    }`}>
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+                      active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
+                    }`}
+                  >
                     <Icon size={26} />
                   </div>
                   <h3 className={`text-sm font-semibold ${active ? 'text-blue-700' : 'text-[var(--color-text)]'}`}>
@@ -443,9 +469,47 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             })}
             {sumber === 'LAINYA' && (
               <div className="mt-4">
-                <Input id="jenis-lainnya" label="Sumber Aspirasi Lainnya" value={sumberLainya} onChange={(e) => setSumberLainya(e.target.value)} placeholder="Masukkan sumber kegiatan" />
+                <Input
+                  id="jenis-lainnya"
+                  label="Sumber Aspirasi Lainnya"
+                  value={sumberLainya}
+                  onChange={(e) => setSumberLainya(e.target.value)}
+                  placeholder="Masukkan sumber kegiatan"
+                />
               </div>
             )}
+          </div>
+          <div className="mt-6 grid md:grid-cols-2 gap-4">
+            <div>
+              <Input
+                id="kategori-usulan"
+                label="Kategori Usulan"
+                value={kategoriUsulan}
+                onChange={(e) => setKategoriUsulan(e.target.value)}
+                placeholder="Masukkan kategori usulan"
+              />
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+            </div>
+            <div>
+              <Input
+                id="jenis-usulan"
+                label="Jenis Usulan"
+                value={jenisUsulan}
+                onChange={(e) => setJenisUsulan(e.target.value)}
+                placeholder="Masukkan jenis usulan"
+              />
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+            </div>
+            <div>
+              <Input
+                id="jenis-reses"
+                label="Jenis Reses"
+                value={jenisReses}
+                onChange={(e) => setJenisReses(e.target.value)}
+                placeholder="Masukkan jenis reses"
+              />
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+            </div>
           </div>
         </Card>
 
@@ -564,11 +628,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 placeholder="Tuliskan aspirasi Anda secara jelas dan lengkap..."
               />
             </div>
-            <FileUpload
-              label="Upload Lampiran (Opsional)"
-              value={lampiran}
-              onChange={setLampiran}
-            />
+            <FileUpload label="Upload Lampiran (Opsional)" value={lampiran} onChange={setLampiran} />
             <p className="text-xs text-[var(--color-text-secondary)]">*Boleh dikosongkan</p>
           </div>
         </Card>

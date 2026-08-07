@@ -66,7 +66,6 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const [kategoriUsulan, setKategoriUsulan] = useState(aspirasi.kategori_usulan)
   const [jenisUsulan, setJenisUsulan] = useState(aspirasi.jenis_usulan)
   const [jenisReses, setJenisReses] = useState(aspirasi.jenis_reses)
-  const [tindakLanjut, setTindakLanjut] = useState(aspirasi.tindak_lanjut)
   const [alamat, setAlamat] = useState(aspirasi.lokasi ?? '')
   const [tanggalDibuat, setTanggalDibuat] = useState(toDateInputValue(aspirasi.tanggal_dibuat))
   const [lampiran, setLampiran] = useState<string[]>(
@@ -89,7 +88,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
     fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : '/api/kelurahan',
     fetcher,
   )
 
@@ -152,7 +151,6 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           kategori_usulan: kategoriUsulan,
           jenis_usulan: jenisUsulan,
           jenis_reses: jenisReses,
-          tindak_lanjut: tindakLanjut,
           sumber: finalSumber as SumberAspirasi,
           alamat,
           tanggal_dibuat: tanggalDibuat,
@@ -268,13 +266,6 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
         placeholder="Contoh: Reses Masa Persidangan I"
         value={jenisReses}
         onChange={(e) => setJenisReses(e.target.value)}
-      />
-      <Input
-        id="tindak_lanjut"
-        label="Tindak Lanjut"
-        placeholder="Jelaskan tindak lanjut yang dilakukan"
-        value={tindakLanjut}
-        onChange={(e) => setTindakLanjut(e.target.value)}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
