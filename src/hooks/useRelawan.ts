@@ -9,6 +9,9 @@ interface RelawanListParams {
   page?: number
   limit?: number
   search?: string
+  kota?: string
+  kecamatan?: string
+  kelurahan?: string
 }
 
 export function useRelawanList(params?: RelawanListParams) {

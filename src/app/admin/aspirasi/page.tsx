@@ -12,13 +12,7 @@ import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
 import { Link } from '@/routing'
 import { Pagination } from '@/components/ui/pagination'
 import { Card } from '@/components/ui/card'
-import {
-  MdVisibility,
-  MdFilterList,
-  MdEdit,
-  MdDelete,
-  MdSearch,
-} from 'react-icons/md'
+import { MdVisibility, MdFilterList, MdEdit, MdDelete, MdSearch } from 'react-icons/md'
 import type { Aspirasi } from '@/types'
 import { useSearchParams } from 'next/navigation'
 
@@ -60,15 +54,9 @@ export default function AspirasiPage(): React.ReactNode {
   const [currentPage, setCurrentPage] = useState(1)
 
   // State Form Inputs & Filter
-  const [searchText, setSearchText] = useState(
-    searchParams.get('search') || searchParams.get('query') || ''
-  )
-  const [filterSumber, setFilterSumber] = useState(
-    searchParams.get('sumber') || ''
-  )
-  const [filterStatus, setFilterStatus] = useState(
-    searchParams.get('status') || ''
-  )
+  const [searchText, setSearchText] = useState(searchParams.get('search') || searchParams.get('query') || '')
+  const [filterSumber, setFilterSumber] = useState(searchParams.get('sumber') || '')
+  const [filterStatus, setFilterStatus] = useState(searchParams.get('status') || '')
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
@@ -98,27 +86,12 @@ export default function AspirasiPage(): React.ReactNode {
 
   // Master Data Wilayah (masing-masing independen, tidak saling cascade)
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    '/api/kecamatan',
-    fetcher
-  )
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    '/api/kelurahan',
-    fetcher
-  )
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>('/api/kelurahan', fetcher)
 
-  const kotaMap = useMemo(
-    () => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])),
-    [kotaList]
-  )
-  const kecamatanMap = useMemo(
-    () => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])),
-    [kecamatanList]
-  )
-  const kelurahanMap = useMemo(
-    () => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])),
-    [kelurahanList]
-  )
+  const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
+  const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
+  const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({
@@ -167,8 +140,7 @@ export default function AspirasiPage(): React.ReactNode {
     const paramKota = searchParams.get('kota') || ''
     const paramKec = searchParams.get('kecamatan') || ''
     const paramKel = searchParams.get('kelurahan') || ''
-    const paramQuery =
-      searchParams.get('search') || searchParams.get('query') || ''
+    const paramQuery = searchParams.get('search') || searchParams.get('query') || ''
     const paramSumber = searchParams.get('sumber') || ''
     const paramStatus = searchParams.get('status') || ''
     const paramBulan = searchParams.get('bulan') || ''
@@ -210,7 +182,11 @@ export default function AspirasiPage(): React.ReactNode {
     params.set('search', activeFilters.search.trim())
   }
 
-  const { data: res, isLoading, mutate } = useSWR<{
+  const {
+    data: res,
+    isLoading,
+    mutate,
+  } = useSWR<{
     data: Aspirasi[]
     total: number
   }>(`/api/aspirasi?${params.toString()}`, fetcher)
@@ -227,16 +203,10 @@ export default function AspirasiPage(): React.ReactNode {
       const date = new Date(item.tanggal_dibuat)
       if (isNaN(date.getTime())) return true
 
-      const monthShort = date
-        .toLocaleDateString('id-ID', { month: 'short' })
-        .toLowerCase()
-      const monthLong = date
-        .toLocaleDateString('id-ID', { month: 'long' })
-        .toLowerCase()
+      const monthShort = date.toLocaleDateString('id-ID', { month: 'short' }).toLowerCase()
+      const monthLong = date.toLocaleDateString('id-ID', { month: 'long' }).toLowerCase()
 
-      return (
-        monthShort.includes(targetBulan) || monthLong.includes(targetBulan)
-      )
+      return monthShort.includes(targetBulan) || monthLong.includes(targetBulan)
     })
   }, [rawAspirasiList, activeFilters.bulan])
 
@@ -320,25 +290,27 @@ export default function AspirasiPage(): React.ReactNode {
     },
   ]
 
+  const getSelectValue = (val: unknown): string => {
+    if (typeof val === 'string') return val
+    if (val && typeof val === 'object' && 'target' in val) {
+      return (val as React.ChangeEvent<HTMLSelectElement>).target.value ?? ''
+    }
+    return ''
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">
-            Tracing Aspirasi
-          </h1>
-          <p className="text-sm text-[var(--color-text-secondary)]">
-            Lacak status tindak lanjut aspirasi
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">Tracing Aspirasi</h1>
+          <p className="text-sm text-[var(--color-text-secondary)]">Lacak status tindak lanjut aspirasi</p>
         </div>
       </div>
 
       <Card className="p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-[var(--color-text)]">
-              Filter & Pencarian
-            </p>
+            <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
             {activeFilters.bulan && (
               <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                 Filter Bulan: {activeFilters.bulan}
@@ -382,8 +354,10 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Kota/Kabupaten"
                 options={kotaOptions}
                 value={kotaId}
-                onChange={(e) => {
-                  setKotaId(e.target.value)
+                onChange={(val) => {
+                  setKotaId(getSelectValue(val))
+                  setKecamatanId('')
+                  setKelurahanId('')
                 }}
               />
             </div>
@@ -394,8 +368,9 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Kecamatan"
                 options={kecamatanOptions}
                 value={kecamatanId}
-                onChange={(e) => {
-                  setKecamatanId(e.target.value)
+                onChange={(val) => {
+                  setKecamatanId(getSelectValue(val))
+                  setKelurahanId('')
                 }}
               />
             </div>
@@ -406,9 +381,7 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(e) => {
-                  setKelurahanId(e.target.value)
-                }}
+                onChange={(val) => setKelurahanId(getSelectValue(val))}
               />
             </div>
           </div>
@@ -426,12 +399,7 @@ export default function AspirasiPage(): React.ReactNode {
               />
             </div>
             {hasFilter && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="mb-0.5"
-                onClick={handleResetFilter}
-              >
+              <Button variant="outline" size="sm" className="mb-0.5" onClick={handleResetFilter}>
                 <MdFilterList size={16} className="mr-1" />
                 Tampilkan Semua
               </Button>
@@ -442,12 +410,7 @@ export default function AspirasiPage(): React.ReactNode {
 
       <div className="mb-2 flex items-center justify-end">
         {selectedIds.size > 0 && (
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={handleBulkDelete}
-            disabled={deleting}
-          >
+          <Button variant="danger" size="sm" onClick={handleBulkDelete} disabled={deleting}>
             {deleting ? (
               <div className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : (
@@ -467,55 +430,34 @@ export default function AspirasiPage(): React.ReactNode {
               <th className="w-8 px-2 py-2 text-left">
                 <input
                   type="checkbox"
-                  checked={
-                    selectedIds.size === aspirasiList.length &&
-                    aspirasiList.length > 0
-                  }
+                  checked={selectedIds.size === aspirasiList.length && aspirasiList.length > 0}
                   onChange={toggleAll}
                   className="cursor-pointer"
                 />
               </th>
 
               {/* No */}
-              <th className="w-8 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
-                No
-              </th>
+              <th className="w-8 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">No</th>
 
               {/* Wilayah */}
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
-                Kecamatan
-              </th>
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
-                Kota/Kabupaten
-              </th>
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kota/Kabupaten</th>
 
               {/* Sumber */}
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
-                Sumber
-              </th>
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Sumber</th>
 
               {/* Deskripsi */}
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
-                Deskripsi
-              </th>
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Deskripsi</th>
 
               {/* Pelapor & Tanggal */}
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
-                Pelapor
-              </th>
-              <th className="w-24 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">
-                Tanggal
-              </th>
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Pelapor</th>
+              <th className="w-24 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Tanggal</th>
 
               {/* Status & Aksi */}
+              <th className="w-28 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">Status</th>
+              <th className="w-20 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               <th className="w-28 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
-                Status
-              </th>
-              <th className="w-20 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
-                Aksi
-              </th>
-              <th className="w-28 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
-                Diverifikasi Oleh 
+                Diverifikasi Oleh
               </th>
             </tr>
           </thead>
@@ -529,170 +471,149 @@ export default function AspirasiPage(): React.ReactNode {
               </tr>
             ) : aspirasiList.length === 0 ? (
               <tr>
-                  <td
-                    colSpan={10}
-                    className="px-4 py-8 text-center text-[var(--color-text-secondary)]"
-                  >
-                    {hasFilter
-                      ? 'Tidak ada aspirasi dengan filter tersebut'
-                      : 'Belum ada data aspirasi'}
+                <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
+                  {hasFilter ? 'Tidak ada aspirasi dengan filter tersebut' : 'Belum ada data aspirasi'}
+                </td>
+              </tr>
+            ) : (
+              aspirasiList.map((aspirasi: Aspirasi, i: number) => (
+                <tr
+                  key={aspirasi.id}
+                  className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
+                >
+                  {/* Checkbox */}
+                  <td className="px-2 py-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(aspirasi.id)}
+                      onChange={() => toggleSelect(aspirasi.id)}
+                      className="cursor-pointer"
+                    />
+                  </td>
+
+                  {/* No */}
+                  <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                    {(currentPage - 1) * PAGE_SIZE + i + 1}
+                  </td>
+
+                  {/* Kecamatan */}
+                  <td className="px-2 py-2">
+                    <span className="line-clamp-1 max-w-[100px]" title={aspirasi.kecamatan || '-'}>
+                      {aspirasi.kecamatan || '-'}
+                    </span>
+                  </td>
+
+                  {/* Kota */}
+                  <td className="px-2 py-2">
+                    <span className="line-clamp-1 max-w-[110px]" title={aspirasi.kota || '-'}>
+                      {aspirasi.kota || '-'}
+                    </span>
+                  </td>
+
+                  {/* Sumber */}
+                  <td className="px-2 py-2">
+                    <p className="line-clamp-2 max-w-[130px]">{sumberLabel[aspirasi.sumber] || aspirasi.sumber}</p>
+                  </td>
+
+                  {/* Deskripsi */}
+                  <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                    <p className="line-clamp-2 max-w-[180px]">{aspirasi.deskripsi}</p>
+                  </td>
+
+                  {/* Pelapor */}
+                  <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                    <span className="line-clamp-1 max-w-[110px]" title={aspirasi.pelapor_nama}>
+                      {aspirasi.pelapor_nama}
+                    </span>
+                  </td>
+
+                  {/* Tanggal */}
+                  <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                    {new Date(aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: '2-digit', // Format singkat (misal: 14 Feb 26)
+                    })}
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
+                    <Badge status={aspirasi.status}>
+                      <span className="text-[10px]">{statusLabel[aspirasi.status] || aspirasi.status}</span>
+                    </Badge>
+                  </td>
+
+                  {/* Aksi */}
+                  <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
+                    <div className="inline-flex items-center justify-center gap-1.5">
+                      <Link
+                        href={`/admin/aspirasi/${aspirasi.id}`}
+                        className="text-[var(--color-primary)] hover:underline"
+                        title="Lihat detail"
+                      >
+                        <MdVisibility className="h-3.5 w-3.5" />
+                      </Link>
+
+                      <Link
+                        href={`/admin/aspirasi/edit/${aspirasi.id}`}
+                        className="cursor-pointer text-[var(--color-warning)] hover:underline"
+                        title="Edit"
+                      >
+                        <MdEdit className="h-3.5 w-3.5" />
+                      </Link>
+
+                      <button
+                        onClick={async () => {
+                          if (deletingId || !window.confirm('Hapus aspirasi ini?')) return
+
+                          setDeletingId(aspirasi.id)
+                          try {
+                            await fetch(`/api/aspirasi/${aspirasi.id}`, {
+                              method: 'DELETE',
+                            })
+                            await mutate()
+                          } catch {
+                            alert('Gagal menghapus')
+                          } finally {
+                            setDeletingId(null)
+                          }
+                        }}
+                        disabled={deletingId === aspirasi.id}
+                        className="text-[var(--color-danger)] hover:underline disabled:opacity-40"
+                        title="Hapus"
+                      >
+                        {deletingId === aspirasi.id ? (
+                          <div className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--color-danger)] border-t-transparent" />
+                        ) : (
+                          <MdDelete className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </td>
+
+                  {/* Diverifikasi oleh */}
+                  <td className="px-2 py-2 text-center text-xs text-[var(--color-text-secondary)]">
+                    {(() => {
+                      const trackings = aspirasi.trackings
+                      if (!trackings || trackings.length === 0) return '-'
+                      const latest = trackings.reduce((a, b) =>
+                        new Date(a.created_at) > new Date(b.created_at) ? a : b,
+                      )
+                      return latest.diverifikasi_oleh_nama || '-'
+                    })()}
                   </td>
                 </tr>
-              ) : (
-                aspirasiList.map((aspirasi: Aspirasi, i: number) => (
-                  <tr
-                    key={aspirasi.id}
-                    className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
-                  >
-                    {/* Checkbox */}
-                    <td className="px-2 py-2">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(aspirasi.id)}
-                        onChange={() => toggleSelect(aspirasi.id)}
-                        className="cursor-pointer"
-                      />
-                    </td>
-
-                    {/* No */}
-                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
-                      {(currentPage - 1) * PAGE_SIZE + i + 1}
-                    </td>
-
-                    {/* Kecamatan */}
-                    <td className="px-2 py-2">
-                      <span className="line-clamp-1 max-w-[100px]" title={aspirasi.kecamatan || '-'}>
-                      {aspirasi.kecamatan || '-'}
-                      </span>
-                    </td>
-
-                    {/* Kota */}
-                    <td className="px-2 py-2">
-                      <span className="line-clamp-1 max-w-[110px]" title={aspirasi.kota || '-'}>
-                      {aspirasi.kota || '-'}
-                      </span>
-                    </td>
-
-                    {/* Sumber */}
-                    <td className="px-2 py-2">
-                      <p className="line-clamp-2 max-w-[130px]">
-                        {sumberLabel[aspirasi.sumber] || aspirasi.sumber}
-                      </p>
-                    </td>
-
-                    {/* Deskripsi */}
-                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
-                      <p className="line-clamp-2 max-w-[180px]">
-                        {aspirasi.deskripsi}
-                      </p>
-                    </td>
-
-                    {/* Pelapor */}
-                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
-                      <span className="line-clamp-1 max-w-[110px]" title={aspirasi.pelapor_nama}>
-                      {aspirasi.pelapor_nama}
-                      </span>
-                    </td>
-
-                    {/* Tanggal */}
-                    <td className="px-2 py-2 text-[var(--color-text-secondary)]">
-                      {new Date(aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: '2-digit', // Format singkat (misal: 14 Feb 26)
-                      })}
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
-                      <Badge status={aspirasi.status}>
-                        <span className="text-[10px]">
-                        {statusLabel[aspirasi.status] || aspirasi.status}
-                        </span>
-                      </Badge>
-                    </td>
-
-                    {/* Aksi */}
-                    <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
-                      <div className="inline-flex items-center justify-center gap-1.5">
-                        <Link
-                          href={`/admin/aspirasi/${aspirasi.id}`}
-                          className="text-[var(--color-primary)] hover:underline"
-                          title="Lihat detail"
-                        >
-                          <MdVisibility className="h-3.5 w-3.5" />
-                        </Link>
-
-                        <Link
-                          href={`/admin/aspirasi/edit/${aspirasi.id}`}
-                          className="cursor-pointer text-[var(--color-warning)] hover:underline"
-                          title="Edit"
-                        >
-                          <MdEdit className="h-3.5 w-3.5" />
-                        </Link>
-
-                        <button
-                          onClick={async () => {
-                            if (deletingId || !window.confirm('Hapus aspirasi ini?'))
-                              return
-
-                            setDeletingId(aspirasi.id)
-                            try {
-                              await fetch(`/api/aspirasi/${aspirasi.id}`, {
-                                method: 'DELETE',
-                              })
-                              await mutate()
-                            } catch {
-                              alert('Gagal menghapus')
-                            } finally {
-                              setDeletingId(null)
-                            }
-                          }}
-                          disabled={deletingId === aspirasi.id}
-                          className="text-[var(--color-danger)] hover:underline disabled:opacity-40"
-                          title="Hapus"
-                        >
-                          {deletingId === aspirasi.id ? (
-                            <div className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--color-danger)] border-t-transparent" />
-                          ) : (
-                              <MdDelete className="h-3.5 w-3.5" />
-                          )}
-                        </button>
-                      </div>
-                    </td>
-
-                    {/* Diverifikasi oleh */}
-                    <td className="px-2 py-2 text-center text-xs text-[var(--color-text-secondary)]">
-                      {(() => {
-                        const trackings = aspirasi.trackings
-                        if (!trackings || trackings.length === 0) return '-'
-                        const latest = trackings.reduce((a, b) =>
-                          new Date(a.created_at) > new Date(b.created_at) ? a : b
-                        )
-                        return latest.diverifikasi_oleh_nama || '-'
-                      })()}
-                    </td>
-                  </tr>
-                ))
+              ))
             )}
           </tbody>
         </table>
       </div>
 
       <div className="mt-4 flex items-center justify-end">
-        <Pagination
-          currentPage={currentPage}
-          totalItems={total}
-          pageSize={PAGE_SIZE}
-          onPageChange={setCurrentPage}
-        />
+        <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
       </div>
 
-      <Modal
-        isOpen={!!selectedAspirasi}
-        onClose={() => setSelectedAspirasi(null)}
-        title="Update Status"
-      >
+      <Modal isOpen={!!selectedAspirasi} onClose={() => setSelectedAspirasi(null)} title="Update Status">
         {selectedAspirasi && (
           <FormUpdateAspirasi
             aspirasi={selectedAspirasi}

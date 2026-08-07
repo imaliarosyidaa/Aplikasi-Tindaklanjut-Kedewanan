@@ -15,9 +15,18 @@ import { useSearchParams } from 'next/navigation'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-interface KotaItem { id: string; nama: string }
-interface KecamatanItem { id: string; nama: string }
-interface KelurahanItem { id: string; nama: string }
+interface KotaItem {
+  id: string
+  nama: string
+}
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 
 // Helper untuk mencocokkan filter bulan ("Feb", "Februari", "2", dsb) dengan tanggal/bulan kegiatan
 const isMatchingMonth = (dateOrMonthString: string | undefined, paramBulan: string) => {
@@ -34,7 +43,20 @@ const isMatchingMonth = (dateOrMonthString: string | undefined, paramBulan: stri
   if (!isNaN(parsedDate.getTime())) {
     const monthIndex = parsedDate.getMonth()
     const shortMonthNames = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des']
-    const fullMonthNames = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember']
+    const fullMonthNames = [
+      'januari',
+      'februari',
+      'maret',
+      'april',
+      'mei',
+      'juni',
+      'juli',
+      'agustus',
+      'september',
+      'oktober',
+      'november',
+      'desember',
+    ]
 
     return (
       shortMonthNames[monthIndex].includes(target) ||
@@ -73,14 +95,8 @@ export default function KunjunganPage() {
 
   // Master Data Wilayah (masing-masing independen, tidak saling cascade)
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    '/api/kecamatan',
-    fetcher
-  )
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    '/api/kelurahan',
-    fetcher
-  )
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>('/api/kelurahan', fetcher)
 
   const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
   const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
@@ -162,10 +178,11 @@ export default function KunjunganPage() {
     params.set('search', activeFilters.search.trim())
   }
 
-  const { data: res, isLoading, mutate } = useSWR<{ data: Kegiatan[]; total: number }>(
-    `/api/kegiatan?${params.toString()}`,
-    fetcher
-  )
+  const {
+    data: res,
+    isLoading,
+    mutate,
+  } = useSWR<{ data: Kegiatan[]; total: number }>(`/api/kegiatan?${params.toString()}`, fetcher)
   const allKegiatan = res?.data ?? []
   const total = res?.total ?? 0
 
@@ -278,6 +295,13 @@ export default function KunjunganPage() {
       setDeletingId(null)
     }
   }
+  const getSelectValue = (val: unknown): string => {
+    if (typeof val === 'string') return val
+    if (val && typeof val === 'object' && 'target' in val) {
+      return (val as React.ChangeEvent<HTMLSelectElement>).target.value ?? ''
+    }
+    return ''
+  }
 
   return (
     <div className="space-y-6">
@@ -305,7 +329,11 @@ export default function KunjunganPage() {
                 placeholder="Semua Kota/Kabupaten"
                 options={kotaOptions}
                 value={kotaId}
-                onChange={(e) => setKotaId(e.target.value)}
+                onChange={(val) => {
+                  setKotaId(getSelectValue(val))
+                  setKecamatanId('')
+                  setKelurahanId('')
+                }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -315,7 +343,10 @@ export default function KunjunganPage() {
                 placeholder="Semua Kecamatan"
                 options={kecamatanOptions}
                 value={kecamatanId}
-                onChange={(e) => setKecamatanId(e.target.value)}
+                onChange={(val) => {
+                  setKecamatanId(getSelectValue(val))
+                  setKelurahanId('')
+                }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -325,7 +356,7 @@ export default function KunjunganPage() {
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(e) => setKelurahanId(e.target.value)}
+                onChange={(val) => setKelurahanId(getSelectValue(val))}
               />
             </div>
           </div>
@@ -390,79 +421,78 @@ export default function KunjunganPage() {
                 </tr>
               ) : filteredData.length === 0 ? (
                 <tr>
-                    <td colSpan={10} className="px-4 py-8 text-center 
-text-[var(--color-text-secondary)]">
-                      {hasFilter ? 'Tidak ada kegiatan dengan filter tersebut' : 'Belum ada data kegiatan'}
+                  <td
+                    colSpan={10}
+                    className="px-4 py-8 text-center 
+text-[var(--color-text-secondary)]"
+                  >
+                    {hasFilter ? 'Tidak ada kegiatan dengan filter tersebut' : 'Belum ada data kegiatan'}
                   </td>
                 </tr>
-                ) : (
-                  filteredData.map((item, i) => (
-                    <tr key={item.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(item.id)}
-                          onChange={() => toggleSelect(item.id)}
-                          className="cursor-pointer"
-                        />
-                      </td>
-                      <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                        {(currentPage - 1) * PAGE_SIZE + i + 1}
-                      </td>
-                      <td className="px-4 py-3 font-medium text-[var(--color-text)]">
-                        {item.nama_kegiatan || (item as unknown as Record<string, string>).isi || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                        {formatTanggal(item.tanggal) || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi || '-'}</td>
-                      <td className="px-4 py-3 text-[var(--color-text)]">{item.kota || '-'}</td>
-                      <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan || '-'}</td>
-                      <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan || '-'}</td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="inline-flex items-center gap-2">
-                          <Link
-                            href={`/admin/kunjungan/kegiatan/${item.id}`}
-                            className="cursor-pointer text-[var(--color-primary)] hover:underline"
-                          >
-                            <MdVisibility size={16} />
-                          </Link>
-                          <Link
-                            href={`/admin/kunjungan/edit/${item.id}`}
-                            className="cursor-pointer text-[var(--color-warning)] hover:underline"
-                          >
-                            <MdEdit size={16} />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            disabled={deletingId === item.id}
-                            className="cursor-pointer text-[var(--color-danger)] hover:underline disabled:opacity-40"
-                          >
-                            {deletingId === item.id ? (
-                              <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-danger)] border-t-transparent" />
-                            ) : (
-                              <MdDelete size={16} />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-[var(--color-text)]">
-                        {item.dibuat_oleh || '-'}
-                      </td>
-                    </tr>
-                  ))
+              ) : (
+                filteredData.map((item, i) => (
+                  <tr
+                    key={item.id}
+                    className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50"
+                  >
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(item.id)}
+                        onChange={() => toggleSelect(item.id)}
+                        className="cursor-pointer"
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
+                      {(currentPage - 1) * PAGE_SIZE + i + 1}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-[var(--color-text)]">
+                      {item.nama_kegiatan || (item as unknown as Record<string, string>).isi || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
+                      {formatTanggal(item.tanggal) || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi || '-'}</td>
+                    <td className="px-4 py-3 text-[var(--color-text)]">{item.kota || '-'}</td>
+                    <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan || '-'}</td>
+                    <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan || '-'}</td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="inline-flex items-center gap-2">
+                        <Link
+                          href={`/admin/kunjungan/kegiatan/${item.id}`}
+                          className="cursor-pointer text-[var(--color-primary)] hover:underline"
+                        >
+                          <MdVisibility size={16} />
+                        </Link>
+                        <Link
+                          href={`/admin/kunjungan/edit/${item.id}`}
+                          className="cursor-pointer text-[var(--color-warning)] hover:underline"
+                        >
+                          <MdEdit size={16} />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          disabled={deletingId === item.id}
+                          className="cursor-pointer text-[var(--color-danger)] hover:underline disabled:opacity-40"
+                        >
+                          {deletingId === item.id ? (
+                            <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-danger)] border-t-transparent" />
+                          ) : (
+                            <MdDelete size={16} />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-text)]">{item.dibuat_oleh || '-'}</td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
         </div>
 
         <div className="mt-4 flex items-center justify-end">
-          <Pagination
-            currentPage={currentPage}
-            totalItems={total}
-            pageSize={PAGE_SIZE}
-            onPageChange={setCurrentPage}
-          />
+          <Pagination currentPage={currentPage} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
         </div>
       </div>
 
@@ -472,10 +502,7 @@ text-[var(--color-text-secondary)]">
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
           onClick={() => setEditingItem(null)}
         >
-          <Card
-            className="relative w-full max-w-lg space-y-4 p-6 mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <Card className="relative w-full max-w-lg space-y-4 p-6 mx-4" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setEditingItem(null)}
               className="absolute top-4 right-4 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
