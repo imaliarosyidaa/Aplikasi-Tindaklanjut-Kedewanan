@@ -228,59 +228,75 @@ export default function RelawanPage(): React.ReactNode {
       </div>
 
       {/* SECTION FILTER */}
-      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-4 shadow-sm">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Select
-            id="filter-kota"
-            label="Kota/Kabupaten"
-            placeholder="Semua Kota"
-            options={kotaOptions}
-            value={kotaId}
-            onChange={(val) => {
-              setKotaId(getSelectValue(val))
-              setKecamatanId('')
-              setKelurahanId('')
-            }}
-          />
+      <Card className="p-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
+            {activeFilters.bulan && (
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                Filter Bulan: {activeFilters.bulan}
+              </span>
+            )}
+          </div>
 
-          <Select
-            id="filter-kecamatan"
-            label="Kecamatan"
-            placeholder="Semua Kecamatan"
-            options={kecamatanOptions}
-            value={kecamatanId}
-            onChange={(val) => {
-              setKecamatanId(getSelectValue(val))
-              setKelurahanId('')
-            }}
-          />
+          <div className="flex flex-wrap gap-3">
+            <div className="min-w-[140px] flex-1">
+              <Select
+                id="kota"
+                label="Kota/Kabupaten"
+                placeholder="Semua Kota/Kabupaten"
+                options={kotaOptions}
+                value={kotaId}
+                onChange={(val) => {
+                  setKotaId(getSelectValue(val))
+                  setKecamatanId('')
+                  setKelurahanId('')
+                }}
+              />
+            </div>
+            <div className="min-w-[160px] flex-1">
+              <Select
+                id="kecamatan"
+                label="Kecamatan"
+                placeholder="Semua Kecamatan"
+                options={kecamatanOptions}
+                value={kecamatanId}
+                onChange={(val) => {
+                  setKecamatanId(getSelectValue(val))
+                  setKelurahanId('')
+                }}
+              />
+            </div>
+            <div className="min-w-[160px] flex-1">
+              <Select
+                id="kelurahan"
+                label="Kelurahan"
+                placeholder="Semua Kelurahan"
+                options={kelurahanOptions}
+                value={kelurahanId}
+                onChange={(val) => {
+                  setKelurahanId(getSelectValue(val))
+                  setKecamatanId('')
+                  setKotaId('')
+                }}
+                disabled={!!kotaId}
+              />
+            </div>
+          </div>
 
-          <Select
-            id="filter-kelurahan"
-            label="Kelurahan"
-            placeholder="Semua Kelurahan"
-            options={kelurahanOptions}
-            value={kelurahanId}
-            onChange={(val) => setKelurahanId(getSelectValue(val))}
-          />
-
-          <Input
-            id="filter-query"
-            label="Cari Nama/Telepon"
-            placeholder="Ketik pencarian..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          <div className="flex items-end gap-3">
+            <div className="flex-1">
+              <Input
+                id="query"
+                label="Cari kegiatan / wilayah"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Cari nama kegiatan, lokasi, kota, kecamatan, kelurahan..."
+              />
+            </div>
+          </div>
         </div>
-
-        <div className="mt-4 flex items-center justify-end gap-2">
-          {hasFilter && (
-            <Button variant="outline" size="sm" onClick={handleResetFilter}>
-              Reset Filter
-            </Button>
-          )}
-        </div>
-      </div>
+      </Card>
 
       <div>
         <div className="mb-2 flex items-center justify-end">
@@ -313,7 +329,7 @@ export default function RelawanPage(): React.ReactNode {
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Nama</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No. Telepon</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Jenis Kelamin</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kota</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kota/Kabupaten</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">

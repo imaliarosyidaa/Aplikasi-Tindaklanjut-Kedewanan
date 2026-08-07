@@ -7,21 +7,55 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { FileUpload } from '@/components/ui/file-upload'
-import { MdArrowBack, MdArrowForward, MdCheck, MdCheckCircle, MdCheckCircleOutline, MdHome, MdInfo, MdLocationCity, MdLocationPin } from 'react-icons/md'
+import {
+  MdArrowBack,
+  MdArrowForward,
+  MdCheck,
+  MdCheckCircle,
+  MdCheckCircleOutline,
+  MdHome,
+  MdInfo,
+  MdLocationCity,
+  MdLocationPin,
+} from 'react-icons/md'
 import { Home, Handshake, Megaphone, ClipboardList } from 'lucide-react'
 import Card from '@mui/material/Card'
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
-interface KotaItem { id: string; nama: string }
-interface KecamatanItem { id: string; nama: string }
-interface KelurahanItem { id: string; nama: string }
+interface KotaItem {
+  id: string
+  nama: string
+}
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 const activities = [
   { id: 'reses', title: 'Reses', desc: 'Serap aspirasi masyarakat', icon: Home },
   { id: 'sosperda', title: 'Sosperda', desc: 'Fungsi pengawasan produk hukum daerah DKI Jakarta', icon: Handshake },
-  { id: 'pelatihan_masyarakat', title: 'Pelatihan Masyarakat', desc: 'Pemberdayaan dan peningkatan keterampilan warga', icon: Megaphone },
-  { id: 'rapat_kerja', title: 'Rapat Kerja', desc: 'Koordinasi program kerja bersama mitra eksekutif', icon: ClipboardList },
-  { id: 'rapat_komisi', title: 'Rapat Komisi', desc: 'Pembahasan kebijakan dan pengawasan bidang spesifik', icon: ClipboardList },
+  {
+    id: 'pelatihan_masyarakat',
+    title: 'Pelatihan Masyarakat',
+    desc: 'Pemberdayaan dan peningkatan keterampilan warga',
+    icon: Megaphone,
+  },
+  {
+    id: 'rapat_kerja',
+    title: 'Rapat Kerja',
+    desc: 'Koordinasi program kerja bersama mitra eksekutif',
+    icon: ClipboardList,
+  },
+  {
+    id: 'rapat_komisi',
+    title: 'Rapat Komisi',
+    desc: 'Pembahasan kebijakan dan pengawasan bidang spesifik',
+    icon: ClipboardList,
+  },
   { id: 'lainya', title: 'Lainnya', desc: 'Agenda kedewanan di luar kategori utama', icon: ClipboardList },
 ]
 
@@ -54,8 +88,14 @@ export default function KegiatanBaruPage() {
   const [fotoFiles, setFotoFiles] = useState<string[]>([])
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(kotaId ? `/api/kecamatan?kota=${kotaId}` : null, fetcher)
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null, fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    fetcher,
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : '/api/kelurahan',
+    fetcher,
+  )
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
@@ -115,37 +155,27 @@ export default function KegiatanBaruPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Tambah Kegiatan</h1>
-          <p className="text-slate-500">Langkah {step + 1} dari {stepLabels.length}</p>
+          <p className="text-slate-500">
+            Langkah {step + 1} dari {stepLabels.length}
+          </p>
         </div>
         <div className="flex w-full items-center justify-between gap-2 sm:gap-3">
           {step > 0 ? (
-            <Button
-              variant="outline"
-              onClick={() => setStep(step - 1)}
-              className="flex-1 sm:flex-initial"
-            >
+            <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 sm:flex-initial">
               <MdArrowBack size={18} className="mr-1 shrink-0" />
               <span>Sebelumnya</span>
             </Button>
           ) : (
-            < div className="hidden sm:block" />
+            <div className="hidden sm:block" />
           )}
 
           {step < stepLabels.length - 1 ? (
-            <Button
-              onClick={() => setStep(step + 1)}
-              disabled={!canNext()}
-              className="flex-1 sm:flex-initial"
-            >
+            <Button onClick={() => setStep(step + 1)} disabled={!canNext()} className="flex-1 sm:flex-initial">
               <span>Selanjutnya</span>
               <MdArrowForward size={18} className="ml-1 shrink-0" />
             </Button>
           ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 sm:flex-initial"
-              >
+            <Button onClick={handleSubmit} disabled={loading} className="flex-1 sm:flex-initial">
               {loading ? 'Menyimpan...' : 'Simpan'}
             </Button>
           )}
@@ -158,60 +188,47 @@ export default function KegiatanBaruPage() {
         <div className="flex items-center justify-between md:justify-start">
           {stepLabels.map((label, i) => (
             <React.Fragment key={label}>
-        <div className="flex items-center gap-2 lg:gap-3">
-          {/* Angka Circle */}
-          <div
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white transition-colors sm:h-10 sm:w-10 sm:text-sm ${i <= step ? 'bg-blue-600' : 'bg-slate-300'
-              }`}
-          >
-            {i + 1}
-          </div>
+              <div className="flex items-center gap-2 lg:gap-3">
+                {/* Angka Circle */}
+                <div
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white transition-colors sm:h-10 sm:w-10 sm:text-sm ${
+                    i <= step ? 'bg-blue-600' : 'bg-slate-300'
+                  }`}
+                >
+                  {i + 1}
+                </div>
 
-          {/* Label & Subtitle (Hanya tampil penuh di Desktop/Tablet) */}
-          <div className="hidden text-start md:block">
-            <div
-              className={`text-xs font-semibold sm:text-sm ${i <= step ? 'text-blue-600' : 'text-slate-400'
-                }`}
-            >
-              {label}
-            </div>
-            <div className="text-[11px] text-slate-400 sm:text-xs">
-              {
-                [
-                  'Pilih jenis kegiatan',
-                  'Pilih lokasi kegiatan',
-                  'Informasi kegiatan',
-                  'Dokumentasi kegiatan',
-                ][i]
-              }
-            </div>
-          </div>
-        </div>
+                {/* Label & Subtitle (Hanya tampil penuh di Desktop/Tablet) */}
+                <div className="hidden text-start md:block">
+                  <div className={`text-xs font-semibold sm:text-sm ${i <= step ? 'text-blue-600' : 'text-slate-400'}`}>
+                    {label}
+                  </div>
+                  <div className="text-[11px] text-slate-400 sm:text-xs">
+                    {['Pilih jenis kegiatan', 'Pilih lokasi kegiatan', 'Informasi kegiatan', 'Dokumentasi kegiatan'][i]}
+                  </div>
+                </div>
+              </div>
 
-        {/* Garis Penghubung antar Step */}
-        {i < stepLabels.length - 1 && (
-          <div
-            className={`mx-2 h-0.5 flex-1 transition-colors sm:mx-4 sm:h-1 ${i < step ? 'bg-blue-600' : 'bg-slate-200'
-              }`}
-          />
-        )}
-      </React.Fragment>
-    ))}
+              {/* Garis Penghubung antar Step */}
+              {i < stepLabels.length - 1 && (
+                <div
+                  className={`mx-2 h-0.5 flex-1 transition-colors sm:mx-4 sm:h-1 ${
+                    i < step ? 'bg-blue-600' : 'bg-slate-200'
+                  }`}
+                />
+              )}
+            </React.Fragment>
+          ))}
         </div>
 
         {/* KETERANGAN STEP AKTIF UNTUK MOBILE (Layar Kecil) */}
         <div className="mt-3 block rounded-lg bg-slate-50 p-2.5 text-center text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300 md:hidden">
-          <span className="font-bold text-blue-600">Langkah {step + 1} dari {stepLabels.length}:</span>{' '}
+          <span className="font-bold text-blue-600">
+            Langkah {step + 1} dari {stepLabels.length}:
+          </span>{' '}
           {stepLabels[step]} —{' '}
           <span className="text-slate-400">
-            {
-              [
-                'Pilih jenis kegiatan',
-                'Pilih lokasi kegiatan',
-                'Informasi kegiatan',
-                'Dokumentasi kegiatan',
-              ][step]
-            }
+            {['Pilih jenis kegiatan', 'Pilih lokasi kegiatan', 'Informasi kegiatan', 'Dokumentasi kegiatan'][step]}
           </span>
         </div>
       </div>
@@ -226,9 +243,14 @@ export default function KegiatanBaruPage() {
               const Icon = item.icon
               const active = jenisKegiatan === item.id
               return (
-                <button key={item.id} onClick={() => setJenisKegiatan(item.id)}
-                  className={`cursor-pointer text-center flex h-48 flex-col justify-center items-center rounded-2xl border p-6 transition duration-300 hover:bg-blue-50 hover:-translate-y-1 ${active ? 'border-blue-600 border-2' : 'border-slate-200 bg-white'}`}>
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                <button
+                  key={item.id}
+                  onClick={() => setJenisKegiatan(item.id)}
+                  className={`cursor-pointer text-center flex h-48 flex-col justify-center items-center rounded-2xl border p-6 transition duration-300 hover:bg-blue-50 hover:-translate-y-1 ${active ? 'border-blue-600 border-2' : 'border-slate-200 bg-white'}`}
+                >
+                  <div
+                    className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                  >
                     <Icon size={30} />
                   </div>
                   <h3 className="font-bold text-lg">{item.title}</h3>
@@ -239,7 +261,13 @@ export default function KegiatanBaruPage() {
           </div>
           {jenisKegiatan === 'lainya' && (
             <div className="mt-4">
-              <Input id="jenis-lainnya" label="Jenis Kegiatan Lainnya" value={jenisLainnya} onChange={(e) => setJenisLainnya(e.target.value)} placeholder="Masukkan jenis kegiatan" />
+              <Input
+                id="jenis-lainnya"
+                label="Jenis Kegiatan Lainnya"
+                value={jenisLainnya}
+                onChange={(e) => setJenisLainnya(e.target.value)}
+                placeholder="Masukkan jenis kegiatan"
+              />
             </div>
           )}
         </div>
@@ -247,130 +275,127 @@ export default function KegiatanBaruPage() {
 
       {/* Step 2: Lokasi */}
       {step === 1 && (
-        <div className='bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16'>
-          <div className='col-span-2 mt-[-12px]'>
+        <div className="bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
+          <div className="col-span-2 mt-[-12px]">
             <h2 className="text-xl font-semibold">Lokasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Tentukan lokasi kegiatan yang dilakukan</p>
 
             <div className="space-y-4">
               <div className="min-w-[180px] mb-4">
-                <label className='font-medium text-sm'>Kota/Kabupaten <span className='text-red-500'>*</span></label>
+                <label className="font-medium text-sm">
+                  Kota/Kabupaten <span className="text-red-500">*</span>
+                </label>
                 <div className="flex items-center gap-3 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3 focus-within:border-[var(--color-primary)] transition-all">
-
-                  <MdLocationCity
-                    size={20}
-                    className="text-[var(--color-text-secondary)] flex-shrink-0"
-                  />
-                  <div
-                    className="w-full"
-                  >
+                  <MdLocationCity size={20} className="text-[var(--color-text-secondary)] flex-shrink-0" />
+                  <div className="w-full">
                     <Select
                       id="kota/kabupaten"
                       placeholder="Pilih Kota/Kabupaten"
                       options={kotaOptions}
                       value={kotaId}
                       onChange={(e) => {
-                        setKotaId(e.target.value);
-                        setKecamatanId('');
-                        setKelurahanId('');
+                        setKotaId(e.target.value)
+                        setKecamatanId('')
+                        setKelurahanId('')
                       }}
-                      className='bg-transparent border-none px-0 py-2.5 text-[var(--color-text)] focus:ring-0 outline-none cursor-pointer'
+                      className="bg-transparent border-none px-0 py-2.5 text-[var(--color-text)] focus:ring-0 outline-none cursor-pointer"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="min-w-[180px] mb-4">
-                <label className='font-medium text-sm'>Kota/Kabupaten <span className='text-red-500'>*</span></label>
+                <label className="font-medium text-sm">
+                  Kota/Kabupaten <span className="text-red-500">*</span>
+                </label>
                 <div className="flex items-center gap-3 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3 focus-within:border-[var(--color-primary)] transition-all">
-
-                  <MdLocationPin
-                    size={20}
-                    className="text-[var(--color-text-secondary)] flex-shrink-0"
-                  />
-                  <div
-                    className="w-full"
-                  >
+                  <MdLocationPin size={20} className="text-[var(--color-text-secondary)] flex-shrink-0" />
+                  <div className="w-full">
                     <Select
                       id="kecamatan"
                       placeholder="Pilih Kecamatan"
                       options={kecamatanOptions}
                       value={kecamatanId}
                       onChange={(e) => {
-                        setKecamatanId(e.target.value);
-                        setKelurahanId('');
+                        setKecamatanId(e.target.value)
+                        setKelurahanId('')
                       }}
                       disabled={!kotaId}
-                      className='bg-transparent border-none px-0 py-2.5 text-[var(--color-text)] focus:ring-0 outline-none cursor-pointer'
+                      className="bg-transparent border-none px-0 py-2.5 text-[var(--color-text)] focus:ring-0 outline-none cursor-pointer"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="min-w-[180px] mb-4">
-                <label className='font-medium text-sm'>Kelurahan <span className='text-red-500'>*</span></label>
+                <label className="font-medium text-sm">
+                  Kelurahan <span className="text-red-500">*</span>
+                </label>
                 <div className="flex items-center gap-3 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3 focus-within:border-[var(--color-primary)] transition-all">
-
-                  <MdHome
-                    size={20}
-                    className="text-[var(--color-text-secondary)] flex-shrink-0"
-                  />
-                  <div
-                    className="w-full"
-                  >
+                  <MdHome size={20} className="text-[var(--color-text-secondary)] flex-shrink-0" />
+                  <div className="w-full">
                     <Select
                       id="kelurahan"
                       placeholder="Pilih Kelurahan"
                       options={kelurahanOptions}
                       value={kelurahanId}
                       onChange={(e) => {
-                        setKelurahanId(e.target.value);
+                        setKelurahanId(e.target.value)
                       }}
                       disabled={!kecamatanId}
-                      className='bg-transparent border-none px-0 py-2.5 text-[var(--color-text)] focus:ring-0 outline-none cursor-pointer'
+                      className="bg-transparent border-none px-0 py-2.5 text-[var(--color-text)] focus:ring-0 outline-none cursor-pointer"
                     />
                   </div>
                 </div>
               </div>
 
-              <label className='font-medium text-sm'>Jalan/Lokasi Detail <span className='text-red-500'>*</span></label>
-              <Input id="jalan" value={jalan} onChange={(e) => setJalan(e.target.value)} placeholder="Masukkan nama jalan" />
+              <label className="font-medium text-sm">
+                Jalan/Lokasi Detail <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="jalan"
+                value={jalan}
+                onChange={(e) => setJalan(e.target.value)}
+                placeholder="Masukkan nama jalan"
+              />
 
               <div className="grid grid-cols-2 gap-3">
-                <Input id="rt" label="RT" type='number' value={rt} onChange={(e) => setRt(e.target.value)} placeholder="RT" />
-                <Input id="rw" label="RW" type='number' value={rw} onChange={(e) => setRw(e.target.value)} placeholder="RW" />
+                <Input
+                  id="rt"
+                  label="RT"
+                  type="number"
+                  value={rt}
+                  onChange={(e) => setRt(e.target.value)}
+                  placeholder="RT"
+                />
+                <Input
+                  id="rw"
+                  label="RW"
+                  type="number"
+                  value={rw}
+                  onChange={(e) => setRw(e.target.value)}
+                  placeholder="RW"
+                />
               </div>
             </div>
           </div>
 
-          <div className='p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)]'>
-            <div className='flex items-center gap-2'>
-              <MdInfo
-                size={20}
-                className="text-blue-500 flex-shrink-0"
-              />
-              <h2 className='font-medium text-black text-sm'>Contoh Pengisian</h2>
+          <div className="p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)]">
+            <div className="flex items-center gap-2">
+              <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
+              <h2 className="font-medium text-black text-sm">Contoh Pengisian</h2>
             </div>
-            <div className='text-xs text-[var(--color-text-secondary)]'>
-              <div className='flex gap-2 mb-2'>
-                <IoMdCheckmarkCircleOutline
-                  size={15}
-                  className="text-green-500 flex-shrink-0"
-                />
+            <div className="text-xs text-[var(--color-text-secondary)]">
+              <div className="flex gap-2 mb-2">
+                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                 <p>Pilih lokasi sampai tingkat kelurahan agar data akurat</p>
               </div>
-              <div className='flex gap-2 mb-2'>
-                <IoMdCheckmarkCircleOutline
-                  size={15}
-                  className="text-green-500 flex-shrink-0"
-                />
+              <div className="flex gap-2 mb-2">
+                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                 <p>Pastikan alamat sesuai dengan lokasi kegiatan</p>
               </div>
-              <div className='flex gap-2 mb-2'>
-                <IoMdCheckmarkCircleOutline
-                  size={15}
-                  className="text-green-500 flex-shrink-0"
-                />
+              <div className="flex gap-2 mb-2">
+                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                 <p>Gunakan peta jika lokasi tidak ditemukan</p>
               </div>
             </div>
@@ -380,29 +405,46 @@ export default function KegiatanBaruPage() {
 
       {/* Step 3: Detail */}
       {step === 2 && (
-        <div className='bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16'>
-          <div className='col-span-2 mt-[-12px]'>
+        <div className="bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
+          <div className="col-span-2 mt-[-12px]">
             <h2 className="text-xl font-semibold">Informasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Lengkapi detail kegiatan.</p>
 
             <div className="space-y-4 max-w-xl">
-
-              <label className='font-medium text-sm'>Nama Kegiatan <span className='text-red-500'>*</span></label>
-              <Input id="nama_kegiatan" value={namaKegiatan} onChange={(e) => setNamaKegiatan(e.target.value)} placeholder="Masukkan nama kegiatan" />
+              <label className="font-medium text-sm">
+                Nama Kegiatan <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="nama_kegiatan"
+                value={namaKegiatan}
+                onChange={(e) => setNamaKegiatan(e.target.value)}
+                placeholder="Masukkan nama kegiatan"
+              />
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className='font-medium text-sm'>Tanggal <span className='text-red-500'>*</span></label>
+                  <label className="font-medium text-sm">
+                    Tanggal <span className="text-red-500">*</span>
+                  </label>
                   <Input id="tanggal" type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} />
                 </div>
                 <div>
-                  <label className='font-medium text-sm'>Jam<span className='text-red-500'>*</span></label>
+                  <label className="font-medium text-sm">
+                    Jam<span className="text-red-500">*</span>
+                  </label>
                   <Input id="jam" type="time" value={jam} onChange={(e) => setJam(e.target.value)} />
                 </div>
               </div>
 
-              <label className='font-medium text-sm'>Tempat Kegiatan <span className='text-red-500'>*</span></label>
-              <Input id="tempat_kegiatan" value={tempat} onChange={(e) => setTempat(e.target.value)} placeholder="Masukkan tempat kegiatan" />
+              <label className="font-medium text-sm">
+                Tempat Kegiatan <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="tempat_kegiatan"
+                value={tempat}
+                onChange={(e) => setTempat(e.target.value)}
+                placeholder="Masukkan tempat kegiatan"
+              />
 
               <div className="w-full">
                 <label htmlFor="jumlah_peserta" className="block font-medium text-sm mb-1.5 text-[var(--color-text)]">
@@ -410,7 +452,6 @@ export default function KegiatanBaruPage() {
                 </label>
 
                 <div className="flex items-center w-full max-w-[180px] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] overflow-hidden focus-within:border-[var(--color-primary)] transition-all">
-
                   <button
                     type="button"
                     onClick={() => setJumlahPeserta(String(Math.max(0, (Number(jumlahPeserta) || 0) - 1)))}
@@ -425,9 +466,9 @@ export default function KegiatanBaruPage() {
                     min="0"
                     value={jumlahPeserta}
                     onChange={(e) => {
-                      const val = e.target.value;
+                      const val = e.target.value
                       if (val === '' || Number(val) >= 0) {
-                        setJumlahPeserta(val);
+                        setJumlahPeserta(val)
                       }
                     }}
                     placeholder="0"
@@ -441,26 +482,35 @@ export default function KegiatanBaruPage() {
                   >
                     +
                   </button>
-
                 </div>
               </div>
 
               <div>
-                <label htmlFor="catatan" className="block text-sm font-medium text-[var(--color-text)] mb-1">Catatan</label>
-                <textarea id="catatan" rows={3} value={catatan} onChange={(e) => setCatatan(e.target.value)}
+                <label htmlFor="catatan" className="block text-sm font-medium text-[var(--color-text)] mb-1">
+                  Catatan
+                </label>
+                <textarea
+                  id="catatan"
+                  rows={3}
+                  value={catatan}
+                  onChange={(e) => setCatatan(e.target.value)}
                   className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                  placeholder="Catatan kegiatan" />
+                  placeholder="Catatan kegiatan"
+                />
               </div>
-              <Input id="link_gmaps" label="Link Google Maps" value={linkGmaps} onChange={(e) => setLinkGmaps(e.target.value)} placeholder="https://maps.google.com/..." />
+              <Input
+                id="link_gmaps"
+                label="Link Google Maps"
+                value={linkGmaps}
+                onChange={(e) => setLinkGmaps(e.target.value)}
+                placeholder="https://maps.google.com/..."
+              />
             </div>
           </div>
           <div className="p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
             <div>
               <div className="flex gap-2 mb-6">
-                <MdInfo
-                  size={20}
-                  className="text-blue-500 flex-shrink-0"
-                />
+                <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
                 <div>
                   <h2 className="mb-2 font-medium text-black">Informasi</h2>
                   <div className="text-xs text-[var(--color-text-secondary)]">
@@ -472,32 +522,20 @@ export default function KegiatanBaruPage() {
 
             <div className="pt-2">
               <div className="flex mb-2 items-center gap-2">
-                <MdInfo
-                  size={20}
-                  className="text-blue-500 flex-shrink-0"
-                />
+                <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
                 <h2 className="font-medium text-black text-sm">Contoh Pengisian</h2>
               </div>
               <div className="text-xs text-[var(--color-text-secondary)]">
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Tanggal dan jam sesuai pelaksanaan kegiatan</p>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Jumlah peserta adalah total peserta yang hadir</p>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Catatan berisi rangkuman singkat kegiatan (opsional)</p>
                 </div>
               </div>
@@ -508,8 +546,8 @@ export default function KegiatanBaruPage() {
 
       {/* Step 4: Upload */}
       {step === 3 && (
-        <div className='bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16'>
-          <div className='col-span-2 mt-[-12px]'>
+        <div className="bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
+          <div className="col-span-2 mt-[-12px]">
             <h2 className="text-xl font-semibold">Dokumentasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Upload dokumentasi kegiatan (opsional).</p>
             <div className="max-w-xl">
@@ -519,14 +557,12 @@ export default function KegiatanBaruPage() {
           <div className="p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
             <div>
               <div className="flex gap-2 mb-6">
-                <MdInfo
-                  size={20}
-                  className="text-blue-500 flex-shrink-0"
-                />
+                <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
                 <div>
                   <h2 className="mb-2 font-medium text-black">Informasi</h2>
                   <div className="text-xs text-[var(--color-text-secondary)]">
-                    Lampirkan foto akan digunakan ssebagai dokumentasi kegiatan dan meningkatkan validitass data yang diinput.
+                    Lampirkan foto akan digunakan ssebagai dokumentasi kegiatan dan meningkatkan validitass data yang
+                    diinput.
                   </div>
                 </div>
               </div>
@@ -534,46 +570,28 @@ export default function KegiatanBaruPage() {
 
             <div className="pt-2">
               <div className="flex mb-2 items-center gap-2">
-                <MdInfo
-                  size={20}
-                  className="text-blue-500 flex-shrink-0"
-                />
+                <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
                 <h2 className="font-medium text-black text-sm">Tips Upload</h2>
               </div>
               <div className="text-xs text-[var(--color-text-secondary)]">
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Gunakan foto dengan kualitas yang baik dan jelas</p>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Pastikan objek kegiatan terlihat jelas</p>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Hindari foto blur atau gelap</p>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Ukuran file maksimal 10 MB per foto</p>
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline
-                    size={15}
-                    className="text-green-500 flex-shrink-0"
-                  />
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
                   <p>Format file: JPG, JPEG, PNG</p>
                 </div>
               </div>

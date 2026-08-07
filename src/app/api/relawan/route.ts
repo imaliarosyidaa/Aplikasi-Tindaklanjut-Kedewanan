@@ -46,6 +46,9 @@ export async function GET(request: NextRequest) {
       { nama: { contains: search, ...mode } },
       { nik: { contains: search, ...mode } },
       { no_telepon: { contains: search } },
+      { kota: { is: { nama: { contains: search, ...mode } } } },
+      { kecamatan: { is: { nama: { contains: search, ...mode } } } },
+      { kelurahan: { is: { nama: { contains: search, ...mode } } } },
     ]
   }
 

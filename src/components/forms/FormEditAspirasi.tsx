@@ -68,46 +68,44 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const [jenisReses, setJenisReses] = useState(aspirasi.jenis_reses)
   const [tindakLanjut, setTindakLanjut] = useState(aspirasi.tindak_lanjut)
   const [alamat, setAlamat] = useState(aspirasi.lokasi ?? '')
-  const [tanggalDibuat, setTanggalDibuat] = useState(
-    toDateInputValue(aspirasi.tanggal_dibuat)
-  )
+  const [tanggalDibuat, setTanggalDibuat] = useState(toDateInputValue(aspirasi.tanggal_dibuat))
   const [lampiran, setLampiran] = useState<string[]>(
     Array.isArray(aspirasi.lampiran)
       ? aspirasi.lampiran
       : typeof aspirasi.lampiran === 'string' && aspirasi.lampiran
         ? [aspirasi.lampiran]
-        : []
-  )
-
-  // Master data wilayah (independen, tidak saling cascade)
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    '/api/kecamatan',
-    fetcher
-  )
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    '/api/kelurahan',
-    fetcher
-  )
-
-  // ID default di-resolve dari nama wilayah pada data aspirasi
-  const defaultKotaId = useMemo(
-    () => kotaList.find((k) => k.nama === aspirasi.kota)?.id ?? '',
-    [kotaList, aspirasi.kota]
-  )
-  const defaultKecamatanId = useMemo(
-    () => kecamatanList.find((k) => k.nama === aspirasi.kecamatan)?.id ?? '',
-    [kecamatanList, aspirasi.kecamatan]
-  )
-  const defaultKelurahanId = useMemo(
-    () => kelurahanList.find((k) => k.nama === aspirasi.kelurahan)?.id ?? '',
-    [kelurahanList, aspirasi.kelurahan]
+        : [],
   )
 
   // Pilihan user (mengalahkan default saat berubah)
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
+
+  // Master data wilayah (independen, tidak saling cascade)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    fetcher,
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher,
+  )
+
+  // ID default di-resolve dari nama wilayah pada data aspirasi
+  const defaultKotaId = useMemo(
+    () => kotaList.find((k) => k.nama === aspirasi.kota)?.id ?? '',
+    [kotaList, aspirasi.kota],
+  )
+  const defaultKecamatanId = useMemo(
+    () => kecamatanList.find((k) => k.nama === aspirasi.kecamatan)?.id ?? '',
+    [kecamatanList, aspirasi.kecamatan],
+  )
+  const defaultKelurahanId = useMemo(
+    () => kelurahanList.find((k) => k.nama === aspirasi.kelurahan)?.id ?? '',
+    [kelurahanList, aspirasi.kelurahan],
+  )
 
   const finalKotaId = kotaId || defaultKotaId
   const finalKecamatanId = kecamatanId || defaultKecamatanId
@@ -124,18 +122,15 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   }))
 
   // Checking apakah nilai `sumber` dari props ada di opsi standar
-  const isStandardOption = (sumberOptions as { value: string; label: string }[])
-    .some((opt) => opt.value === (aspirasi.sumber as string) && opt.value !== 'LAINNYA')
+  const isStandardOption = (sumberOptions as { value: string; label: string }[]).some(
+    (opt) => opt.value === (aspirasi.sumber as string) && opt.value !== 'LAINNYA',
+  )
 
   // State untuk Dropdown
-  const [sumber, setSumber] = useState<string>(
-    isStandardOption ? aspirasi.sumber : 'LAINNYA'
-  )
+  const [sumber, setSumber] = useState<string>(isStandardOption ? aspirasi.sumber : 'LAINNYA')
 
   // State untuk Input Teks Kustom
-  const [sumberLainnya, setSumberLainnya] = useState<string>(
-    isStandardOption ? '' : aspirasi.sumber || ''
-  )
+  const [sumberLainnya, setSumberLainnya] = useState<string>(isStandardOption ? '' : aspirasi.sumber || '')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -179,13 +174,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        id="id_laporan"
-        label="ID Laporan"
-        value={id_laporan}
-        disabled
-        className="bg-gray-100 text-gray-500"
-      />
+      <Input id="id_laporan" label="ID Laporan" value={id_laporan} disabled className="bg-gray-100 text-gray-500" />
       <Input
         id="status"
         label="Status"
@@ -312,6 +301,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           options={kelurahanOptions}
           value={finalKelurahanId}
           onChange={(e) => setKelurahanId(e.target.value)}
+          disabled={!!kotaId}
         />
       </div>
 

@@ -27,9 +27,18 @@ import Hero from '@/components/shared/Hero'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-interface KotaItem { id: string; nama: string }
-interface KecamatanItem { id: string; nama: string }
-interface KelurahanItem { id: string; nama: string }
+interface KotaItem {
+  id: string
+  nama: string
+}
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 
 function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const trackings = aspirasi.trackings ?? []
@@ -48,7 +57,12 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const trackSelesai = getLatestTracking(['SELESAI'])
 
   // Penentuan tahap aktif/sudah lewat berdasarkan status utama aspirasi
-  const isSedangOrBeyond = ['SEDANG_DITINDAKLANJUTI', 'SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI', 'SELESAI'].includes(aspirasi.status)
+  const isSedangOrBeyond = [
+    'SEDANG_DITINDAKLANJUTI',
+    'SUDAH_DITINDAKLANJUTI',
+    'TIDAK_BISA_DITINDAKLANJUTI',
+    'SELESAI',
+  ].includes(aspirasi.status)
   const isSudahOrBeyond = ['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI', 'SELESAI'].includes(aspirasi.status)
   const isSelesai = aspirasi.status === 'SELESAI' || aspirasi.status === 'SUDAH_DITINDAKLANJUTI'
 
@@ -92,7 +106,6 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
 
         {/* --- TRACKING STATUS MANUAL (4 DIV STATIS) --- */}
         <div className="relative pt-2">
-
           {/* DIV 1: Belum Ditindaklanjuti (Laporan Diterima) */}
           <div className="flex gap-3">
             <div className="flex flex-col items-center">
@@ -108,8 +121,12 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
               )}
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                 {new Date(trackBelum?.created_at || aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
-                  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                  hour: '2-digit', minute: '2-digit',
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </p>
             </div>
@@ -118,10 +135,13 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
           {/* DIV 2: Sedang Ditindaklanjuti */}
           <div className="flex gap-3">
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isSedangOrBeyond
-                ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
-                : 'bg-gray-100 text-gray-400'
-                }`}>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                  isSedangOrBeyond
+                    ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                    : 'bg-gray-100 text-gray-400'
+                }`}
+              >
                 <MdSearch size={20} />
               </div>
               <div className={`w-0.5 flex-1 ${isSudahOrBeyond ? 'bg-[var(--color-primary)]' : 'bg-gray-200'}`} />
@@ -137,9 +157,11 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                       key={idx}
                       type="button"
                       onClick={() => {
-                        fetch(url).then(r => r.blob()).then(blob => {
-                          window.open(URL.createObjectURL(blob), '_blank')
-                        })
+                        fetch(url)
+                          .then((r) => r.blob())
+                          .then((blob) => {
+                            window.open(URL.createObjectURL(blob), '_blank')
+                          })
                       }}
                       className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
                     >
@@ -155,8 +177,12 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
               {trackSedang?.created_at && (
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                   {new Date(trackSedang.created_at).toLocaleDateString('id-ID', {
-                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit',
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </p>
               )}
@@ -166,25 +192,36 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
           {/* DIV 3: Sudah / Tidak Bisa Ditindaklanjuti */}
           <div className="flex gap-3">
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
-                ? 'bg-red-100 text-red-600'
-                : isSudahOrBeyond
-                  ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
-                  : 'bg-gray-100 text-gray-400'
-                }`}>
-                {aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI' ? <MdCancel size={20} /> : <MdCheckCircle size={20} />}
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                  aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+                    ? 'bg-red-100 text-red-600'
+                    : isSudahOrBeyond
+                      ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                      : 'bg-gray-100 text-gray-400'
+                }`}
+              >
+                {aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI' ? (
+                  <MdCancel size={20} />
+                ) : (
+                  <MdCheckCircle size={20} />
+                )}
               </div>
               <div className={`w-0.5 flex-1 ${isSelesai ? 'bg-[var(--color-primary)]' : 'bg-gray-200'}`} />
             </div>
             <div className="pb-4">
-              <p className={`text-sm font-medium ${
-                aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
-                  ? 'text-red-600'
-                : isSudahOrBeyond
-                  ? 'text-[var(--color-text)]'
-                  : 'text-gray-400'
-                }`}>
-                {aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI' ? 'Tidak Dapat Ditindaklanjuti' : 'Laporan Anda Sudah Ditindak Lanjuti'}
+              <p
+                className={`text-sm font-medium ${
+                  aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+                    ? 'text-red-600'
+                    : isSudahOrBeyond
+                      ? 'text-[var(--color-text)]'
+                      : 'text-gray-400'
+                }`}
+              >
+                {aspirasi.status === 'TIDAK_BISA_DITINDAKLANJUTI'
+                  ? 'Tidak Dapat Ditindaklanjuti'
+                  : 'Laporan Anda Sudah Ditindak Lanjuti'}
               </p>
 
               {trackSudah?.lampiran && trackSudah.lampiran.length > 0 && (
@@ -194,9 +231,11 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                       key={idx}
                       type="button"
                       onClick={() => {
-                        fetch(url).then(r => r.blob()).then(blob => {
-                          window.open(URL.createObjectURL(blob), '_blank')
-                        })
+                        fetch(url)
+                          .then((r) => r.blob())
+                          .then((blob) => {
+                            window.open(URL.createObjectURL(blob), '_blank')
+                          })
                       }}
                       className="inline-flex items-center gap-1 py-1.5 text-xs font-medium text-blue-600 transition-colors cursor-pointer"
                     >
@@ -213,8 +252,12 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
               {trackSudah?.created_at && (
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                   {new Date(trackSudah.created_at).toLocaleDateString('id-ID', {
-                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit',
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </p>
               )}
@@ -224,29 +267,33 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
           {/* DIV 4: Selesai */}
           <div className="flex gap-3">
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isSelesai ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
-                }`}>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                  isSelesai ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                }`}
+              >
                 <MdCheckCircle size={20} />
               </div>
             </div>
             <div>
-              <p className={`text-sm font-medium ${isSelesai ? 'text-green-600' : 'text-gray-400'}`}>
-                Selesai
-              </p>
+              <p className={`text-sm font-medium ${isSelesai ? 'text-green-600' : 'text-gray-400'}`}>Selesai</p>
               {trackSelesai?.catatan && (
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic">"{trackSelesai.catatan}"</p>
               )}
               {trackSelesai?.created_at && (
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                   {new Date(trackSelesai.created_at).toLocaleDateString('id-ID', {
-                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit',
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </p>
               )}
             </div>
           </div>
-
         </div>
       </Card>
     </section>
@@ -264,13 +311,10 @@ export default function LaporanSayaPage(): React.ReactNode {
   const [results, setResults] = useState<Aspirasi[]>([])
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
-    fetcher
-  )
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(kotaId ? `/api/kecamatan?kota=${kotaId}` : null, fetcher)
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
-    fetcher
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : '/api/kelurahan',
+    fetcher,
   )
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
@@ -281,12 +325,7 @@ export default function LaporanSayaPage(): React.ReactNode {
     const q = query.toLowerCase().trim()
     const qId = queryId.trim().toUpperCase()
 
-    const hasActiveFilter =
-      kotaId !== '' ||
-      kecamatanId !== '' ||
-      kelurahanId !== '' ||
-      q !== '' ||
-      qId !== ''
+    const hasActiveFilter = kotaId !== '' || kecamatanId !== '' || kelurahanId !== '' || q !== '' || qId !== ''
 
     if (!hasActiveFilter) {
       setResults([])
@@ -294,9 +333,9 @@ export default function LaporanSayaPage(): React.ReactNode {
       return
     }
 
-    const kecamatanNama = kecamatanOptions.find(k => k.value === kecamatanId)?.label ?? ''
+    const kecamatanNama = kecamatanOptions.find((k) => k.value === kecamatanId)?.label ?? ''
     const kelurahanOpts = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
-    const kelurahanNama = kelurahanOpts.find(k => k.value === kelurahanId)?.label ?? ''
+    const kelurahanNama = kelurahanOpts.find((k) => k.value === kelurahanId)?.label ?? ''
 
     const filtered = (allAspirasi ?? []).filter((a) => {
       if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
@@ -337,7 +376,11 @@ export default function LaporanSayaPage(): React.ReactNode {
                 placeholder="Semua Kota/Kabupaten"
                 options={kotaOptions}
                 value={kotaId}
-                onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }}
+                onChange={(e) => {
+                  setKotaId(e.target.value)
+                  setKecamatanId('')
+                  setKelurahanId('')
+                }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -347,7 +390,10 @@ export default function LaporanSayaPage(): React.ReactNode {
                 placeholder="Semua Kecamatan"
                 options={kecamatanOptions}
                 value={kecamatanId}
-                onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }}
+                onChange={(e) => {
+                  setKecamatanId(e.target.value)
+                  setKelurahanId('')
+                }}
               />
             </div>
             <div className="min-w-[160px] flex-1">
@@ -358,6 +404,7 @@ export default function LaporanSayaPage(): React.ReactNode {
                 options={kelurahanOptions}
                 value={kelurahanId}
                 onChange={(e) => setKelurahanId(e.target.value)}
+                disabled={!!kotaId}
               />
             </div>
           </div>
@@ -369,7 +416,9 @@ export default function LaporanSayaPage(): React.ReactNode {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Contoh: Siti atau 081234567890"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearch()
+                }}
               />
             </div>
           </div>
@@ -381,7 +430,9 @@ export default function LaporanSayaPage(): React.ReactNode {
                 value={queryId}
                 onChange={(e) => setQueryId(e.target.value)}
                 placeholder="Contoh: LAP-A7B3K9X2P1"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearch()
+                }}
               />
             </div>
             <Button onClick={handleSearch} disabled={!hasFilter}>
@@ -391,9 +442,9 @@ export default function LaporanSayaPage(): React.ReactNode {
           </div>
         </div>
         {!searched && (
-          <div className='lg:h-screen flex items-end justify-center'>
+          <div className="lg:h-screen flex items-end justify-center">
             <img src="/laporan.png" alt="Logo" className="lg:w-2/5 opacity-60 h-auto" />
-        </div>
+          </div>
         )}
       </div>
 
@@ -406,9 +457,7 @@ export default function LaporanSayaPage(): React.ReactNode {
               </p>
             </Card>
           ) : (
-            results.map((aspirasi) => (
-              <TrackingTicket key={aspirasi.id} aspirasi={aspirasi} />
-            ))
+            results.map((aspirasi) => <TrackingTicket key={aspirasi.id} aspirasi={aspirasi} />)
           )}
         </div>
       )}

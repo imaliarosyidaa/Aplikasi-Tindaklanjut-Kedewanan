@@ -86,9 +86,14 @@ export default function AspirasiPage(): React.ReactNode {
 
   // Master Data Wilayah (masing-masing independen, tidak saling cascade)
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>('/api/kelurahan', fetcher)
-
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    fetcher,
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher,
+  )
   const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
   const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
   const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
@@ -381,7 +386,11 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(val) => setKelurahanId(getSelectValue(val))}
+                onChange={(val) => {
+                  setKelurahanId(getSelectValue(val))
+                  setKecamatanId('')
+                  setKotaId('')
+                }}
               />
             </div>
           </div>
@@ -390,12 +399,12 @@ export default function AspirasiPage(): React.ReactNode {
             <div className="flex-1">
               <Input
                 id="search"
-                label="Cari Nama atau No. Telepon"
+                label="Cari Nama, Telepon, atau Wilayah"
                 value={searchText}
                 onChange={(e) => {
                   setSearchText(e.target.value)
                 }}
-                placeholder="Ketik nama atau telepon..."
+                placeholder="Ketik nama, telepon, ID laporan, atau wilayah..."
               />
             </div>
             {hasFilter && (
@@ -440,8 +449,9 @@ export default function AspirasiPage(): React.ReactNode {
               <th className="w-8 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">No</th>
 
               {/* Wilayah */}
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
               <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kota/Kabupaten</th>
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
+              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
 
               {/* Sumber */}
               <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Sumber</th>
@@ -496,6 +506,13 @@ export default function AspirasiPage(): React.ReactNode {
                     {(currentPage - 1) * PAGE_SIZE + i + 1}
                   </td>
 
+                  {/* Kota */}
+                  <td className="px-2 py-2">
+                    <span className="line-clamp-1 max-w-[110px]" title={aspirasi.kota || '-'}>
+                      {aspirasi.kota || '-'}
+                    </span>
+                  </td>
+
                   {/* Kecamatan */}
                   <td className="px-2 py-2">
                     <span className="line-clamp-1 max-w-[100px]" title={aspirasi.kecamatan || '-'}>
@@ -503,10 +520,10 @@ export default function AspirasiPage(): React.ReactNode {
                     </span>
                   </td>
 
-                  {/* Kota */}
+                  {/* Kelurahan */}
                   <td className="px-2 py-2">
-                    <span className="line-clamp-1 max-w-[110px]" title={aspirasi.kota || '-'}>
-                      {aspirasi.kota || '-'}
+                    <span className="line-clamp-1 max-w-[100px]" title={aspirasi.kelurahan || '-'}>
+                      {aspirasi.kelurahan || '-'}
                     </span>
                   </td>
 

@@ -356,7 +356,12 @@ export default function KunjunganPage() {
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(val) => setKelurahanId(getSelectValue(val))}
+                onChange={(val) => {
+                  setKelurahanId(getSelectValue(val))
+                  setKecamatanId('')
+                  setKotaId('')
+                }}
+                disabled={!!kotaId}
               />
             </div>
           </div>
@@ -365,10 +370,10 @@ export default function KunjunganPage() {
             <div className="flex-1">
               <Input
                 id="query"
-                label="Cari kegiatan"
+                label="Cari kegiatan / wilayah"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Cari nama kegiatan, lokasi..."
+                placeholder="Cari nama kegiatan, lokasi, kota, kecamatan, kelurahan..."
               />
             </div>
           </div>

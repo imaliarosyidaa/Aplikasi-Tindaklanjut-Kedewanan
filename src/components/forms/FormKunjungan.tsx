@@ -12,9 +12,18 @@ import { FileUpload } from '../ui/file-upload'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-interface KotaItem { id: string; nama: string }
-interface KecamatanItem { id: string; nama: string }
-interface KelurahanItem { id: string; nama: string }
+interface KotaItem {
+  id: string
+  nama: string
+}
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+interface KelurahanItem {
+  id: string
+  nama: string
+}
 
 interface FormKunjunganInitialData {
   id: string
@@ -71,14 +80,17 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   const [tempat, setTempat] = useState(initialData?.tempat ?? '')
   const [rt, setRt] = useState(initialData?.rt ?? '')
   const [rw, setRw] = useState(initialData?.rw ?? '')
-  const [jumlahPeserta, setJumlahPeserta] = useState(initialData?.jumlah_peserta ? String(initialData.jumlah_peserta) : '')
+  const [jumlahPeserta, setJumlahPeserta] = useState(
+    initialData?.jumlah_peserta ? String(initialData.jumlah_peserta) : '',
+  )
   const [catatan, setCatatan] = useState(initialData?.catatan ?? '')
   const [lampiran, setLampiran] = useState<string[]>(() => {
     if (!initialData?.foto) return []
     try {
-      const parsed = typeof initialData.foto === 'string' && initialData.foto.startsWith('[')
-        ? JSON.parse(initialData.foto)
-        : [initialData.foto]
+      const parsed =
+        typeof initialData.foto === 'string' && initialData.foto.startsWith('[')
+          ? JSON.parse(initialData.foto)
+          : [initialData.foto]
       return parsed.filter(Boolean)
     } catch {
       const f = initialData.foto
@@ -96,12 +108,12 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
-    fetcher
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
-    fetcher
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : '/api/kelurahan',
+    fetcher,
   )
 
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
@@ -147,14 +159,17 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             jumlah_peserta: jumlahPeserta,
             link_gmaps: linkGmaps,
             tanggal,
-            foto: lampiran.length > 0 ? lampiran : (() => {
-              if (!initialData?.foto) return []
-              const f = initialData.foto
-              if (typeof f === 'string' && f.startsWith('[')) return JSON.parse(f)
-              if (typeof f === 'string') return [f]
-              if (Array.isArray(f)) return f
-              return []
-            })(),
+            foto:
+              lampiran.length > 0
+                ? lampiran
+                : (() => {
+                    if (!initialData?.foto) return []
+                    const f = initialData.foto
+                    if (typeof f === 'string' && f.startsWith('[')) return JSON.parse(f)
+                    if (typeof f === 'string') return [f]
+                    if (Array.isArray(f)) return f
+                    return []
+                  })(),
           }),
         })
         router.push('/admin/kunjungan')
@@ -194,51 +209,157 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Select id="jenis_kegiatan" label="Jenis Kegiatan" placeholder="Pilih jenis kegiatan" options={JENIS_KEGIATAN_OPTIONS} value={jenisKegiatan} onChange={(e) => { setJenisKegiatan(e.target.value); if (e.target.value !== 'lainya') setJenisKegiatanLainnya('') }} error={errors.jenisKegiatan} />
+      <Select
+        id="jenis_kegiatan"
+        label="Jenis Kegiatan"
+        placeholder="Pilih jenis kegiatan"
+        options={JENIS_KEGIATAN_OPTIONS}
+        value={jenisKegiatan}
+        onChange={(e) => {
+          setJenisKegiatan(e.target.value)
+          if (e.target.value !== 'lainya') setJenisKegiatanLainnya('')
+        }}
+        error={errors.jenisKegiatan}
+      />
       {jenisKegiatan === 'lainya' && (
-        <Input id="jenis_kegiatan_lainnya" label="Jenis Kegiatan (Lainnya)" placeholder="Tuliskan jenis kegiatan" value={jenisKegiatanLainnya} onChange={(e) => setJenisKegiatanLainnya(e.target.value)} required />
+        <Input
+          id="jenis_kegiatan_lainnya"
+          label="Jenis Kegiatan (Lainnya)"
+          placeholder="Tuliskan jenis kegiatan"
+          value={jenisKegiatanLainnya}
+          onChange={(e) => setJenisKegiatanLainnya(e.target.value)}
+          required
+        />
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input id="tanggal" label="Tanggal" type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} error={errors.tanggal} />
-        <Input id="jam" label="Jam" type="time" value={jam} onChange={(e) => setJam(e.target.value)} error={errors.jam} />
+        <Input
+          id="tanggal"
+          label="Tanggal"
+          type="date"
+          value={tanggal}
+          onChange={(e) => setTanggal(e.target.value)}
+          error={errors.tanggal}
+        />
+        <Input
+          id="jam"
+          label="Jam"
+          type="time"
+          value={jam}
+          onChange={(e) => setJam(e.target.value)}
+          error={errors.jam}
+        />
       </div>
 
-      <Input id="jalan" label="Jalan" placeholder="Masukkan nama jalan" value={jalan} onChange={(e) => setJalan(e.target.value)} />
+      <Input
+        id="jalan"
+        label="Jalan"
+        placeholder="Masukkan nama jalan"
+        value={jalan}
+        onChange={(e) => setJalan(e.target.value)}
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Select id="kota" label="Kota/Kabupaten" placeholder="Pilih kota/kabupaten" options={kotaOptions} value={kotaId} onChange={(e) => { setKotaId(e.target.value); setKecamatanId(''); setKelurahanId('') }} error={errors.kota} />
-        <Select id="kecamatan" label="Kecamatan" placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'} options={kecamatanOptions} value={kecamatanId} onChange={(e) => { setKecamatanId(e.target.value); setKelurahanId('') }} error={errors.kecamatan} disabled={!kotaId} />
-        <Select id="kelurahan" label="Kelurahan" placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'} options={kelurahanOptions} value={kelurahanId} onChange={(e) => setKelurahanId(e.target.value)} error={errors.kelurahan} disabled={!kecamatanId} />
+        <Select
+          id="kota"
+          label="Kota/Kabupaten"
+          placeholder="Pilih kota/kabupaten"
+          options={kotaOptions}
+          value={kotaId}
+          onChange={(e) => {
+            setKotaId(e.target.value)
+            setKecamatanId('')
+            setKelurahanId('')
+          }}
+          error={errors.kota}
+        />
+        <Select
+          id="kecamatan"
+          label="Kecamatan"
+          placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
+          options={kecamatanOptions}
+          value={kecamatanId}
+          onChange={(e) => {
+            setKecamatanId(e.target.value)
+            setKelurahanId('')
+          }}
+          error={errors.kecamatan}
+          disabled={!kotaId}
+        />
+        <Select
+          id="kelurahan"
+          label="Kelurahan"
+          placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
+          options={kelurahanOptions}
+          value={kelurahanId}
+          onChange={(e) => setKelurahanId(e.target.value)}
+          error={errors.kelurahan}
+          disabled={!!kotaId}
+        />
       </div>
 
-      <Input id="nama_kegiatan" label="Nama Kegiatan" placeholder="Masukkan nama kegiatan" value={namaKegiatan} onChange={(e) => setNamaKegiatan(e.target.value)} error={errors.namaKegiatan} required />
+      <Input
+        id="nama_kegiatan"
+        label="Nama Kegiatan"
+        placeholder="Masukkan nama kegiatan"
+        value={namaKegiatan}
+        onChange={(e) => setNamaKegiatan(e.target.value)}
+        error={errors.namaKegiatan}
+        required
+      />
 
-      <Input id="isi" label="Isi/Keterangan" placeholder="Deskripsi kegiatan" value={isi} onChange={(e) => setIsi(e.target.value)} />
+      <Input
+        id="isi"
+        label="Isi/Keterangan"
+        placeholder="Deskripsi kegiatan"
+        value={isi}
+        onChange={(e) => setIsi(e.target.value)}
+      />
 
-      <Input id="tempat" label="Tempat" placeholder="Lokasi kegiatan" value={tempat} onChange={(e) => setTempat(e.target.value)} />
+      <Input
+        id="tempat"
+        label="Tempat"
+        placeholder="Lokasi kegiatan"
+        value={tempat}
+        onChange={(e) => setTempat(e.target.value)}
+      />
 
-      <Input id="link_gmaps" label="Titik Lokasi (Google Maps)" placeholder="https://maps.google.com/?q=..." value={linkGmaps} onChange={(e) => setLinkGmaps(e.target.value)} />
+      <Input
+        id="link_gmaps"
+        label="Titik Lokasi (Google Maps)"
+        placeholder="https://maps.google.com/?q=..."
+        value={linkGmaps}
+        onChange={(e) => setLinkGmaps(e.target.value)}
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <Input id="rt" label="RT" placeholder="001" value={rt} onChange={(e) => setRt(e.target.value)} />
         <Input id="rw" label="RW" placeholder="005" value={rw} onChange={(e) => setRw(e.target.value)} />
-        <Input id="jumlah_peserta" label="Jumlah Peserta" type="number" placeholder="0" value={jumlahPeserta} onChange={(e) => setJumlahPeserta(e.target.value)} />
+        <Input
+          id="jumlah_peserta"
+          label="Jumlah Peserta"
+          type="number"
+          placeholder="0"
+          value={jumlahPeserta}
+          onChange={(e) => setJumlahPeserta(e.target.value)}
+        />
       </div>
 
       <div>
-        <label htmlFor="catatan" className="block text-sm font-medium text-[var(--color-text)] mb-1">Catatan</label>
-        <textarea id="catatan" value={catatan} onChange={(e) => setCatatan(e.target.value)} rows={3}
+        <label htmlFor="catatan" className="block text-sm font-medium text-[var(--color-text)] mb-1">
+          Catatan
+        </label>
+        <textarea
+          id="catatan"
+          value={catatan}
+          onChange={(e) => setCatatan(e.target.value)}
+          rows={3}
           className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)]"
           placeholder="Catatan tambahan..."
         />
       </div>
       <div>
-        <FileUpload
-          label="Upload Foto"
-          value={lampiran}
-          onChange={setLampiran}
-        />
+        <FileUpload label="Upload Foto" value={lampiran} onChange={setLampiran} />
       </div>
 
       <div className="flex justify-end gap-3 pt-4">

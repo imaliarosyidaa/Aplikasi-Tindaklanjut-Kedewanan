@@ -49,6 +49,9 @@ export async function GET(request: NextRequest) {
       { pelapor_nama: { contains: search, ...mode } },
       { pelapor_telepon: { contains: search } },
       { id_laporan: { contains: search, ...mode } },
+      { kota: { is: { nama: { contains: search, ...mode } } } },
+      { kecamatan: { is: { nama: { contains: search, ...mode } } } },
+      { kelurahan: { is: { nama: { contains: search, ...mode } } } },
     ]
   }
 

@@ -80,12 +80,16 @@ export async function GET(request: NextRequest) {
   }
 
   if (search) {
+    const mode = 'insensitive' as const
     const searchOr = {
       OR: [
-        { nama_kegiatan: { contains: search, mode: 'insensitive' as const } },
-        { jenis_kegiatan: { contains: search, mode: 'insensitive' as const } },
-        { tempat: { contains: search, mode: 'insensitive' as const } },
-        { isi: { contains: search, mode: 'insensitive' as const } },
+        { nama_kegiatan: { contains: search, mode } },
+        { jenis_kegiatan: { contains: search, mode } },
+        { tempat: { contains: search, mode } },
+        { isi: { contains: search, mode } },
+        { kunjungan: { is: { kota: { is: { nama: { contains: search, mode } } } } } },
+        { kunjungan: { is: { kecamatan: { is: { nama: { contains: search, mode } } } } } },
+        { kunjungan: { is: { kelurahan: { is: { nama: { contains: search, mode } } } } } },
       ],
     }
     if (where.AND) {

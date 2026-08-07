@@ -88,12 +88,12 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
-    fetcher
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
-    fetcher
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : '/api/kelurahan',
+    fetcher,
   )
 
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
@@ -224,25 +224,10 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
       <label className="block text-sm font-medium text-[var(--color-text)]">
         NIK <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan)</span>
       </label>
-      <Input
-        id="nik"
-        value={nik}
-        onChange={(e) => setNik(e.target.value)}
-        error={errors.nik}
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Nama Lengkap
-      </label>
-      <Input
-        id="nama"
-        value={nama}
-        onChange={(e) => setNama(e.target.value)}
-        error={errors.nama}
-        required
-      />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        No. Telepon
-      </label>
+      <Input id="nik" value={nik} onChange={(e) => setNik(e.target.value)} error={errors.nik} />
+      <label className="block text-sm font-medium text-[var(--color-text)]">Nama Lengkap</label>
+      <Input id="nama" value={nama} onChange={(e) => setNama(e.target.value)} error={errors.nama} required />
+      <label className="block text-sm font-medium text-[var(--color-text)]">No. Telepon</label>
       <Input
         id="no_telepon"
         type="tel"
@@ -251,9 +236,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         error={errors.noTelepon}
         required
       />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Jenis Kelamin
-      </label>
+      <label className="block text-sm font-medium text-[var(--color-text)]">Jenis Kelamin</label>
       <Select
         id="jenis_kelamin"
         placeholder="Pilih jenis kelamin"
@@ -262,23 +245,29 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         onChange={(e) => setJenisKelamin(e.target.value)}
         error={errors.jenisKelamin}
       />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Posisi
-      </label>
+      <label className="block text-sm font-medium text-[var(--color-text)]">Posisi</label>
       <Select
         id="posisi"
         placeholder="Pilih posisi"
         options={POSISI_OPTIONS}
         value={posisi}
-        onChange={(e) => { setPosisi(e.target.value); if (e.target.value !== 'LAINNYA') setPosisiLainnya('') }}
+        onChange={(e) => {
+          setPosisi(e.target.value)
+          if (e.target.value !== 'LAINNYA') setPosisiLainnya('')
+        }}
         error={errors.posisi}
       />
       {posisi === 'LAINNYA' && (
-        <Input id="posisi_lainnya" label="Posisi (Lainnya)" placeholder="Tuliskan posisi" value={posisiLainnya} onChange={(e) => setPosisiLainnya(e.target.value)} required />
+        <Input
+          id="posisi_lainnya"
+          label="Posisi (Lainnya)"
+          placeholder="Tuliskan posisi"
+          value={posisiLainnya}
+          onChange={(e) => setPosisiLainnya(e.target.value)}
+          required
+        />
       )}
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Kota/Kabupaten
-      </label>
+      <label className="block text-sm font-medium text-[var(--color-text)]">Kota/Kabupaten</label>
       <Select
         id="kota"
         placeholder="Pilih Kota/Kabupaten"
@@ -290,9 +279,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         }}
         error={errors.kota}
       />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Kecamatan
-      </label>
+      <label className="block text-sm font-medium text-[var(--color-text)]">Kecamatan</label>
       <Select
         id="kecamatan"
         placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
@@ -305,9 +292,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         error={errors.kecamatan}
         disabled={!kotaId}
       />
-      <label className="block text-sm font-medium text-[var(--color-text)]">
-        Kelurahan
-      </label>
+      <label className="block text-sm font-medium text-[var(--color-text)]">Kelurahan</label>
       <Select
         id="kelurahan"
         placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
@@ -315,18 +300,35 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         value={kelurahanId}
         onChange={(e) => setKelurahanId(e.target.value)}
         error={errors.kelurahan}
-        disabled={!kecamatanId}
+        disabled={!!kotaId}
       />
 
       <div>
         <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Domisili sesuai KTP?</label>
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="domisili_ktp" value="Ya" checked={domisiliSesuaiKtp === 'Ya'} onChange={() => { setDomisiliSesuaiKtp('Ya'); setDomisiliSekarang('') }} className="accent-[var(--color-primary)]" />
+            <input
+              type="radio"
+              name="domisili_ktp"
+              value="Ya"
+              checked={domisiliSesuaiKtp === 'Ya'}
+              onChange={() => {
+                setDomisiliSesuaiKtp('Ya')
+                setDomisiliSekarang('')
+              }}
+              className="accent-[var(--color-primary)]"
+            />
             <span className="text-sm text-[var(--color-text)]">Ya</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="domisili_ktp" value="Tidak" checked={domisiliSesuaiKtp === 'Tidak'} onChange={() => setDomisiliSesuaiKtp('Tidak')} className="accent-[var(--color-primary)]" />
+            <input
+              type="radio"
+              name="domisili_ktp"
+              value="Tidak"
+              checked={domisiliSesuaiKtp === 'Tidak'}
+              onChange={() => setDomisiliSesuaiKtp('Tidak')}
+              className="accent-[var(--color-primary)]"
+            />
             <span className="text-sm text-[var(--color-text)]">Tidak</span>
           </label>
         </div>
@@ -369,7 +371,8 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-[var(--color-text)]">
-          Upload Foto Diri <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan, format PNG/JPG/JPEG)</span>
+          Upload Foto Diri{' '}
+          <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan, format PNG/JPG/JPEG)</span>
         </label>
         <input
           id="foto"
@@ -380,7 +383,11 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         />
         {fotoBase64 && fotoBase64.startsWith('data:') && (
           <div className="flex justify-center">
-            <img src={fotoBase64} alt="Foto diri" className="w-32 h-32 object-cover rounded-full border-4 border-[var(--color-primary-light)]" />
+            <img
+              src={fotoBase64}
+              alt="Foto diri"
+              className="w-32 h-32 object-cover rounded-full border-4 border-[var(--color-primary-light)]"
+            />
           </div>
         )}
         {fotoName && (
