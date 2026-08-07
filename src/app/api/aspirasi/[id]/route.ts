@@ -77,6 +77,30 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         diverifikasi_oleh_id: body.diverifikasi_oleh_id,
       },
     })
+  } else {
+    await prisma.aspirasis.update({
+      where: { id },
+      data: {
+        nik: body.nik ?? undefined,
+        sumber: body.sumber ?? undefined,
+        deskripsi: body.deskripsi ?? undefined,
+        pelapor_nama: body.pelapor_nama ?? undefined,
+        pelapor_email: body.pelapor_email ?? undefined,
+        pelapor_telepon: body.pelapor_telepon ?? undefined,
+        lampiran: Array.isArray(body.lampiran) ? body.lampiran : undefined,
+        kategori_usulan: body.kategori_usulan ?? undefined,
+        jenis_usulan: body.jenis_usulan ?? undefined,
+        jenis_reses: body.jenis_reses ?? undefined,
+        tindak_lanjut: body.tindak_lanjut ?? undefined,
+        tanggal_dibuat: body.tanggal_dibuat
+          ? new Date(body.tanggal_dibuat)
+          : undefined,
+        alamat: body.alamat ?? undefined,
+        kota_id: body.kota_id ?? null,
+        kecamatan_id: body.kecamatan_id ?? null,
+        kelurahan_id: body.kelurahan_id ?? null,
+      },
+    })
   }
 
   const updated = await prisma.aspirasis.findUnique({

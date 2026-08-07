@@ -1,11 +1,44 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
+import useSWR from 'swr'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import type { Aspirasi, SumberAspirasi } from '@/types'
 import { FileUpload } from '../ui/file-upload'
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+interface KotaItem {
+  id: string
+  nama: string
+}
+interface KecamatanItem {
+  id: string
+  nama: string
+}
+interface KelurahanItem {
+  id: string
+  nama: string
+}
+
+const statusLabel: Record<string, string> = {
+  BELUM_DITINDAKLANJUTI: 'Belum Ditindaklanjuti',
+  SEDANG_DITINDAKLANJUTI: 'Sedang Ditindaklanjuti',
+  SUDAH_DITINDAKLANJUTI: 'Sudah Ditindaklanjuti',
+  TIDAK_BISA_DITINDAKLANJUTI: 'Tidak Bisa Ditindaklanjuti',
+  SELESAI: 'Selesai',
+}
+
+const toDateInputValue = (iso: string): string => {
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 
 interface FormEditAspirasiProps {
   aspirasi: Aspirasi
@@ -24,6 +57,7 @@ const sumberOptions = [
 
 export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps): React.ReactNode => {
   const [loading, setLoading] = useState(false)
+  const [nik, setNik] = useState(aspirasi.nik ?? '')
   const [pelaporNama, setPelaporNama] = useState(aspirasi.pelapor_nama)
   const [id_laporan] = useState(aspirasi.id_laporan)
   const [pelaporTelepon, setPelaporTelepon] = useState(aspirasi.pelapor_telepon)
@@ -34,6 +68,9 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const [jenisReses, setJenisReses] = useState(aspirasi.jenis_reses)
   const [tindakLanjut, setTindakLanjut] = useState(aspirasi.tindak_lanjut)
   const [alamat, setAlamat] = useState(aspirasi.lokasi ?? '')
+  const [tanggalDibuat, setTanggalDibuat] = useState(
+    toDateInputValue(aspirasi.tanggal_dibuat)
+  )
   const [lampiran, setLampiran] = useState<string[]>(
     Array.isArray(aspirasi.lampiran)
       ? aspirasi.lampiran
@@ -41,6 +78,50 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
         ? [aspirasi.lampiran]
         : []
   )
+
+  // Master data wilayah (independen, tidak saling cascade)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
+    '/api/kecamatan',
+    fetcher
+  )
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
+    '/api/kelurahan',
+    fetcher
+  )
+
+  // ID default di-resolve dari nama wilayah pada data aspirasi
+  const defaultKotaId = useMemo(
+    () => kotaList.find((k) => k.nama === aspirasi.kota)?.id ?? '',
+    [kotaList, aspirasi.kota]
+  )
+  const defaultKecamatanId = useMemo(
+    () => kecamatanList.find((k) => k.nama === aspirasi.kecamatan)?.id ?? '',
+    [kecamatanList, aspirasi.kecamatan]
+  )
+  const defaultKelurahanId = useMemo(
+    () => kelurahanList.find((k) => k.nama === aspirasi.kelurahan)?.id ?? '',
+    [kelurahanList, aspirasi.kelurahan]
+  )
+
+  // Pilihan user (mengalahkan default saat berubah)
+  const [kotaId, setKotaId] = useState('')
+  const [kecamatanId, setKecamatanId] = useState('')
+  const [kelurahanId, setKelurahanId] = useState('')
+
+  const finalKotaId = kotaId || defaultKotaId
+  const finalKecamatanId = kecamatanId || defaultKecamatanId
+  const finalKelurahanId = kelurahanId || defaultKelurahanId
+
+  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.map((k) => ({
+    value: k.id,
+    label: k.nama,
+  }))
+  const kelurahanOptions = kelurahanList.map((k) => ({
+    value: k.id,
+    label: k.nama,
+  }))
 
   // Checking apakah nilai `sumber` dari props ada di opsi standar
   const isStandardOption = (sumberOptions as { value: string; label: string }[])
@@ -68,6 +149,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          nik,
           pelapor_nama: pelaporNama,
           pelapor_telepon: pelaporTelepon,
           pelapor_email: pelaporEmail,
@@ -78,9 +160,15 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           tindak_lanjut: tindakLanjut,
           sumber: finalSumber as SumberAspirasi,
           alamat,
+          tanggal_dibuat: tanggalDibuat,
+          lampiran,
+          kota_id: finalKotaId || null,
+          kecamatan_id: finalKecamatanId || null,
+          kelurahan_id: finalKelurahanId || null,
         }),
       })
       if (!res.ok) throw new Error('Failed')
+      alert('Perubahan berhasil disimpan')
       if (onSuccess) onSuccess()
     } catch {
       alert('Gagal menyimpan perubahan')
@@ -97,6 +185,20 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
         value={id_laporan}
         disabled
         className="bg-gray-100 text-gray-500"
+      />
+      <Input
+        id="status"
+        label="Status"
+        value={statusLabel[aspirasi.status] || aspirasi.status}
+        disabled
+        className="bg-gray-100 text-gray-500"
+      />
+      <Input
+        id="nik"
+        label="NIK"
+        placeholder="Masukkan NIK pelapor"
+        value={nik}
+        onChange={(e) => setNik(e.target.value)}
       />
       <Input
         id="pelapor_nama"
@@ -181,12 +283,46 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
       <Input
         id="tindak_lanjut"
         label="Tindak Lanjut"
-        placeholder="Status tindak lanjut otomatis"
+        placeholder="Jelaskan tindak lanjut yang dilakukan"
         value={tindakLanjut}
         onChange={(e) => setTindakLanjut(e.target.value)}
-        disabled
-        className="bg-gray-100 text-gray-500"
       />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Select
+          id="kota"
+          label="Kota/Kabupaten"
+          placeholder="Pilih kota/kabupaten"
+          options={kotaOptions}
+          value={finalKotaId}
+          onChange={(e) => setKotaId(e.target.value)}
+        />
+        <Select
+          id="kecamatan"
+          label="Kecamatan"
+          placeholder="Pilih kecamatan"
+          options={kecamatanOptions}
+          value={finalKecamatanId}
+          onChange={(e) => setKecamatanId(e.target.value)}
+        />
+        <Select
+          id="kelurahan"
+          label="Kelurahan"
+          placeholder="Pilih kelurahan"
+          options={kelurahanOptions}
+          value={finalKelurahanId}
+          onChange={(e) => setKelurahanId(e.target.value)}
+        />
+      </div>
+
+      <Input
+        id="tanggal_dibuat"
+        label="Tanggal Dibuat"
+        type="date"
+        value={tanggalDibuat}
+        onChange={(e) => setTanggalDibuat(e.target.value)}
+      />
+
       <Input
         id="alamat"
         label="Alamat / Lokasi"
