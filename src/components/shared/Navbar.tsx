@@ -4,14 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { usePathname } from '@/routing'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { Link } from '@/routing'
-import {
-  MdMenu,
-  MdClose,
-  MdLogout,
-  MdSettings,
-  MdPerson,
-  MdKeyboardArrowDown,
-} from 'react-icons/md'
+import { MdMenu, MdClose, MdLogout, MdSettings, MdPerson, MdKeyboardArrowDown } from 'react-icons/md'
 import { signOut, useSession } from 'next-auth/react'
 
 export const Navbar = (): React.ReactNode => {
@@ -34,10 +27,7 @@ export const Navbar = (): React.ReactNode => {
   // Event listener untuk menutup dropdown ketika diklik di luar area dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false)
       }
     }
@@ -51,20 +41,12 @@ export const Navbar = (): React.ReactNode => {
   }
 
   return (
-    <nav className="relative top-0 z-0 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur-md">
+    <nav className="relative z-40 top-0 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 items-center justify-between px-8">
         {/* LOGO AREA */}
         <div className="flex items-center justify-center gap-3 py-2">
-          <img
-            src="/Lambang_DPRD_Generik.png"
-            alt="Logo DPRD"
-            className="h-12 w-auto"
-          />
-          <img
-            src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png"
-            alt="Logo Partai"
-            className="h-12 w-auto"
-          />
+          <img src="/Lambang_DPRD_Generik.png" alt="Logo DPRD" className="h-12 w-auto" />
+          <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo Partai" className="h-12 w-auto" />
         </div>
 
         {/* NAVIGATION ITEMS (DESKTOP) */}
@@ -74,9 +56,7 @@ export const Navbar = (): React.ReactNode => {
               key={item.href}
               href={item.href}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                pathname === item.href ||
-                  (item.href !== '/' &&
-                    pathname.startsWith(item.href + '/kegiatan'))
+                pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
                   ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
                   : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'
               }`}
@@ -104,8 +84,9 @@ export const Navbar = (): React.ReactNode => {
               </span>
               <MdKeyboardArrowDown
                 size={18}
-                className={`text-[var(--color-text-secondary)] transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''
-                  }`}
+                className={`text-[var(--color-text-secondary)] transition-transform duration-200 ${
+                  dropdownOpen ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -113,9 +94,7 @@ export const Navbar = (): React.ReactNode => {
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] p-1.5 shadow-lg transition-all">
                 <div className="border-b border-[var(--color-border)] px-3 py-2">
-                  <p className="text-xs font-semibold text-[var(--color-text)]">
-                    {session?.user?.name || 'Admin'}
-                  </p>
+                  <p className="text-xs font-semibold text-[var(--color-text)]">{session?.user?.name || 'Admin'}</p>
                   <p className="truncate text-[10px] text-[var(--color-text-secondary)]">
                     {session?.user?.email || 'admin@dprd.go.id'}
                   </p>
@@ -164,8 +143,7 @@ export const Navbar = (): React.ReactNode => {
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={`block rounded-lg px-3 py-2 text-sm font-medium ${
-                pathname === item.href ||
-                  (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
+                pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/kegiatan'))
                   ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
                   : 'text-[var(--color-text-secondary)]'
               }`}
