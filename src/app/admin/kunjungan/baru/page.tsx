@@ -380,23 +380,23 @@ export default function KegiatanBaruPage() {
             </div>
           </div>
 
-          <div className="p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)]">
+          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 col-span-2 lg:col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)]">
             <div className="flex items-center gap-2">
-              <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
-              <h2 className="font-medium text-black text-sm">Contoh Pengisian</h2>
+              <MdInfo size={20} className="text-blue-500 shrink-0" />
+              <h2 className="font-medium text-black text-xs sm:text-sm">Contoh Pengisian</h2>
             </div>
-            <div className="text-xs text-[var(--color-text-secondary)]">
-              <div className="flex gap-2 mb-2">
-                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
-                <p>Pilih lokasi sampai tingkat kelurahan agar data akurat</p>
+            <div className="text-[11px] sm:text-xs text-[var(--color-text-secondary)] space-y-2">
+              <div className="flex items-start gap-2">
+                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 shrink-0 mt-0.5" />
+                <p className="leading-snug">Pilih lokasi sampai tingkat kelurahan agar data akurat</p>
               </div>
-              <div className="flex gap-2 mb-2">
-                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
-                <p>Pastikan alamat sesuai dengan lokasi kegiatan</p>
+              <div className="flex items-start gap-2">
+                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 shrink-0 mt-0.5" />
+                <p className="leading-snug">Pastikan alamat sesuai dengan lokasi kegiatan</p>
               </div>
-              <div className="flex gap-2 mb-2">
-                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
-                <p>Gunakan peta jika lokasi tidak ditemukan</p>
+              <div className="flex items-start gap-2">
+                <IoMdCheckmarkCircleOutline size={15} className="text-green-500 shrink-0 mt-0.5" />
+                <p className="leading-snug">Gunakan peta jika lokasi tidak ditemukan</p>
               </div>
             </div>
           </div>
@@ -507,7 +507,7 @@ export default function KegiatanBaruPage() {
               />
             </div>
           </div>
-          <div className="p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
+          <div className="p-4 space-y-4 col-span-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
             <div>
               <div className="flex gap-2 mb-6">
                 <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
@@ -522,21 +522,21 @@ export default function KegiatanBaruPage() {
 
             <div className="pt-2">
               <div className="flex mb-2 items-center gap-2">
-                <MdInfo size={20} className="text-blue-500 flex-shrink-0" />
-                <h2 className="font-medium text-black text-sm">Contoh Pengisian</h2>
+                <MdInfo size={20} className="text-blue-500 shrink-0" />
+                <h2 className="font-medium text-black text-xs sm:text-sm">Contoh Pengisian</h2>
               </div>
-              <div className="text-xs text-[var(--color-text-secondary)]">
-                <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
-                  <p>Tanggal dan jam sesuai pelaksanaan kegiatan</p>
+              <div className="text-[11px] sm:text-xs text-[var(--color-text-secondary)] space-y-2">
+                <div className="flex items-start gap-2">
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 shrink-0 mt-0.5" />
+                  <p className="leading-snug">Tanggal dan jam sesuai pelaksanaan kegiatan</p>
                 </div>
-                <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
-                  <p>Jumlah peserta adalah total peserta yang hadir</p>
+                <div className="flex items-start gap-2">
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 shrink-0 mt-0.5" />
+                  <p className="leading-snug">Jumlah peserta adalah total peserta yang hadir</p>
                 </div>
-                <div className="flex gap-2 mb-2">
-                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 flex-shrink-0" />
-                  <p>Catatan berisi rangkuman singkat kegiatan (opsional)</p>
+                <div className="flex items-start gap-2">
+                  <IoMdCheckmarkCircleOutline size={15} className="text-green-500 shrink-0 mt-0.5" />
+                  <p className="leading-snug">Catatan berisi rangkuman singkat kegiatan (opsional)</p>
                 </div>
               </div>
             </div>
@@ -554,7 +554,7 @@ export default function KegiatanBaruPage() {
               <FileUpload label="Upload Foto" value={fotoFiles} onChange={setFotoFiles} />
             </div>
           </div>
-          <div className="p-4 space-y-4 col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
+          <div className="p-4 space-y-4 col-span-2 lg:col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
             <div>
               <div className="flex gap-2 mb-6">
                 <MdInfo size={20} className="text-blue-500 flex-shrink-0" />

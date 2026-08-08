@@ -145,7 +145,8 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                   year: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit',
-                })}
+                })}{' '}
+                WIB
               </p>
             </div>
           </div>

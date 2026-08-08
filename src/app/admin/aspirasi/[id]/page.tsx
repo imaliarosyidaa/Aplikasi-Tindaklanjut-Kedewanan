@@ -91,8 +91,8 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
 
       <Card className="flex justify-between p-4">
         <div>
-          <h1 className="text-2xl mb-2 font-bold text-[var(--color-text)]">Laporan #{aspirasi?.id_laporan}</h1>
-          <p className="text-[var(--color-text)] text-sm">Dibuat pada {formatDate(aspirasi?.created_at)}</p>
+          <h1 className="text-2xl mb-2 font-bold text-[var(--color-text)]">Laporan {aspirasi?.id_laporan}</h1>
+          <p className="text-[var(--color-text)] text-sm">Dibuat pada {formatDate(aspirasi?.created_at)} WIB</p>
         </div>
         <div>
           <Badge status={aspirasi?.status as any}>
@@ -247,7 +247,7 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
                           </span>
                           {t.created_at && (
                             <span className="text-xs text-[var(--color-text-secondary)]">
-                              {formatDate(t.created_at)}
+                              {formatDate(t.created_at)} WIB
                             </span>
                           )}
                         </div>
