@@ -98,9 +98,9 @@ function TicketLaporan({
           <tr><td class="label">NIK</td><td class="value">${data.nik || '-'}</td></tr>
           <tr><td class="label">Email</td><td class="value">${data.email || '-'}</td></tr>
           <tr><td class="label">No. Telepon</td><td class="value">${data.telepon}</td></tr>
-          <tr><td class="label">Kota</td><td class="value">${data.kota}</td></tr>
-          <tr><td class="label">Kecamatan</td><td class="value">${data.kecamatan}</td></tr>
           <tr><td class="label">Kelurahan</td><td class="value">${data.kelurahan}</td></tr>
+          <tr><td class="label">Kecamatan</td><td class="value">${data.kecamatan}</td></tr>
+          <tr><td class="label">Kota</td><td class="value">${data.kota}</td></tr>
           <tr><td class="label">Alamat</td><td class="value">${data.alamat}</td></tr>
           <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal}</td></tr>
           <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan}</td></tr>
@@ -162,8 +162,8 @@ function TicketLaporan({
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Kota</span>
-              <span className="text-[var(--color-text)]">{data.kota}</span>
+              <span className="w-28 text-[var(--color-text-secondary)]">Kelurahan</span>
+              <span className="text-[var(--color-text)]">{data.kelurahan}</span>
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
@@ -172,8 +172,8 @@ function TicketLaporan({
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Kelurahan</span>
-              <span className="text-[var(--color-text)]">{data.kelurahan}</span>
+              <span className="w-28 text-[var(--color-text-secondary)]">Kota</span>
+              <span className="text-[var(--color-text)]">{data.kota}</span>
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
@@ -567,7 +567,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
               <MdLocationOn size={20} className="text-blue-600" />
             </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Lokasi Kejadian</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text)]">Titik Lokasi Pengajuan Kegiatan Aspirasi</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <Select
