@@ -154,6 +154,7 @@ export interface Kegiatan {
   isi: string
   hari: string
   tanggal: string
+  jam: string
   tempat: string
   lokasi: string
   foto: string | string[]

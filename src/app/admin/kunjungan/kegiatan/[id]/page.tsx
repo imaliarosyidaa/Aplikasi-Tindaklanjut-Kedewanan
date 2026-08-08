@@ -34,21 +34,28 @@ export default function DetailKegiatanPage({ params }: DetailKegiatanProps): Rea
     return days[d.getDay()]
   }
 
-  const formatTanggalJam = (dateString: string) => {
+  const formatTanggalJam = (dateString: string, jam?: string) => {
     const date = new Date(dateString)
 
-    return `${date.toLocaleDateString('id-ID', {
+    const tanggalFormatted = date.toLocaleDateString('id-ID', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    })}, Jam ${date.toLocaleTimeString('id-ID', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })} WIB`
+    })
+
+    const jamFormatted = jam
+      ? jam
+      : date.toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+
+    return `${tanggalFormatted}, Jam ${jamFormatted} WIB`
   }
+
   const fields = [
-    { label: 'Tanggal', value: formatTanggalJam(kegiatan?.tanggal || '') },
+    { label: 'Tanggal', value: formatTanggalJam(kegiatan?.tanggal || '', kegiatan?.jam || '') },
     { label: 'Jenis Kegiatan', value: kegiatan?.jenis_kegiatan },
     { label: 'Catatan Kegiatan', value: kegiatan?.catatan },
     { label: 'Te Kegiatan', value: kegiatan?.tempat },
@@ -115,7 +122,7 @@ export default function DetailKegiatanPage({ params }: DetailKegiatanProps): Rea
             <p className="font-medium text-[var(--color-text)]">Informasi Kegiatan</p>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdCalendarToday size={16} />
-              <span>{formatTanggalJam(kegiatan?.tanggal || '')}</span>
+              <span>{formatTanggalJam(kegiatan?.tanggal || '', kegiatan?.jam || '')}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdLocationOn size={16} />
