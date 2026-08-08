@@ -294,7 +294,6 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           value={kelurahanId}
           onChange={(e) => setKelurahanId(e.target.value)}
           error={errors.kelurahan}
-          disabled={!!kotaId}
         />
       </div>
 

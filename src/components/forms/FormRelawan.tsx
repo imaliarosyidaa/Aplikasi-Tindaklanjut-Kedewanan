@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { useRouter } from '@/routing'
 import { useCreateRelawan } from '@/hooks/useRelawan'
@@ -86,6 +86,9 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const [domisiliSekarang, setDomisiliSekarang] = useState(initialData?.domisili_sekarang ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  // Setelah user mengubah wilayah, hentikan auto-populate dari initialData
+  const wilayahTouched = useRef(false)
+
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
     kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
@@ -101,8 +104,11 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   useEffect(() => {
+    if (wilayahTouched.current) return
     if (initialData && kotaList.length > 0) {
       const found = kotaList.find((k) => k.nama === initialData.kota_kabupaten)
       if (found) setKotaId(found.id)
@@ -110,6 +116,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   }, [initialData, kotaList])
 
   useEffect(() => {
+    if (wilayahTouched.current) return
     if (initialData && kecamatanList.length > 0) {
       const found = kecamatanList.find((k) => k.nama === initialData.kecamatan)
       if (found) setKecamatanId(found.id)
@@ -117,6 +124,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   }, [initialData, kecamatanList])
 
   useEffect(() => {
+    if (wilayahTouched.current) return
     if (initialData && kelurahanList.length > 0) {
       const found = kelurahanList.find((k) => k.nama === initialData.kelurahan)
       if (found) setKelurahanId(found.id)
@@ -267,40 +275,45 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           required
         />
       )}
-      <label className="block text-sm font-medium text-[var(--color-text)]">Kota/Kabupaten</label>
       <Select
         id="kota"
-        placeholder="Pilih Kota/Kabupaten"
+        label="Kota/Kabupaten"
+        placeholder="Pilih kota/kabupaten"
         options={kotaOptions}
         value={kotaId}
         onChange={(e) => {
+          wilayahTouched.current = true
           setKotaId(e.target.value)
           setKecamatanId('')
+          setKelurahanId('')
         }}
         error={errors.kota}
       />
-      <label className="block text-sm font-medium text-[var(--color-text)]">Kecamatan</label>
       <Select
         id="kecamatan"
+        label="Kecamatan"
         placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
-        options={kecamatanList.map((k) => ({ value: k.id, label: k.nama }))}
+        options={kecamatanOptions}
         value={kecamatanId}
         onChange={(e) => {
+          wilayahTouched.current = true
           setKecamatanId(e.target.value)
           setKelurahanId('')
         }}
         error={errors.kecamatan}
         disabled={!kotaId}
       />
-      <label className="block text-sm font-medium text-[var(--color-text)]">Kelurahan</label>
       <Select
         id="kelurahan"
+        label="Kelurahan"
         placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
-        options={kelurahanList.map((k) => ({ value: k.id, label: k.nama }))}
+        options={kelurahanOptions}
         value={kelurahanId}
-        onChange={(e) => setKelurahanId(e.target.value)}
+        onChange={(e) => {
+          wilayahTouched.current = true
+          setKelurahanId(e.target.value)
+        }}
         error={errors.kelurahan}
-        disabled={!!kotaId}
       />
 
       <div>

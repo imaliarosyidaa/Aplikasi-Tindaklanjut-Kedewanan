@@ -544,7 +544,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             </div>
             <Input
               id="telepon"
-              label="Nomor Hanphone"
+              label="Nomor Handphone / Whatsapp Aktif"
               type="tel"
               value={telepon}
               onChange={(e) => setTelepon(e.target.value)}

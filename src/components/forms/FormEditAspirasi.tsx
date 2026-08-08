@@ -81,6 +81,9 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
 
+  // Setelah user mengubah wilayah, abaikan default dari data aspirasi
+  const [wilayahTouched, setWilayahTouched] = useState(false)
+
   // Master data wilayah (independen, tidak saling cascade)
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
@@ -106,9 +109,13 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
     [kelurahanList, aspirasi.kelurahan],
   )
 
-  const finalKotaId = kotaId || defaultKotaId
-  const finalKecamatanId = kecamatanId || defaultKecamatanId
-  const finalKelurahanId = kelurahanId || defaultKelurahanId
+  const finalKotaId = wilayahTouched ? kotaId : kotaId || defaultKotaId
+  const finalKecamatanId = wilayahTouched
+    ? kecamatanId
+    : kecamatanId || defaultKecamatanId
+  const finalKelurahanId = wilayahTouched
+    ? kelurahanId
+    : kelurahanId || defaultKelurahanId
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({
@@ -275,7 +282,12 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           placeholder="Pilih kota/kabupaten"
           options={kotaOptions}
           value={finalKotaId}
-          onChange={(e) => setKotaId(e.target.value)}
+          onChange={(e) => {
+            setWilayahTouched(true)
+            setKotaId(e.target.value)
+            setKecamatanId('')
+            setKelurahanId('')
+          }}
         />
         <Select
           id="kecamatan"
@@ -283,7 +295,11 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           placeholder="Pilih kecamatan"
           options={kecamatanOptions}
           value={finalKecamatanId}
-          onChange={(e) => setKecamatanId(e.target.value)}
+          onChange={(e) => {
+            setWilayahTouched(true)
+            setKecamatanId(e.target.value)
+            setKelurahanId('')
+          }}
         />
         <Select
           id="kelurahan"
@@ -291,8 +307,10 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           placeholder="Pilih kelurahan"
           options={kelurahanOptions}
           value={finalKelurahanId}
-          onChange={(e) => setKelurahanId(e.target.value)}
-          disabled={!!kotaId}
+          onChange={(e) => {
+            setWilayahTouched(true)
+            setKelurahanId(e.target.value)
+          }}
         />
       </div>
 

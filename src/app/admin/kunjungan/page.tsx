@@ -361,7 +361,6 @@ export default function KunjunganPage() {
                   setKecamatanId('')
                   setKotaId('')
                 }}
-                disabled={!!kotaId}
               />
             </div>
           </div>

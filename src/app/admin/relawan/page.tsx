@@ -274,7 +274,6 @@ export default function RelawanPage(): React.ReactNode {
                   setKecamatanId('')
                   setKotaId('')
                 }}
-                disabled={!!kotaId}
               />
             </div>
           </div>
