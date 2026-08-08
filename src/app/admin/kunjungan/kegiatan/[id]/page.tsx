@@ -7,23 +7,13 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Link } from '@/routing'
-import {
-  MdArrowBack,
-  MdCalendarToday,
-  MdLocationOn,
-  MdImage,
-  MdMap,
-  MdPeople,
-  MdNotes,
-} from 'react-icons/md'
+import { MdArrowBack, MdCalendarToday, MdLocationOn, MdImage, MdMap, MdPeople, MdNotes } from 'react-icons/md'
 
 interface DetailKegiatanProps {
   params: Promise<{ id: string }>
 }
 
-export default function DetailKegiatanPage({
-  params,
-}: DetailKegiatanProps): React.ReactNode {
+export default function DetailKegiatanPage({ params }: DetailKegiatanProps): React.ReactNode {
   const { id } = use(params)
   const { data: kegiatan, isLoading } = useKegiatan(id)
 
@@ -45,18 +35,18 @@ export default function DetailKegiatanPage({
   }
 
   const formatTanggalJam = (dateString: string) => {
-  const date = new Date(dateString)
+    const date = new Date(dateString)
 
-  return `${date.toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })}, Jam ${date.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })} WIB`
-}
+    return `${date.toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })}, Jam ${date.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })} WIB`
+  }
   const fields = [
     { label: 'Tanggal', value: formatTanggalJam(kegiatan?.tanggal || '') },
     { label: 'Jenis Kegiatan', value: kegiatan?.jenis_kegiatan },
@@ -67,8 +57,9 @@ export default function DetailKegiatanPage({
       value: kegiatan?.link_gmaps,
       isLink: true,
     },
-    { label: 'Kecamatan', value: kegiatan?.kecamatan ?? '-' },
     { label: 'Kelurahan', value: kegiatan?.kelurahan ?? '-' },
+    { label: 'Kecamatan', value: kegiatan?.kecamatan ?? '-' },
+    { label: 'Kota/Kabupaten', value: kegiatan?.kota ?? '-' },
     { label: 'RT', value: kegiatan?.rt },
     { label: 'RW', value: kegiatan?.rw },
     { label: 'Jumlah Peserta', value: String(kegiatan?.jumlah_peserta) },
@@ -84,9 +75,7 @@ export default function DetailKegiatanPage({
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Detail Kegiatan Kedewanan
-        </h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">Detail Kegiatan Kedewanan</h1>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -95,18 +84,14 @@ export default function DetailKegiatanPage({
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">Kegiatan</p>
-                <p className="text-lg font-semibold text-[var(--color-text)]">
-                  {kegiatan?.nama_kegiatan}
-                </p>
+                <p className="text-lg font-semibold text-[var(--color-text)]">{kegiatan?.nama_kegiatan}</p>
               </div>
               <Badge variant="primary">{kegiatan?.jenis_kegiatan}</Badge>
             </div>
 
             {fields.map((field) => (
               <div key={field.label}>
-                <p className="text-sm text-[var(--color-text-secondary)]">
-                  {field.label}
-                </p>
+                <p className="text-sm text-[var(--color-text-secondary)]">{field.label}</p>
                 {field.isLink ? (
                   <a
                     href={field.value}
@@ -118,9 +103,7 @@ export default function DetailKegiatanPage({
                     {field.value}
                   </a>
                 ) : (
-                  <p className="text-[var(--color-text)] whitespace-pre-wrap">
-                    {field.value}
-                  </p>
+                  <p className="text-[var(--color-text)] whitespace-pre-wrap">{field.value}</p>
                 )}
               </div>
             ))}
@@ -164,9 +147,11 @@ export default function DetailKegiatanPage({
                       key={idx}
                       type="button"
                       onClick={() => {
-                        fetch(url).then(r => r.blob()).then(blob => {
-                          window.open(URL.createObjectURL(blob), '_blank')
-                        })
+                        fetch(url)
+                          .then((r) => r.blob())
+                          .then((blob) => {
+                            window.open(URL.createObjectURL(blob), '_blank')
+                          })
                       }}
                       className="block text-xs font-medium text-blue-600 hover:underline cursor-pointer"
                     >
@@ -183,11 +168,7 @@ export default function DetailKegiatanPage({
             </div>
           </Card>
 
-          <a
-            href={kegiatan?.link_gmaps}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={kegiatan?.link_gmaps} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" className="w-full">
               <MdMap size={16} className="mr-1" />
               Buka Google Maps
