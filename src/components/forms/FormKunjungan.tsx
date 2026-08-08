@@ -63,8 +63,17 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   const [loading, setLoading] = useState(false)
   const isEdit = !!initialData
 
+  const toDateInputValue = (iso: string): string => {
+    const d = new Date(iso)
+    if (isNaN(d.getTime())) return ''
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
+
   // Kunjungan fields
-  const [tanggal, setTanggal] = useState(initialData?.tanggal ?? '')
+  const [tanggal, setTanggal] = useState(toDateInputValue(initialData?.tanggal ?? ''))
   const [jam, setJam] = useState(initialData?.jam ?? '')
   const [jalan, setJalan] = useState(initialData?.kunjungan.jalan ?? '')
   const [kotaId, setKotaId] = useState(initialData?.kunjungan.kota_id ?? '')
@@ -156,6 +165,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             catatan,
             rt,
             rw,
+            jam: jam,
             jumlah_peserta: jumlahPeserta,
             link_gmaps: linkGmaps,
             tanggal,

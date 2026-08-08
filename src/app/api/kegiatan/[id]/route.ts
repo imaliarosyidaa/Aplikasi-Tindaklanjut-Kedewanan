@@ -77,6 +77,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       link_gmaps: body.link_gmaps,
       tanggal: body.tanggal ? new Date(body.tanggal) : undefined,
       foto: fotoVal,
+      kunjungan: body.jam
+        ? {
+            update: {
+              jam: body.jam,
+            },
+          }
+        : undefined,
     },
     include: {
       kunjungan: {
