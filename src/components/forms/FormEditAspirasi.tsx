@@ -249,21 +249,21 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
       <Input
         id="kategori_usulan"
         label="Kategori Usulan"
-        placeholder="Contoh: Infrastruktur / Pendidikan"
+        placeholder="Pembangunan / Pendidikan / Kesehatan / Kesejahteraan Sosial / Pekerjaan  / Dll"
         value={kategoriUsulan}
         onChange={(e) => setKategoriUsulan(e.target.value)}
       />
       <Input
         id="jenis_usulan"
         label="Jenis Usulan"
-        placeholder="Contoh: Perbaikan Jalan"
+        placeholder="Pelatihan / Perbaikan Jalan / Pembuatan Drainase / Fasos / Fasum / Dll"
         value={jenisUsulan}
         onChange={(e) => setJenisUsulan(e.target.value)}
       />
       <Input
         id="jenis_reses"
         label="Jenis Reses"
-        placeholder="Contoh: Reses Masa Persidangan I"
+        placeholder="Reses I / Reses II / Reses III"
         value={jenisReses}
         onChange={(e) => setJenisReses(e.target.value)}
       />

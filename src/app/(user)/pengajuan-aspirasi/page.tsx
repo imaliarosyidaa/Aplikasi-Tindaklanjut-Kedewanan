@@ -486,7 +486,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Kategori Usulan"
                 value={kategoriUsulan}
                 onChange={(e) => setKategoriUsulan(e.target.value)}
-                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesehjahteraan Sosial / Pekerjaan  / Dll"
+                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesejahteraan Sosial / Pekerjaan  / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
@@ -518,7 +518,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
               <MdPerson size={20} className="text-blue-600" />
             </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Data Pelapor</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text)]">Data Pelapor Aspirasi</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <Input
@@ -532,7 +532,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             <div>
               <Input
                 id="nik"
-                label="NIK"
+                label="NIK (Opsional)"
                 value={nik}
                 onChange={(e) => setNik(e.target.value)}
                 placeholder="Masukkan NIK (opsional)"
@@ -549,16 +549,19 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               placeholder="08xxxxxxxxxx"
               className="md:col-span-2"
             />
-            <Input
-              id="email"
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="***@gmail.com"
-              className="md:col-span-2"
-            />
+            <div>
+              <Input
+                id="email"
+                label="Email (Opsional)"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="***@gmail.com"
+                className="md:col-span-2"
+              />
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+            </div>
           </div>
         </Card>
 
@@ -616,19 +619,19 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           <div className="space-y-4">
             <div>
               <label htmlFor="pengaduan" className="block text-sm font-medium text-[var(--color-text)] mb-1">
-                Isi Pengaduan
+                Isi Pengaduan Aspirasi (Opsional)
               </label>
               <textarea
                 id="pengaduan"
                 value={pengaduan}
                 onChange={(e) => setPengaduan(e.target.value)}
-                required
                 rows={5}
                 className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] resize-y"
                 placeholder="Tuliskan aspirasi Anda secara jelas dan lengkap..."
               />
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
-            <FileUpload label="Upload Lampiran (Opsional)" value={lampiran} onChange={setLampiran} />
+            <FileUpload label="Upload Lampiran Aspirasi (Opsional)" value={lampiran} onChange={setLampiran} />
             <p className="text-xs text-[var(--color-text-secondary)]">*Boleh dikosongkan</p>
           </div>
         </Card>
@@ -652,7 +655,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           ) : (
             <span className="flex items-center gap-2">
               <MdSend size={20} />
-              Kirim Aspirasi
+              Kirim Pengaduan Aspirasi
             </span>
           )}
         </Button>
