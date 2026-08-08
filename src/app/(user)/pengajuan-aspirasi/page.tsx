@@ -298,6 +298,19 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
+  const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setKotaId(e.target.value)
+    setKecamatanId('')
+    setKelurahanId('')
+  }
+
+  const handleKecamatanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setKecamatanId(e.target.value)
+    setKelurahanId('')
+  }
+  const [rt, setRt] = useState('')
+  const [rw, setRw] = useState('')
+
   const kotaOptions = [...kotaList]
     .sort((a, b) => {
       if (a.nama === 'Jakarta Selatan') return -1
@@ -356,6 +369,8 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           jenis_reses: jenisReses,
           kota,
           kecamatan,
+          rt: rt,
+          rw: rw,
           kelurahan,
           lokasi: alamat,
           lampiran: lampiran,
@@ -408,18 +423,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       />
     )
   }
-
-  const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setKotaId(e.target.value)
-    setKecamatanId('')
-    setKelurahanId('')
-  }
-
-  const handleKecamatanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setKecamatanId(e.target.value)
-    setKelurahanId('')
-  }
-
   return (
     <div className="mx-auto space-y-6">
       <div className="text-center">
@@ -541,7 +544,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             </div>
             <Input
               id="telepon"
-              label="No. Telepon"
+              label="Nomor Hanphone"
               type="tel"
               value={telepon}
               onChange={(e) => setTelepon(e.target.value)}
@@ -552,7 +555,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             <div>
               <Input
                 id="email"
-                label="Email (Opsional)"
+                label="Email Aktif (Opsional)"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -606,6 +609,24 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               onChange={(e) => setAlamat(e.target.value)}
               placeholder="Masukkan alamat lengkap"
             />
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                id="rt"
+                label="RT"
+                type="number"
+                value={rt}
+                onChange={(e) => setRt(e.target.value)}
+                placeholder="RT"
+              />
+              <Input
+                id="rw"
+                label="RW"
+                type="number"
+                value={rw}
+                onChange={(e) => setRw(e.target.value)}
+                placeholder="RW"
+              />
+            </div>
           </div>
         </Card>
 

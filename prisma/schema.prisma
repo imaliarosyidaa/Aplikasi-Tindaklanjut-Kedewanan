@@ -149,6 +149,8 @@ model Aspirasis {
   kecamatan_id         String?         @db.Uuid
   kelurahan_id         String?         @db.Uuid
   alamat               String?
+  rt                   String?
+  rw                   String?
   user_id              String?         @db.Uuid
   created_at           DateTime        @default(now())
   updated_at           DateTime        @updatedAt

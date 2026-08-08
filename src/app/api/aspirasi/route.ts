@@ -150,6 +150,8 @@ export async function POST(request: Request) {
       kecamatan_id: kecamatanId,
       kelurahan_id: kelurahanId,
       alamat: body.lokasi ?? body.alamat ?? '',
+      rt: body.rt ?? '',
+      rw: body.rw ?? '',
     },
   })
 
