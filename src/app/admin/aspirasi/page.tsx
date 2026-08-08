@@ -13,7 +13,7 @@ import { Link } from '@/routing'
 import { Pagination } from '@/components/ui/pagination'
 import { Card } from '@/components/ui/card'
 import { MdVisibility, MdFilterList, MdEdit, MdDelete, MdSearch } from 'react-icons/md'
-import type { Aspirasi } from '@/types'
+import type { Aspirasi, MasterKecamatan, MasterKelurahan, MasterKota } from '@/types'
 import { useSearchParams } from 'next/navigation'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 
@@ -85,23 +85,30 @@ export default function AspirasiPage(): React.ReactNode {
     return () => clearTimeout(t)
   }, [searchText])
 
-  // Master Data Wilayah (masing-masing independen, tidak saling cascade)
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>('/api/kelurahan', fetcher)
-  const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
-  const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
-  const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
+  const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
+    fetcher,
+  )
+  const { data: kelurahanList = [] } = useSWR<MasterKelurahan[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher,
+  )
+  const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
+  const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
+  const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({
-    value: k.id,
-    label: k.nama,
-  }))
-  const kelurahanOptions = kelurahanList.map((k) => ({
-    value: k.id,
-    label: k.nama,
-  }))
+  const kotaOptions = [...kotaList]
+    .sort((a, b) => {
+      if (a.nama === 'Jakarta Selatan') return -1
+      if (b.nama === 'Jakarta Selatan') return 1
+      return a.nama.localeCompare(b.nama)
+    })
+    .map((k) => ({ value: k.id, label: k.nama }))
+
+  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+
+  const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   // Referensi map wilayah agar tidak perlu dependency di efek auto-apply
   const kotaMapRef = useRef(kotaMap)
@@ -383,8 +390,6 @@ export default function AspirasiPage(): React.ReactNode {
                 value={kelurahanId}
                 onChange={(val) => {
                   setKelurahanId(getSelectValue(val))
-                  setKecamatanId('')
-                  setKotaId('')
                 }}
               />
             </div>

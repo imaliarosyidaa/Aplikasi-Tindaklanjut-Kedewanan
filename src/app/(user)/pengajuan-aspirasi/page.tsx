@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -299,6 +299,17 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
+  // Referensi map wilayah agar tidak perlu dependency di efek auto-apply
+  const kotaMapRef = useRef(kotaMap)
+  const kecamatanMapRef = useRef(kecamatanMap)
+  const kelurahanMapRef = useRef(kelurahanMap)
+
+  useEffect(() => {
+    kotaMapRef.current = kotaMap
+    kecamatanMapRef.current = kecamatanMap
+    kelurahanMapRef.current = kelurahanMap
+  }, [kotaMap, kecamatanMap, kelurahanMap])
+
   const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setKotaId(e.target.value)
     setKecamatanId('')
@@ -313,9 +324,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   }
   const [rt, setRt] = useState('')
   const [rw, setRw] = useState('')
-
-  const [isOpen, setIsOpen] = useState(false)
-  const [search, setSearch] = useState('')
 
   const kotaOptions = [...kotaList]
     .sort((a, b) => {

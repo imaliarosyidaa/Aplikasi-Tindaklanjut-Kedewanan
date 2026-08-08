@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card'
 import { Pagination } from '@/components/ui/pagination'
 import { Link } from '@/routing'
 import { MdVisibility, MdEdit, MdDelete, MdClose } from 'react-icons/md'
-import type { Kegiatan } from '@/types'
+import type { Kegiatan, MasterKecamatan, MasterKelurahan, MasterKota } from '@/types'
 import { useSearchParams } from 'next/navigation'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 
@@ -95,16 +95,29 @@ export default function KunjunganPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   // Master Data Wilayah (masing-masing independen, tidak saling cascade)
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>('/api/kelurahan', fetcher)
+  const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
+  const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
+    fetcher,
+  )
+  const { data: kelurahanList = [] } = useSWR<MasterKelurahan[]>(
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    fetcher,
+  )
+  const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
+  const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
+  const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
-  const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
-  const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
-  const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
+  const kotaOptions = [...kotaList]
+    .sort((a, b) => {
+      if (a.nama === 'Jakarta Selatan') return -1
+      if (b.nama === 'Jakarta Selatan') return 1
+      return a.nama.localeCompare(b.nama)
+    })
+    .map((k) => ({ value: k.id, label: k.nama }))
 
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   // Referensi map wilayah agar tidak perlu dependency di efek auto-apply
@@ -359,8 +372,6 @@ export default function KunjunganPage() {
                 value={kelurahanId}
                 onChange={(val) => {
                   setKelurahanId(getSelectValue(val))
-                  setKecamatanId('')
-                  setKotaId('')
                 }}
               />
             </div>
