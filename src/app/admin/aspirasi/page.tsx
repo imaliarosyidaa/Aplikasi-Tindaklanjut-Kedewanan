@@ -305,6 +305,13 @@ export default function AspirasiPage(): React.ReactNode {
     return ''
   }
 
+  function handleKelurahanChange(value: string) {
+    setKelurahanId(value)
+    if (!kecamatanId) {
+      setKotaId('')
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -388,10 +395,7 @@ export default function AspirasiPage(): React.ReactNode {
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(val) => {
-                  setKelurahanId(getSelectValue(val))
-                  setKotaId('')
-                }}
+                onChange={(val) => handleKelurahanChange(val)}
               />
             </div>
           </div>

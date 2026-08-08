@@ -316,6 +316,12 @@ export default function KunjunganPage() {
     }
     return ''
   }
+  function handleKelurahanChange(value: string) {
+    setKelurahanId(value)
+    if (!kecamatanId) {
+      setKotaId('')
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -370,10 +376,7 @@ export default function KunjunganPage() {
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(val) => {
-                  setKelurahanId(getSelectValue(val))
-                  setKotaId('')
-                }}
+                onChange={(val) => handleKelurahanChange(val)}
               />
             </div>
           </div>
