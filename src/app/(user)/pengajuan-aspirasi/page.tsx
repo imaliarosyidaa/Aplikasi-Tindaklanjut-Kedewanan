@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -329,23 +329,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
 
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
-  const [placeholderJenisUsulan, setPlaceholderJenisUsulan] = useState('')
-
-  useEffect(() => {
-    const placeholder =
-      kategoriUsulan.toLowerCase().trim() === 'pembangunan'
-        ? 'Perbaikan Jalan / Pembuatan Drainase / Dll'
-        : kategoriUsulan.toLowerCase().trim() === 'pendidikan'
-          ? 'KJP / Dll'
-          : kategoriUsulan.toLowerCase().trim() === 'kesehatan'
-            ? 'BPJS / Dll'
-            : kategoriUsulan.toLowerCase().trim() === 'kesejahteraansosial'
-              ? 'Desil / Dll'
-              : 'Pelatihan / Perbaikan Jalan / Pembuatan Drainase / Fasos / Fasum / Dll'
-
-    setPlaceholderJenisUsulan(placeholder)
-  }, [kategoriUsulan])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -515,7 +498,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Kategori Usulan"
                 value={kategoriUsulan}
                 onChange={(e) => setKategoriUsulan(e.target.value)}
-                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesejahteraan Sosial / Pekerjaan  / Dll"
+                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesejahteraan Sosial  / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
@@ -525,7 +508,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Jenis Usulan"
                 value={jenisUsulan}
                 onChange={(e) => setJenisUsulan(e.target.value)}
-                placeholder={placeholderJenisUsulan}
+                placeholder="Pembuatan Drainase / KJP-KJMU / BPJS / Desil / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
