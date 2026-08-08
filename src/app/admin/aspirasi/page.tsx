@@ -87,11 +87,11 @@ export default function AspirasiPage(): React.ReactNode {
 
   const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
+    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
     fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<MasterKelurahan[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
+    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : '/api/kelurahan',
     fetcher,
   )
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
