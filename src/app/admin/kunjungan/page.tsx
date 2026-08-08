@@ -421,7 +421,7 @@ export default function KunjunganPage() {
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Nama Kegiatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tanggal</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Lokasi</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tempat Kegiatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kota/Kabupaten</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>

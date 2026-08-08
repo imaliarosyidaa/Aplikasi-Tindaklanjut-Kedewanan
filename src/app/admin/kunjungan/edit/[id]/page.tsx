@@ -8,11 +8,7 @@ import { FormKunjungan } from '@/components/forms/FormKunjungan'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-export default function EditKegiatanPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default function EditKegiatanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { data: kegiatan, isLoading } = useSWR(`/api/kegiatan/${id}`, fetcher)
 
@@ -27,12 +23,8 @@ export default function EditKegiatanPage({
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Edit Kegiatan
-        </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          {kegiatan?.nama_kegiatan}
-        </p>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">Edit Kegiatan</h1>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">{kegiatan?.nama_kegiatan}</p>
       </div>
 
       {isLoading ? (

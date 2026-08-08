@@ -95,7 +95,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   return NextResponse.json({
     id: updated.id,
     nama_kegiatan: updated.nama_kegiatan,
-    lokasi: updated.tempat ?? '',
+    tempat: updated.tempat ?? '',
     catatan: updated.catatan ?? '',
   })
 }

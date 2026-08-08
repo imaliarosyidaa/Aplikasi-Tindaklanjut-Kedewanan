@@ -51,7 +51,7 @@ export default function DetailKegiatanPage({ params }: DetailKegiatanProps): Rea
     { label: 'Tanggal', value: formatTanggalJam(kegiatan?.tanggal || '') },
     { label: 'Jenis Kegiatan', value: kegiatan?.jenis_kegiatan },
     { label: 'Catatan Kegiatan', value: kegiatan?.catatan },
-    { label: 'Lokasi Kegiatan', value: kegiatan?.lokasi },
+    { label: 'Te Kegiatan', value: kegiatan?.tempat },
     {
       label: 'Link GMaps',
       value: kegiatan?.link_gmaps,
