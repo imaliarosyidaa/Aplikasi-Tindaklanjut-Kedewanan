@@ -272,6 +272,7 @@ export default function RelawanPage(): React.ReactNode {
                 value={kelurahanId}
                 onChange={(val) => {
                   setKelurahanId(getSelectValue(val))
+                  setKotaId('')
                 }}
               />
             </div>

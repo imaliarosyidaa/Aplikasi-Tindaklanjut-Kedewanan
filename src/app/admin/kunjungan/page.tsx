@@ -372,6 +372,7 @@ export default function KunjunganPage() {
                 value={kelurahanId}
                 onChange={(val) => {
                   setKelurahanId(getSelectValue(val))
+                  setKotaId('')
                 }}
               />
             </div>

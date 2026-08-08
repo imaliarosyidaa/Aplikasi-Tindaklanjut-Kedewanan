@@ -390,6 +390,7 @@ export default function AspirasiPage(): React.ReactNode {
                 value={kelurahanId}
                 onChange={(val) => {
                   setKelurahanId(getSelectValue(val))
+                  setKotaId('')
                 }}
               />
             </div>
