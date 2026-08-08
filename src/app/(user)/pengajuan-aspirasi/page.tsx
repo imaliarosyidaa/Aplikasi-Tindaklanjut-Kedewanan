@@ -486,7 +486,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Kategori Usulan"
                 value={kategoriUsulan}
                 onChange={(e) => setKategoriUsulan(e.target.value)}
-                placeholder="Masukkan kategori usulan"
+                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesehjahteraan Sosial / Pekerjaan  / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
@@ -496,7 +496,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Jenis Usulan"
                 value={jenisUsulan}
                 onChange={(e) => setJenisUsulan(e.target.value)}
-                placeholder="Masukkan jenis usulan"
+                placeholder="Pelatihan / Perbaikan Jalan / Pembuatan Drainase / Fasos / Fasum / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
@@ -506,7 +506,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Jenis Reses"
                 value={jenisReses}
                 onChange={(e) => setJenisReses(e.target.value)}
-                placeholder="Masukkan jenis reses"
+                placeholder="Reses I / Reses II / Reses III"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
