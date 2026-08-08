@@ -15,6 +15,7 @@ import { Card } from '@/components/ui/card'
 import { MdVisibility, MdFilterList, MdEdit, MdDelete, MdSearch } from 'react-icons/md'
 import type { Aspirasi } from '@/types'
 import { useSearchParams } from 'next/navigation'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -86,14 +87,8 @@ export default function AspirasiPage(): React.ReactNode {
 
   // Master Data Wilayah (masing-masing independen, tidak saling cascade)
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
-    fetcher,
-  )
-  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
-    kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
-    fetcher,
-  )
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>('/api/kecamatan', fetcher)
+  const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>('/api/kelurahan', fetcher)
   const kotaMap = useMemo(() => Object.fromEntries(kotaList.map((k) => [k.id, k.nama])), [kotaList])
   const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
   const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
@@ -367,7 +362,7 @@ export default function AspirasiPage(): React.ReactNode {
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kecamatan"
                 label="Kecamatan"
                 placeholder="Semua Kecamatan"
@@ -380,7 +375,7 @@ export default function AspirasiPage(): React.ReactNode {
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kelurahan"
                 label="Kelurahan"
                 placeholder="Semua Kelurahan"

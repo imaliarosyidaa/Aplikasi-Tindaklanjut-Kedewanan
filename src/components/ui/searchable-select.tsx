@@ -20,7 +20,7 @@ interface SearchableSelectProps {
   disabled?: boolean
 }
 
-export const SearchableSelect = ({
+export function SearchableSelect({
   id,
   label,
   options,
@@ -29,7 +29,7 @@ export const SearchableSelect = ({
   placeholder,
   className,
   disabled,
-}: SearchableSelectProps): React.ReactNode => {
+}: SearchableSelectProps): React.ReactNode {
   const [open, setOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -52,9 +52,7 @@ export const SearchableSelect = ({
 
   const selected = options.find((opt) => opt.value === value)
   const q = searchTerm.trim().toLowerCase()
-  const visibleOptions = q
-    ? options.filter((opt) => opt.label.toLowerCase().includes(q))
-    : options
+  const visibleOptions = q ? options.filter((opt) => opt.label.toLowerCase().includes(q)) : options
 
   return (
     <div ref={containerRef} className="space-y-1">
@@ -71,24 +69,15 @@ export const SearchableSelect = ({
         onClick={() => setOpen((o) => !o)}
         className={cn(
           'flex w-full items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent',
-          disabled && 'cursor-not-allowed opacity-50',
-          className
+          className,
         )}
       >
-        <span
-          className={cn(
-            'truncate',
-            !selected && 'text-[var(--color-text-secondary)]'
-          )}
-        >
+        <span className={cn('truncate', !selected && 'text-[var(--color-text-secondary)]')}>
           {selected ? selected.label : placeholder || 'Pilih...'}
         </span>
         <MdArrowDropDown
           size={20}
-          className={cn(
-            'shrink-0 text-[var(--color-text-secondary)] transition-transform',
-            open && 'rotate-180'
-          )}
+          className={cn('shrink-0 text-[var(--color-text-secondary)] transition-transform', open && 'rotate-180')}
         />
       </button>
 
@@ -108,9 +97,7 @@ export const SearchableSelect = ({
             </div>
             <ul className="max-h-56 overflow-y-auto p-1">
               {visibleOptions.length === 0 ? (
-                <li className="px-3 py-2 text-sm text-[var(--color-text-secondary)]">
-                  Tidak ada hasil
-                </li>
+                <li className="px-3 py-2 text-sm text-[var(--color-text-secondary)]">Tidak ada hasil</li>
               ) : (
                 visibleOptions.map((opt) => (
                   <li key={opt.value}>
@@ -123,7 +110,7 @@ export const SearchableSelect = ({
                       }}
                       className={cn(
                         'flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-sm hover:bg-[var(--color-bg-secondary)]',
-                        opt.value === value && 'text-[var(--color-primary)]'
+                        opt.value === value && 'text-[var(--color-primary)]',
                       )}
                     >
                       <span className="truncate">{opt.label}</span>

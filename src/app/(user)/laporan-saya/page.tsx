@@ -24,6 +24,7 @@ import {
 import useSWR from 'swr'
 import { getKelurahanByKecamatanId } from '@/utils/masterWilayah'
 import Hero from '@/components/shared/Hero'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -417,28 +418,26 @@ export default function LaporanSayaPage(): React.ReactNode {
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kecamatan"
                 label="Kecamatan"
                 placeholder="Semua Kecamatan"
                 options={kecamatanOptions}
                 value={kecamatanId}
-                onChange={(e) => {
-                  setKecamatanId(e.target.value)
+                onChange={(value) => {
+                  setKecamatanId(value)
                   setKelurahanId('')
                 }}
-                disabled={!kotaId}
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kelurahan"
                 label="Kelurahan"
                 placeholder="Semua Kelurahan"
                 options={kelurahanOptions}
                 value={kelurahanId}
-                onChange={(e) => setKelurahanId(e.target.value)}
-                disabled={!kecamatanId}
+                onChange={(value) => setKelurahanId(value)}
               />
             </div>
           </div>

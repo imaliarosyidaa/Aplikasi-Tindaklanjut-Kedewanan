@@ -22,6 +22,7 @@ import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
 import { ClipboardList, Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
 import { MasterKecamatan, MasterKelurahan, MasterKota } from '../../../types/index'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -303,13 +304,18 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     setKecamatanId('')
     setKelurahanId('')
   }
-
-  const handleKecamatanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setKecamatanId(e.target.value)
+  const handleKecamatanChange = (value: string) => {
+    setKecamatanId(value)
     setKelurahanId('')
+  }
+  const handleKelurahanChange = (value: string) => {
+    setKelurahanId(value)
   }
   const [rt, setRt] = useState('')
   const [rw, setRw] = useState('')
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [search, setSearch] = useState('')
 
   const kotaOptions = [...kotaList]
     .sort((a, b) => {
@@ -318,7 +324,9 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       return a.nama.localeCompare(b.nama)
     })
     .map((k) => ({ value: k.id, label: k.nama }))
+
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -423,6 +431,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       />
     )
   }
+
   return (
     <div className="mx-auto space-y-6">
       <div className="text-center">
@@ -584,7 +593,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               value={kotaId}
               onChange={handleKotaChange}
             />
-            <Select
+            <SearchableSelect
               id="kecamatan"
               label="Kecamatan"
               placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
@@ -593,13 +602,14 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               onChange={handleKecamatanChange}
               disabled={!kotaId}
             />
-            <Select
+
+            <SearchableSelect
               id="kelurahan"
               label="Kelurahan"
               placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
               options={kelurahanOptions}
               value={kelurahanId}
-              onChange={(e) => setKelurahanId(e.target.value)}
+              onChange={handleKelurahanChange}
               disabled={!kecamatanId}
             />
             <Input
@@ -629,13 +639,12 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             </div>
           </div>
         </Card>
-
         <Card>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
               <MdDescription size={20} className="text-blue-600" />
             </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Isi Aspirasi</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text)]">Isi Aspirasi Anda</h2>
           </div>
           <div className="space-y-4">
             <div>
@@ -676,7 +685,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           ) : (
             <span className="flex items-center gap-2">
               <MdSend size={20} />
-              Kirim Pengaduan Aspirasi
+              Kirim Pengaduan Aspirasi Anda
             </span>
           )}
         </Button>

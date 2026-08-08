@@ -24,6 +24,7 @@ import {
   MdDelete,
 } from 'react-icons/md'
 import type { Relawan } from '@/types'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -250,7 +251,7 @@ export default function RelawanPage(): React.ReactNode {
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kecamatan"
                 label="Kecamatan"
                 placeholder="Semua Kecamatan"
@@ -263,7 +264,7 @@ export default function RelawanPage(): React.ReactNode {
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kelurahan"
                 label="Kelurahan"
                 placeholder="Semua Kelurahan"

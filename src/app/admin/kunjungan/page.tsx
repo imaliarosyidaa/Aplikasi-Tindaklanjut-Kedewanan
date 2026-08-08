@@ -12,6 +12,7 @@ import { Link } from '@/routing'
 import { MdVisibility, MdEdit, MdDelete, MdClose } from 'react-icons/md'
 import type { Kegiatan } from '@/types'
 import { useSearchParams } from 'next/navigation'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -337,7 +338,7 @@ export default function KunjunganPage() {
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kecamatan"
                 label="Kecamatan"
                 placeholder="Semua Kecamatan"
@@ -350,7 +351,7 @@ export default function KunjunganPage() {
               />
             </div>
             <div className="min-w-[160px] flex-1">
-              <Select
+              <SearchableSelect
                 id="kelurahan"
                 label="Kelurahan"
                 placeholder="Semua Kelurahan"
