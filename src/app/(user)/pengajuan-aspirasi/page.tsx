@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -329,6 +329,23 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
 
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
+  const [placeholderJenisUsulan, setPlaceholderJenisUsulan] = useState('')
+
+  useEffect(() => {
+    const placeholder =
+      kategoriUsulan.toLowerCase().trim() === 'pembangunan'
+        ? 'Perbaikan Jalan / Pembuatan Drainase / Dll'
+        : kategoriUsulan.toLowerCase().trim() === 'pendidikan'
+          ? 'KJP / Dll'
+          : kategoriUsulan.toLowerCase().trim() === 'kesehatan'
+            ? 'BPJS / Dll'
+            : kategoriUsulan.toLowerCase().trim() === 'kesejahteraansosial'
+              ? 'Desil / Dll'
+              : 'Pelatihan / Perbaikan Jalan / Pembuatan Drainase / Fasos / Fasum / Dll'
+
+    setPlaceholderJenisUsulan(placeholder)
+  }, [kategoriUsulan])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -508,7 +525,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Jenis Usulan"
                 value={jenisUsulan}
                 onChange={(e) => setJenisUsulan(e.target.value)}
-                placeholder="Pelatihan / Perbaikan Jalan / Pembuatan Drainase / Fasos / Fasum / Dll"
+                placeholder={placeholderJenisUsulan}
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>

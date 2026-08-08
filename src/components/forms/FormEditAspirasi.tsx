@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import useSWR from 'swr'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -75,6 +75,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
         ? [aspirasi.lampiran]
         : [],
   )
+  const [placeholderJenisUsulan, setPlaceholderJenisUsulan] = useState('')
 
   // Pilihan user (mengalahkan default saat berubah)
   const [kotaId, setKotaId] = useState('')
@@ -110,12 +111,8 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   )
 
   const finalKotaId = wilayahTouched ? kotaId : kotaId || defaultKotaId
-  const finalKecamatanId = wilayahTouched
-    ? kecamatanId
-    : kecamatanId || defaultKecamatanId
-  const finalKelurahanId = wilayahTouched
-    ? kelurahanId
-    : kelurahanId || defaultKelurahanId
+  const finalKecamatanId = wilayahTouched ? kecamatanId : kecamatanId || defaultKecamatanId
+  const finalKelurahanId = wilayahTouched ? kelurahanId : kelurahanId || defaultKelurahanId
 
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({
@@ -176,6 +173,14 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
       setLoading(false)
     }
   }
+  useEffect(() => {
+    const placeholder =
+      kategoriUsulan.toLowerCase().trim() === 'pendidikan'
+        ? 'KJP / KJMU'
+        : 'Pelatihan / Perbaikan Jalan / Pembuatan Drainase / Fasos / Fasum / Dll'
+
+    setPlaceholderJenisUsulan(placeholder)
+  }, [kategoriUsulan])
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -263,7 +268,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
       <Input
         id="jenis_usulan"
         label="Jenis Usulan"
-        placeholder="Pelatihan / Perbaikan Jalan / Pembuatan Drainase / Fasos / Fasum / Dll"
+        placeholder={placeholderJenisUsulan}
         value={jenisUsulan}
         onChange={(e) => setJenisUsulan(e.target.value)}
       />
