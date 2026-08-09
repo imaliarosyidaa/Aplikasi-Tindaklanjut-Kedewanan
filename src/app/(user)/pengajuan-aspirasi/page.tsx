@@ -113,7 +113,7 @@ function TicketLaporan({
           <tr><td class="label">Kecamatan</td><td class="value">${data.kecamatan}</td></tr>
           <tr><td class="label">Kota</td><td class="value">${data.kota}</td></tr>
           <tr><td class="label">Alamat</td><td class="value">${data.alamat}</td></tr>
-          <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal}</td></tr>
+          <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal} WIB</td></tr>
           <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan}</td></tr>
           ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map((f) => (f.startsWith('data:application/pdf') ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF</span>` : `<img src="${f}" class="lampiran-img" />`)).join('')}</td></tr>` : ''}
         </table>
@@ -176,7 +176,7 @@ function TicketLaporan({
             <div className="flex gap-2">
               <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Nama Pelapor</span>
-              <span className="text-[var(--color-text)]">{data.nama}</span>
+              <span className="text-[var(--color-text)]">{data.nama || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
@@ -186,42 +186,42 @@ function TicketLaporan({
             <div className="flex gap-2">
               <MdEmail size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Email</span>
-              <span className="text-[var(--color-text)]">{data.email}</span>
+              <span className="text-[var(--color-text)]">{data.email || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdPhone size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">No. Telepon</span>
-              <span className="text-[var(--color-text)]">{data.telepon}</span>
+              <span className="text-[var(--color-text)]">{data.telepon || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Kelurahan</span>
-              <span className="text-[var(--color-text)]">{data.kelurahan}</span>
+              <span className="text-[var(--color-text)]">{data.kelurahan || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Kecamatan</span>
-              <span className="text-[var(--color-text)]">{data.kecamatan}</span>
+              <span className="text-[var(--color-text)]">{data.kecamatan || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Kota</span>
-              <span className="text-[var(--color-text)]">{data.kota}</span>
+              <span className="text-[var(--color-text)]">{data.kota || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Alamat</span>
-              <span className="text-[var(--color-text)]">{data.alamat}</span>
+              <span className="text-[var(--color-text)]">{data.alamat || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdSource size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Tanggal</span>
-              <span className="text-[var(--color-text)]">{data.tanggal}</span>
+              <span className="text-[var(--color-text)]">{data.tanggal ? data.tanggal + ' WIB' : '-'}</span>
             </div>
             <div className="flex gap-2 pt-2 border-t border-[var(--color-border)]">
               <MdDescription size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-28 text-[var(--color-text-secondary)]">Pengaduan</span>
-              <span className="text-[var(--color-text)]">{data.pengaduan}</span>
+              <span className="text-[var(--color-text)]">{data.pengaduan || '-'}</span>
             </div>
             {data.lampiran.length > 0 && (
               <div className="flex gap-2 pt-2 border-t border-[var(--color-border)]">
