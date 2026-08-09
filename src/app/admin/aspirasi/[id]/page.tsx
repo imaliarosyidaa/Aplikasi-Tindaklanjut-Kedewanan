@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/routing'
-import { MdArrowBack, MdDescription, MdEdit, MdFlag } from 'react-icons/md'
+import { MdArrowBack, MdCheck, MdContentCopy, MdDescription, MdEdit, MdFlag } from 'react-icons/md'
 import { Aspirasi } from '@/types'
 import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
@@ -50,6 +50,7 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
     : latestTracking
   const activeNote = activeTracking?.catatan || ''
   const activeLampiran: string[] = Array.isArray(activeTracking?.lampiran) ? activeTracking.lampiran : []
+  const [copied, setCopied] = useState(false)
 
   // SINKRONISASI STATE: Isi state lokal dengan status terakhir dari data API
   useEffect(() => {
@@ -80,6 +81,13 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
     })
   }
 
+  const handleCopy = () => {
+    if (!aspirasi?.id_laporan) return
+    navigator.clipboard.writeText(aspirasi.id_laporan)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <div className="space-y-6 text-blue-500">
       <Link href="/admin/aspirasi">
@@ -91,7 +99,32 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
 
       <Card className="flex justify-between p-4">
         <div>
-          <h1 className="text-2xl mb-2 font-bold text-[var(--color-text)]">Laporan {aspirasi?.id_laporan}</h1>
+          <div className="flex mb-2 items-start gap-2">
+            <h1 className="text-2xl mb-2 font-bold text-[var(--color-text)]">Laporan </h1>
+            <div className="w-fit inline-flex items-center gap-1.5 ">
+              <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-2.5 py-1">
+                <span className="font-mono text-base sm:text-lg font-bold text-[var(--color-text)]">
+                  {aspirasi?.id_laporan || '-'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopy}
+                title="Salin ID Laporan"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-[#5cb85c] hover:bg-[#419641] border-2 border-[#419641] text-white transition-all hover:opacity-90 active:scale-95"
+              >
+                {copied ? <MdCheck size={16} /> : <MdContentCopy size={16} />}
+              </button>
+              {copied ? (
+                <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-lg dark:bg-gray-100 dark:text-gray-900 animate-in fade-in slide-in-from-bottom-3 duration-200">
+                  <MdCheck className="text-green-400 dark:text-green-600" size={18} />
+                  <span>ID Laporan berhasil disalin ke papan klip</span>
+                </div>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
           <p className="text-[var(--color-text)] text-sm">Dibuat pada {formatDate(aspirasi?.created_at)} WIB</p>
         </div>
         <div>
@@ -111,25 +144,25 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
                 Informasi Pelapor
               </h3>
               <div className="space-y-3.5 text-sm">
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <span className="text-[var(--color-text-secondary)]">NIK</span>
                   <span className="text-[var(--color-text)] font-semibold">{aspirasi?.nik || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Nama</span>
                   <span className="text-[var(--color-text)] font-semibold">{aspirasi?.pelapor_nama || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Email</span>
                   <span className="text-[var(--color-text)] font-medium truncate max-w-[180px]">
                     {aspirasi?.pelapor_email || '-'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Telepon</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.pelapor_telepon || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Alamat</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.lokasi || '-'}</span>
                 </div>
@@ -144,15 +177,15 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
                 Alamat Usulan
               </h3>
               <div className="space-y-3.5 text-sm">
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Kota / Kab</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.kota || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Kecamatan</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.kecamatan || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Kelurahan</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.kelurahan || '-'}</span>
                 </div>
@@ -382,15 +415,15 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
                 Informasi Tambahan
               </h3>
               <div className="space-y-3.5 text-sm">
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Kategori Usulan</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.kategori_usulan || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Jenis Usulan</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.jenis_usulan || '-'}</span>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-[var(--color-text-secondary)]">Jenis Reses</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.jenis_reses || '-'}</span>
                 </div>

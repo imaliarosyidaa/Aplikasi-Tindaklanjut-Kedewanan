@@ -17,6 +17,8 @@ import {
   MdSource,
   MdError,
   MdEmail,
+  MdCheck,
+  MdContentCopy,
 } from 'react-icons/md'
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
@@ -57,6 +59,14 @@ function TicketLaporan({
   onReset: () => void
 }) {
   const ticketRef = useRef<HTMLDivElement>(null)
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    if (!data?.idLaporan) return
+    navigator.clipboard.writeText(data.idLaporan)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank')
@@ -137,7 +147,29 @@ function TicketLaporan({
 
           <div className="text-center mb-6">
             <p className="text-xs text-[var(--color-text-secondary)]">ID Laporan</p>
-            <p className="text-2xl font-bold font-mono tracking-wider text-[var(--color-text)]">{data.idLaporan}</p>
+            <div className="w-fit mt-2 inline-flex items-center gap-1.5 ">
+              <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-2.5 py-1">
+                <p className="text-2xl font-bold font-mono tracking-wider text-[var(--color-text)]">{data.idLaporan}</p>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  title="Salin ID Laporan"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-[#5cb85c] hover:bg-[#419641] border-2 border-[#419641] text-white transition-all hover:opacity-90 active:scale-95"
+                >
+                  {copied ? <MdCheck size={16} /> : <MdContentCopy size={16} />}
+                </button>
+                {copied ? (
+                  <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-lg dark:bg-gray-100 dark:text-gray-900 animate-in fade-in slide-in-from-bottom-3 duration-200">
+                    <MdCheck className="text-green-400 dark:text-green-600" size={18} />
+                    <span>ID Laporan berhasil disalin ke papan klip</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-3 text-sm">
@@ -357,8 +389,8 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       setError('Lokasi (Kota, Kecamatan, Kelurahan) harus dipilih')
       return
     }
-    if (!pengaduan.trim()) {
-      setError('Isi pengaduan harus diisi')
+    if (!pengaduan.trim() || !lampiran) {
+      setError('Salah satu isi antara pengaduan atau lampiran aspirasi harus diisi')
       return
     }
 
