@@ -195,7 +195,7 @@ enum PosisiRelawan {
 
 model Relawan {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nik            String?        @unique
+  nik            String?      
   nama           String
   no_telepon     String?
   jenis_kelamin  JenisKelamin
