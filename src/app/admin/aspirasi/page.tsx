@@ -480,13 +480,13 @@ export default function AspirasiPage(): React.ReactNode {
           <tbody className="bg-[var(--color-bg)]">
             {isLoading ? (
               <tr>
-                <td colSpan={10} className="px-4 py-8 text-center">
+                <td colSpan={12} className="px-4 py-8 text-center">
                   <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[var(--color-primary)] border-t-transparent" />
                 </td>
               </tr>
             ) : aspirasiList.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
+                <td colSpan={12} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
                   {hasFilter ? 'Tidak ada aspirasi dengan filter tersebut' : 'Belum ada data aspirasi'}
                 </td>
               </tr>
