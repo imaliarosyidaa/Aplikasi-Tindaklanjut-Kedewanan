@@ -157,6 +157,7 @@ export interface Kegiatan {
   jam: string
   tempat: string
   lokasi: string
+  alamat: string
   foto: string | string[]
   jenis_kegiatan: string
   nama_kegiatan: string

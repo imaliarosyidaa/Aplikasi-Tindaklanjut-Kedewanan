@@ -125,6 +125,7 @@ export default function KegiatanBaruPage() {
         link_gmaps: linkGmaps,
         foto: fotoFiles,
         jalan,
+        tempat,
         rt,
         rw,
         alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
@@ -159,26 +160,28 @@ export default function KegiatanBaruPage() {
             Langkah {step + 1} dari {stepLabels.length}
           </p>
         </div>
-        <div className="flex w-full items-center justify-between gap-2 sm:gap-3">
-          {step > 0 ? (
-            <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 sm:flex-initial">
-              <MdArrowBack size={18} className="mr-1 shrink-0" />
-              <span>Sebelumnya</span>
-            </Button>
-          ) : (
-            <div className="hidden sm:block" />
-          )}
+        <div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 w-full items-center justify-between gap-2 sm:gap-3">
+            {step > 0 ? (
+              <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1 sm:flex-initial">
+                <MdArrowBack size={18} className="mr-1 shrink-0" />
+                <span>Sebelumnya</span>
+              </Button>
+            ) : (
+              <div className="hidden sm:block" />
+            )}
 
-          {step < stepLabels.length - 1 ? (
-            <Button onClick={() => setStep(step + 1)} disabled={!canNext()} className="flex-1 sm:flex-initial">
-              <span>Selanjutnya</span>
-              <MdArrowForward size={18} className="ml-1 shrink-0" />
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} disabled={loading} className="flex-1 sm:flex-initial">
-              {loading ? 'Menyimpan...' : 'Simpan'}
-            </Button>
-          )}
+            {step < stepLabels.length - 1 ? (
+              <Button onClick={() => setStep(step + 1)} disabled={!canNext()} className="flex-1 sm:flex-initial">
+                <span>Selanjutnya</span>
+                <MdArrowForward size={18} className="ml-1 shrink-0" />
+              </Button>
+            ) : (
+              <Button onClick={handleSubmit} disabled={loading} className="flex-1 sm:flex-initial">
+                {loading ? 'Menyimpan...' : 'Simpan'}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -507,7 +510,7 @@ export default function KegiatanBaruPage() {
               />
             </div>
           </div>
-          <div className="p-4 space-y-4 col-span-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
+          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 col-span-2 lg:col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)]">
             <div>
               <div className="flex gap-2 mb-6">
                 <MdInfo size={20} className="text-blue-500 flex-shrink-0" />

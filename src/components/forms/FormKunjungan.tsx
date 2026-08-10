@@ -259,33 +259,6 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
         />
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input
-          id="tanggal"
-          label="Tanggal"
-          type="date"
-          value={tanggal}
-          onChange={(e) => setTanggal(e.target.value)}
-          error={errors.tanggal}
-        />
-        <Input
-          id="jam"
-          label="Jam"
-          type="time"
-          value={jam}
-          onChange={(e) => setJam(e.target.value)}
-          error={errors.jam}
-        />
-      </div>
-
-      <Input
-        id="jalan"
-        label="Jalan"
-        placeholder="Masukkan nama jalan"
-        value={jalan}
-        onChange={(e) => setJalan(e.target.value)}
-      />
-
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Select
           id="kota"
@@ -321,6 +294,33 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           value={kelurahanId}
           onChange={(e) => setKelurahanId(e.target.value)}
           error={errors.kelurahan}
+        />
+      </div>
+
+      <Input
+        id="jalan"
+        label="Jalan/Lokasi Detail"
+        placeholder="Masukkan nama jalan"
+        value={jalan}
+        onChange={(e) => setJalan(e.target.value)}
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Input
+          id="tanggal"
+          label="Tanggal"
+          type="date"
+          value={tanggal}
+          onChange={(e) => setTanggal(e.target.value)}
+          error={errors.tanggal}
+        />
+        <Input
+          id="jam"
+          label="Jam"
+          type="time"
+          value={jam}
+          onChange={(e) => setJam(e.target.value)}
+          error={errors.jam}
         />
       </div>
 

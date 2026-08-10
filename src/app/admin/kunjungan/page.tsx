@@ -422,14 +422,16 @@ export default function KunjunganPage() {
                   />
                 </th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Nama Kegiatan</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tanggal</th>
+                <th className="px-4 py-3 w-[25%] text-left font-medium text-[var(--color-text-secondary)]">
+                  Nama Kegiatan
+                </th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tempat Kegiatan</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kota/Kabupaten</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
+                  Jalan/Lokasi Detail
+                </th>
                 <th className="px-4 py-3 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Dibuat Oleh</th>
+                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tanggal Dibuat</th>
               </tr>
             </thead>
             <tbody className="bg-[var(--color-bg)]">
@@ -469,13 +471,10 @@ text-[var(--color-text-secondary)]"
                     <td className="px-4 py-3 font-medium text-[var(--color-text)]">
                       {item.nama_kegiatan || (item as unknown as Record<string, string>).isi || '-'}
                     </td>
-                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                      {formatTanggal(item.tanggal) || '-'}
-                    </td>
                     <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi || '-'}</td>
-                    <td className="px-4 py-3 text-[var(--color-text)]">{item.kota || '-'}</td>
-                    <td className="px-4 py-3 text-[var(--color-text)]">{item.kecamatan || '-'}</td>
-                    <td className="px-4 py-3 text-[var(--color-text)]">{item.kelurahan || '-'}</td>
+                    <td className="px-4 py-3 text-[var(--color-text)]">
+                      {item.alamat || '-'} {item.kelurahan || '-'}, {item.kecamatan || '-'}, {item.kota || '-'}
+                    </td>
                     <td className="px-4 py-3 text-center">
                       <div className="inline-flex items-center gap-2">
                         <Link
@@ -504,6 +503,9 @@ text-[var(--color-text-secondary)]"
                       </div>
                     </td>
                     <td className="px-4 py-3 text-[var(--color-text)]">{item.dibuat_oleh || '-'}</td>
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
+                      {formatTanggal(item.tanggal) || '-'}
+                    </td>
                   </tr>
                 ))
               )}

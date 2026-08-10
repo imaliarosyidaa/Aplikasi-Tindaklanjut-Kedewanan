@@ -53,23 +53,33 @@ export async function POST(request: Request) {
     return kegiatan
   })
 
-  return NextResponse.json({
-    id: result.id,
-    jenis_kegiatan: result.jenis_kegiatan,
-    kunjungan_id: result.kunjungan_id,
-    isi: result.isi ?? '',
-    hari: result.hari ?? '',
-    tanggal: result.tanggal?.toISOString() ?? '',
-    foto: (() => { try { const f = result.foto ?? ''; return f.startsWith('[') ? JSON.parse(f) : f } catch { return result.foto ?? '' } })(),
-    nama_kegiatan: result.nama_kegiatan,
-    link_gmaps: result.link_gmaps ?? '',
-    lokasi: result.tempat ?? '',
-    rt: result.rt ?? '',
-    rw: result.rw ?? '',
-    jumlah_peserta: result.jumlah_peserta ?? 0,
-    catatan: result.catatan ?? '',
-    kelurahan: result.kunjungan.kelurahan.nama,
-    kecamatan: result.kunjungan.kecamatan.nama,
-    kota: result.kunjungan.kota.nama,
-  }, { status: 201 })
+  return NextResponse.json(
+    {
+      id: result.id,
+      jenis_kegiatan: result.jenis_kegiatan,
+      kunjungan_id: result.kunjungan_id,
+      isi: result.isi ?? '',
+      hari: result.hari ?? '',
+      tanggal: result.tanggal?.toISOString() ?? '',
+      foto: (() => {
+        try {
+          const f = result.foto ?? ''
+          return f.startsWith('[') ? JSON.parse(f) : f
+        } catch {
+          return result.foto ?? ''
+        }
+      })(),
+      nama_kegiatan: result.nama_kegiatan,
+      link_gmaps: result.link_gmaps ?? '',
+      lokasi: result.tempat ?? '',
+      rt: result.rt ?? '',
+      rw: result.rw ?? '',
+      jumlah_peserta: result.jumlah_peserta ?? 0,
+      catatan: result.catatan ?? '',
+      kelurahan: result.kunjungan.kelurahan.nama,
+      kecamatan: result.kunjungan.kecamatan.nama,
+      kota: result.kunjungan.kota.nama,
+    },
+    { status: 201 },
+  )
 }

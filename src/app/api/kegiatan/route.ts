@@ -67,9 +67,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (matchSets.length) {
-    const intersection = matchSets.reduce((acc, cur) =>
-      acc.filter((x) => cur.includes(x))
-    )
+    const intersection = matchSets.reduce((acc, cur) => acc.filter((x) => cur.includes(x)))
     kunjunganConstraints.push({ kunjungan_id: { in: intersection } })
   }
 
@@ -125,10 +123,18 @@ export async function GET(request: NextRequest) {
     isi: k.isi ?? '',
     hari: k.hari ?? '',
     tanggal: k.tanggal?.toISOString() ?? '',
-    foto: (() => { try { const f = k.foto ?? ''; return f.startsWith('[') ? JSON.parse(f) : f } catch { return k.foto ?? '' } })(),
+    foto: (() => {
+      try {
+        const f = k.foto ?? ''
+        return f.startsWith('[') ? JSON.parse(f) : f
+      } catch {
+        return k.foto ?? ''
+      }
+    })(),
     nama_kegiatan: k.nama_kegiatan,
     link_gmaps: k.link_gmaps ?? '',
     lokasi: k.tempat ?? '',
+    alamat: k.alamat ?? '',
     rt: k.rt ?? '',
     rw: k.rw ?? '',
     jumlah_peserta: k.jumlah_peserta ?? 0,
@@ -172,23 +178,33 @@ export async function POST(request: Request) {
     },
   })
 
-  return NextResponse.json({
-    id: created.id,
-    jenis_kegiatan: created.jenis_kegiatan,
-    kunjungan_id: created.kunjungan_id,
-    isi: created.isi ?? '',
-    hari: created.hari ?? '',
-    tanggal: created.tanggal?.toISOString() ?? '',
-    foto: (() => { try { const f = created.foto ?? ''; return f.startsWith('[') ? JSON.parse(f) : f } catch { return created.foto ?? '' } })(),
-    nama_kegiatan: created.nama_kegiatan,
-    link_gmaps: created.link_gmaps ?? '',
-    lokasi: created.tempat ?? '',
-    rt: created.rt ?? '',
-    rw: created.rw ?? '',
-    jumlah_peserta: created.jumlah_peserta ?? 0,
-    catatan: created.catatan ?? '',
-    kelurahan: created.kunjungan.kelurahan.nama,
-    kecamatan: created.kunjungan.kecamatan.nama,
-    kota: created.kunjungan.kota.nama,
-  }, { status: 201 })
+  return NextResponse.json(
+    {
+      id: created.id,
+      jenis_kegiatan: created.jenis_kegiatan,
+      kunjungan_id: created.kunjungan_id,
+      isi: created.isi ?? '',
+      hari: created.hari ?? '',
+      tanggal: created.tanggal?.toISOString() ?? '',
+      foto: (() => {
+        try {
+          const f = created.foto ?? ''
+          return f.startsWith('[') ? JSON.parse(f) : f
+        } catch {
+          return created.foto ?? ''
+        }
+      })(),
+      nama_kegiatan: created.nama_kegiatan,
+      link_gmaps: created.link_gmaps ?? '',
+      lokasi: created.tempat ?? '',
+      rt: created.rt ?? '',
+      rw: created.rw ?? '',
+      jumlah_peserta: created.jumlah_peserta ?? 0,
+      catatan: created.catatan ?? '',
+      kelurahan: created.kunjungan.kelurahan.nama,
+      kecamatan: created.kunjungan.kecamatan.nama,
+      kota: created.kunjungan.kota.nama,
+    },
+    { status: 201 },
+  )
 }
