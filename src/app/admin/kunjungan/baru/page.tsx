@@ -306,7 +306,7 @@ export default function KegiatanBaruPage() {
 
               <div className="min-w-[180px] mb-4">
                 <label className="font-medium text-sm">
-                  Kota/Kabupaten <span className="text-red-500">*</span>
+                  Kecamatan <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center gap-3 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3 focus-within:border-[var(--color-primary)] transition-all">
                   <MdLocationPin size={20} className="text-[var(--color-text-secondary)] flex-shrink-0" />
