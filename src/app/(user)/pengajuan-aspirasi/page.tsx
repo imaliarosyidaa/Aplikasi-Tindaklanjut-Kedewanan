@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,11 @@ import {
   MdEmail,
   MdCheck,
   MdContentCopy,
+  MdFeedback,
+  MdClass,
+  MdEventNote,
+  MdCategory,
+  MdBadge,
 } from 'react-icons/md'
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
@@ -38,26 +44,28 @@ const SUMBER_ASPIRASI: { id: string; title: string; desc?: string; icon?: Lucide
   { id: 'LAINYA', title: 'Lainnya', desc: 'Jenis kegiatan di kategori utama', icon: ClipboardList },
 ]
 
-function TicketLaporan({
-  data,
-  onReset,
-}: {
-  data: {
-    idLaporan: string
-    nik: string
-    nama: string
-    email: string
-    kota: string
-    kecamatan: string
-    kelurahan: string
-    alamat: string
-    telepon: string
-    pengaduan: string
-    lampiran: string[]
-    tanggal: string
-  }
-  onReset: () => void
-}) {
+interface TicketData {
+  idLaporan: string
+  nik: string
+  nama: string
+  email: string
+  kota: string
+  kecamatan: string
+  kelurahan: string
+  alamat: string
+  telepon: string
+  pengaduan: string
+  lampiran: string[]
+  tanggal: string
+  sumber: string
+  kategoriUsulan: string
+  jenisReses: string
+  jenisUsulan: string
+  rt: string
+  rw: string
+}
+
+function TicketLaporan({ data, onReset }: { data: TicketData; onReset: () => void }) {
   const ticketRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
 
@@ -114,11 +122,32 @@ function TicketLaporan({
           <tr><td class="label">Kota</td><td class="value">${data.kota}</td></tr>
           <tr><td class="label">Alamat</td><td class="value">${data.alamat}</td></tr>
           <tr><td class="label">Tanggal Dibuat</td><td class="value">${data.tanggal} WIB</td></tr>
-          <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan}</td></tr>
-          ${data.lampiran.length > 0 ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran.map((f) => (f.startsWith('data:application/pdf') ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF</span>` : `<img src="${f}" class="lampiran-img" />`)).join('')}</td></tr>` : ''}
+          <tr><td class="label">Sumber Aspirasi</td><td class="value">${data.sumber || '-'}</td></tr>
+          <tr><td class="label">Kategori Usulan</td><td class="value">${data.kategoriUsulan || '-'}</td></tr>
+          <tr><td class="label">Jenis Reses</td><td class="value">${data.jenisReses || '-'}</td></tr>
+          <tr><td class="label">Jenis Usulan</td><td class="value">${data.jenisUsulan || '-'}</td></tr>
+          <tr><td class="label">Isi Pengaduan</td><td class="value">${data.pengaduan || '-'}</td></tr>
+          ${
+            data.lampiran.length > 0
+              ? `<tr><td class="label">Lampiran</td><td class="value">${data.lampiran
+                  .map((f) =>
+                    f.startsWith('data:application/pdf')
+                      ? `<span style="display:inline-block;padding:4px 12px;font-size:11px;color:#666;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;margin:2px;">PDF</span>`
+                      : `<img src="${f}" class="lampiran-img" />`,
+                  )
+                  .join('')}</td></tr>`
+              : ''
+          }
         </table>
         <div class="footer">
-          Dokumen ini dicetak pada ${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}<br/>
+          Dokumen ini dicetak pada ${new Date().toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}<br/>
           DPRD Kota Administrasi Jakarta Selatan
         </div>
       </body>
@@ -147,11 +176,11 @@ function TicketLaporan({
 
           <div className="text-center mb-6">
             <p className="text-xs text-[var(--color-text-secondary)]">ID Laporan</p>
-            <div className="w-fit mt-2 inline-flex items-center gap-1.5 ">
+            <div className="w-fit mt-2 inline-flex items-center gap-1.5">
               <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-2.5 py-1">
                 <p className="text-2xl font-bold font-mono tracking-wider text-[var(--color-text)]">{data.idLaporan}</p>
               </div>
-              <div>
+              <div className="relative">
                 <button
                   type="button"
                   onClick={handleCopy}
@@ -160,13 +189,11 @@ function TicketLaporan({
                 >
                   {copied ? <MdCheck size={16} /> : <MdContentCopy size={16} />}
                 </button>
-                {copied ? (
+                {copied && (
                   <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-3 text-xs font-medium text-white shadow-lg dark:bg-gray-100 dark:text-gray-900 animate-in fade-in slide-in-from-bottom-3 duration-200">
                     <MdCheck className="text-green-400 dark:text-green-600" size={18} />
                     <span>ID Laporan berhasil disalin ke papan klip</span>
                   </div>
-                ) : (
-                  ''
                 )}
               </div>
             </div>
@@ -175,58 +202,70 @@ function TicketLaporan({
           <div className="space-y-3 text-sm">
             <div className="flex gap-2">
               <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Nama Pelapor</span>
+              <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Nama Lengkap</span>
               <span className="text-[var(--color-text)]">{data.nama || '-'}</span>
             </div>
             <div className="flex gap-2">
-              <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">NIK</span>
+              <MdBadge size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">NIK</span>
               <span className="text-[var(--color-text)]">{data.nik || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdEmail size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Email</span>
+              <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Email Aktif</span>
               <span className="text-[var(--color-text)]">{data.email || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdPhone size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">No. Telepon</span>
+              <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Nomor Handphone / WhatsApp Aktif</span>
               <span className="text-[var(--color-text)]">{data.telepon || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Kelurahan</span>
-              <span className="text-[var(--color-text)]">{data.kelurahan || '-'}</span>
-            </div>
-            <div className="flex gap-2">
-              <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Kecamatan</span>
-              <span className="text-[var(--color-text)]">{data.kecamatan || '-'}</span>
-            </div>
-            <div className="flex gap-2">
-              <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Kota</span>
-              <span className="text-[var(--color-text)]">{data.kota || '-'}</span>
-            </div>
-            <div className="flex gap-2">
-              <MdLocationOn size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Alamat</span>
-              <span className="text-[var(--color-text)]">{data.alamat || '-'}</span>
+              <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Lokasi</span>
+              <span className="text-[var(--color-text)]">
+                {data.alamat || '-'} RT {data.rt} RW {data.rw} , {data.kelurahan || '-'}, {data.kecamatan || '-'},{' '}
+                {data.kota || '-'}
+              </span>
             </div>
             <div className="flex gap-2">
               <MdSource size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Tanggal</span>
+              <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Tanggal</span>
               <span className="text-[var(--color-text)]">{data.tanggal ? data.tanggal + ' WIB' : '-'}</span>
             </div>
-            <div className="flex gap-2 pt-2 border-t border-[var(--color-border)]">
-              <MdDescription size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-              <span className="w-28 text-[var(--color-text-secondary)]">Pengaduan</span>
-              <span className="text-[var(--color-text)]">{data.pengaduan || '-'}</span>
+
+            <div className="pt-2 border-t border-[var(--color-border)] space-y-3">
+              <div className="flex gap-2">
+                <MdSource size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+                <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Sumber Aspirasi</span>
+                <span className="text-[var(--color-text)]">{data.sumber || '-'}</span>
+              </div>
+              <div className="flex gap-2">
+                <MdCategory size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+                <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Kategori Usulan</span>
+                <span className="text-[var(--color-text)]">{data.kategoriUsulan || '-'}</span>
+              </div>
+              <div className="flex gap-2">
+                <MdEventNote size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+                <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Jenis Reses</span>
+                <span className="text-[var(--color-text)]">{data.jenisReses || '-'}</span>
+              </div>
+              <div className="flex gap-2">
+                <MdClass size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+                <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Jenis Usulan</span>
+                <span className="text-[var(--color-text)]">{data.jenisUsulan || '-'}</span>
+              </div>
+              <div className="flex gap-2">
+                <MdFeedback size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+                <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Isi Pengaduan</span>
+                <span className="text-[var(--color-text)]">{data.pengaduan || '-'}</span>
+              </div>
             </div>
+
             {data.lampiran.length > 0 && (
               <div className="flex gap-2 pt-2 border-t border-[var(--color-border)]">
                 <MdDescription size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
-                <span className="w-28 text-[var(--color-text-secondary)]">Lampiran</span>
+                <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Lampiran</span>
                 <div className="flex flex-wrap gap-2">
                   {data.lampiran.map((f, i) =>
                     f.startsWith('data:application/pdf') ? (
@@ -243,7 +282,7 @@ function TicketLaporan({
                         className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
                       >
                         <MdDescription size={14} />
-                        Detail
+                        Detail PDF
                       </button>
                     ) : (
                       <img
@@ -302,20 +341,10 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [kategoriUsulan, setKategoriUsulan] = useState('')
   const [jenisUsulan, setJenisUsulan] = useState('')
   const [jenisReses, setJenisReses] = useState('')
-  const [ticketData, setTicketData] = useState<{
-    idLaporan: string
-    nik: string
-    nama: string
-    email: string
-    kota: string
-    kecamatan: string
-    kelurahan: string
-    alamat: string
-    telepon: string
-    pengaduan: string
-    lampiran: string[]
-    tanggal: string
-  } | null>(null)
+  const [email, setEmail] = useState('')
+  const [rt, setRt] = useState('')
+  const [rw, setRw] = useState('')
+  const [ticketData, setTicketData] = useState<TicketData | null>(null)
 
   const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
@@ -326,21 +355,10 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : null,
     fetcher,
   )
-  const [email, setEmail] = useState('')
+
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
-
-  // Referensi map wilayah agar tidak perlu dependency di efek auto-apply
-  const kotaMapRef = useRef(kotaMap)
-  const kecamatanMapRef = useRef(kecamatanMap)
-  const kelurahanMapRef = useRef(kelurahanMap)
-
-  useEffect(() => {
-    kotaMapRef.current = kotaMap
-    kecamatanMapRef.current = kecamatanMap
-    kelurahanMapRef.current = kelurahanMap
-  }, [kotaMap, kecamatanMap, kelurahanMap])
 
   const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setKotaId(e.target.value)
@@ -354,8 +372,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const handleKelurahanChange = (value: string) => {
     setKelurahanId(value)
   }
-  const [rt, setRt] = useState('')
-  const [rw, setRw] = useState('')
 
   const kotaOptions = [...kotaList]
     .sort((a, b) => {
@@ -366,7 +382,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
     .map((k) => ({ value: k.id, label: k.nama }))
 
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
-
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -389,7 +404,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       setError('Lokasi (Kota, Kecamatan, Kelurahan) harus dipilih')
       return
     }
-    if (!pengaduan.trim() || !lampiran) {
+    if (!pengaduan.trim() && lampiran.length === 0) {
       setError('Salah satu isi antara pengaduan atau lampiran aspirasi harus diisi')
       return
     }
@@ -400,6 +415,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       const kota = kotaMap[kotaId] ?? ''
       const kecamatan = kecamatanMap[kecamatanId] ?? ''
       const kelurahan = kelurahanMap[kelurahanId] ?? ''
+      const finalSumber = sumber === 'LAINYA' ? sumberLainya : sumber
 
       const res = await fetch('/api/aspirasi', {
         method: 'POST',
@@ -407,7 +423,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         body: JSON.stringify({
           id_laporan: idLaporan,
           nik,
-          sumber: sumber === 'LAINYA' ? sumberLainya : sumber,
+          sumber: finalSumber,
           deskripsi: pengaduan,
           pelapor_nama: nama,
           pelapor_email: email,
@@ -417,11 +433,11 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           jenis_reses: jenisReses,
           kota,
           kecamatan,
-          rt: rt,
-          rw: rw,
+          rt,
+          rw,
           kelurahan,
           lokasi: alamat,
-          lampiran: lampiran,
+          lampiran,
         }),
       })
 
@@ -450,6 +466,12 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           hour: '2-digit',
           minute: '2-digit',
         }),
+        sumber: finalSumber,
+        kategoriUsulan,
+        jenisReses,
+        jenisUsulan,
+        rt,
+        rw,
       })
       setSubmitted(true)
     } catch (err) {
@@ -491,6 +513,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             </div>
             <h2 className="text-lg font-semibold text-[var(--color-text)]">Sumber Aspirasi</h2>
           </div>
+
           <div className="grid md:grid-cols-3 gap-4">
             {SUMBER_ASPIRASI.map((item) => {
               const Icon = item.icon as LucideIcon
@@ -519,18 +542,20 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 </button>
               )
             })}
-            {sumber === 'LAINYA' && (
-              <div className="mt-4">
-                <Input
-                  id="jenis-lainnya"
-                  label="Sumber Aspirasi Lainnya"
-                  value={sumberLainya}
-                  onChange={(e) => setSumberLainya(e.target.value)}
-                  placeholder="Masukkan sumber kegiatan"
-                />
-              </div>
-            )}
           </div>
+
+          {sumber === 'LAINYA' && (
+            <div className="mt-4">
+              <Input
+                id="jenis-lainnya"
+                label="Sumber Aspirasi Lainnya"
+                value={sumberLainya}
+                onChange={(e) => setSumberLainya(e.target.value)}
+                placeholder="Masukkan sumber kegiatan"
+              />
+            </div>
+          )}
+
           <div className="mt-6 grid md:grid-cols-2 gap-4">
             <div>
               <Input
@@ -538,7 +563,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 label="Kategori Usulan"
                 value={kategoriUsulan}
                 onChange={(e) => setKategoriUsulan(e.target.value)}
-                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesejahteraan Sosial  / Dll"
+                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesejahteraan Sosial / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
@@ -601,16 +626,14 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               placeholder="08xxxxxxxxxx"
               className="md:col-span-2"
             />
-            <div>
+            <div className="md:col-span-2">
               <Input
                 id="email"
                 label="Email Aktif (Opsional)"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
                 placeholder="***@gmail.com"
-                className="md:col-span-2"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
@@ -642,7 +665,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               onChange={handleKecamatanChange}
               disabled={!kotaId}
             />
-
             <SearchableSelect
               id="kelurahan"
               label="Kelurahan"
@@ -659,7 +681,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               onChange={(e) => setAlamat(e.target.value)}
               placeholder="Masukkan alamat lengkap"
             />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 md:col-span-2">
               <Input
                 id="rt"
                 label="RT"
@@ -679,6 +701,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             </div>
           </div>
         </Card>
+
         <Card>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
