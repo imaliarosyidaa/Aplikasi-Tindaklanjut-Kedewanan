@@ -82,8 +82,13 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   const [linkGmaps, setLinkGmaps] = useState(initialData?.link_gmaps ?? '')
 
   // Kegiatan fields
-  const [jenisKegiatan, setJenisKegiatan] = useState(initialData?.jenis_kegiatan ?? '')
-  const [jenisKegiatanLainnya, setJenisKegiatanLainnya] = useState('')
+  const isKnownType = JENIS_KEGIATAN_OPTIONS.some((opt) => opt.value === initialData?.jenis_kegiatan)
+  const [jenisKegiatan, setJenisKegiatan] = useState(
+    initialData?.jenis_kegiatan ? (isKnownType ? initialData.jenis_kegiatan : 'lainya') : '',
+  )
+  const [jenisKegiatanLainnya, setJenisKegiatanLainnya] = useState(
+    initialData?.jenis_kegiatan && !isKnownType ? initialData.jenis_kegiatan : '',
+  )
   const [namaKegiatan, setNamaKegiatan] = useState(initialData?.nama_kegiatan ?? '')
   const [isi, setIsi] = useState(initialData?.isi ?? '')
   const [tempat, setTempat] = useState(initialData?.tempat ?? '')
@@ -216,6 +221,18 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
       setLoading(false)
     }
   }
+  useEffect(() => {
+    if (initialData?.jenis_kegiatan) {
+      const isKnown = JENIS_KEGIATAN_OPTIONS.some((opt) => opt.value === initialData.jenis_kegiatan)
+      if (isKnown) {
+        setJenisKegiatan(initialData.jenis_kegiatan)
+        setJenisKegiatanLainnya('')
+      } else {
+        setJenisKegiatan('lainya')
+        setJenisKegiatanLainnya(initialData.jenis_kegiatan)
+      }
+    }
+  }, [initialData])
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
