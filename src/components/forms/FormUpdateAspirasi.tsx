@@ -21,10 +21,7 @@ const statusOptions = [
   { value: 'TIDAK_BISA_DITINDAKLANJUTI', label: 'Tidak Bisa Ditindaklanjuti' },
 ]
 
-export const FormUpdateAspirasi = ({
-  aspirasi,
-  onSuccess,
-}: FormUpdateAspirasiProps): React.ReactNode => {
+export const FormUpdateAspirasi = ({ aspirasi, onSuccess }: FormUpdateAspirasiProps): React.ReactNode => {
   const { trigger, isMutating } = useUpdateStatus(aspirasi.id)
 
   const [status, setStatus] = useState<AspirasiStatus>(aspirasi.status)
@@ -51,7 +48,6 @@ export const FormUpdateAspirasi = ({
     <form onSubmit={handleSubmit} className="space-y-6 w-full">
       {/* GRID 2 KOLOM: items-stretch agar tinggi kedua kolom sama persis */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-
         {/* KOLOM KIRI: Select Status & Textarea Catatan (Memanjang Vertikal) */}
         <div className="flex flex-col gap-4 h-full">
           <Select
@@ -63,10 +59,7 @@ export const FormUpdateAspirasi = ({
           />
 
           <div className="flex-1 flex flex-col min-h-0">
-            <label
-              htmlFor="catatan"
-              className="block text-sm font-medium text-[var(--color-text)] mb-1"
-            >
+            <label htmlFor="catatan" className="block text-sm font-medium text-[var(--color-text)] mb-1">
               Catatan Tindak Lanjut
             </label>
             <textarea
@@ -84,7 +77,12 @@ export const FormUpdateAspirasi = ({
           <FileUpload
             label="Bukti Tindak Lanjut"
             value={lampiranFiles}
-            onChange={setLampiranFiles}
+            onChange={(files) => {
+              const stringFiles = files
+                .map((item) => (typeof item === 'string' ? item : item.base64 || ''))
+                .filter(Boolean)
+              setLampiranFiles(stringFiles)
+            }}
           />
         </div>
       </div>

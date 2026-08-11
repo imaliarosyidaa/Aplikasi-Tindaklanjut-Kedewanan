@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import type { Aspirasi, SumberAspirasi } from '@/types'
 import { FileUpload } from '../ui/file-upload'
+import { useRouter } from '@/routing'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -56,6 +57,8 @@ const sumberOptions = [
 ]
 
 export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps): React.ReactNode => {
+  const router = useRouter()
+
   const [loading, setLoading] = useState(false)
   const [nik, setNik] = useState(aspirasi.nik ?? '')
   const [pelaporNama, setPelaporNama] = useState(aspirasi.pelapor_nama)
@@ -166,6 +169,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
       if (!res.ok) throw new Error('Failed')
       alert('Perubahan berhasil disimpan')
       if (onSuccess) onSuccess()
+      router.push('/admin/aspirasi')
     } catch {
       alert('Gagal menyimpan perubahan')
     } finally {
@@ -328,7 +332,10 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
       <FileUpload
         label="Upload Foto / Dokumen Lampiran"
         value={lampiran}
-        onChange={(files) => setLampiran(Array.isArray(files) ? files : [files])}
+        onChange={(files) => {
+          const stringFiles = files.map((item) => (typeof item === 'string' ? item : item.base64 || '')).filter(Boolean)
+          setLampiran(stringFiles)
+        }}
         multiple
       />
 

@@ -18,31 +18,18 @@ interface FileUploadProps {
   maxSizeMB?: number
   acceptedTypes?: string
   value?: (string | FileUploadItem)[]
-  onChange: (files: string[]) => void
+  onChange: (files: (string | FileUploadItem)[]) => void
   className?: string
   multiple?: boolean
 }
 
 const toBase64String = (item: string | FileUploadItem | undefined): string => {
   if (typeof item === 'string') return item
-  if (item && typeof item === 'object' && typeof item.base64 === 'string')
-    return item.base64
+  if (item && typeof item === 'object' && typeof item.base64 === 'string') return item.base64
   return ''
 }
 
-const ALLOWED_EXTENSIONS = [
-  '.pdf',
-  '.doc',
-  '.docx',
-  '.xls',
-  '.xlsx',
-  '.ppt',
-  '.pptx',
-  '.jpg',
-  '.jpeg',
-  '.png',
-  '.webp',
-]
+const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.jpg', '.jpeg', '.png', '.webp']
 
 export const FileUpload = ({
   label,
@@ -67,64 +54,90 @@ export const FileUpload = ({
     })
   }
 
-  // Helper untuk mendapatkan nama file dari Base64 atau URL
-  const getFileName = (
-    item: string | FileUploadItem,
-    index: number
-  ): string => {
+  // Helper untuk mendapatkan nama file asli
+  const getFileName = (item: string | FileUploadItem, index: number): string => {
+    // 1. Jika berbentuk Objek yang punya properti name
+    if (typeof item === 'object' && item?.name) {
+      return item.name
+    }
+
     const fileString = toBase64String(item)
     if (!fileString) return `File ${index + 1}`
 
-    // Jika Base64
-    if (fileString.startsWith('data:')) {
-      const mime = fileString.split(';')[0].split(':')[1] || ''
-      const ext = mime.split('/')[1] || 'file'
-      return `Berkas_${index + 1}.${ext}`
+    // 2. Jika URL biasa (bukan Base64)
+    if (!fileString.startsWith('data:')) {
+      try {
+        const url = new URL(fileString)
+        const fileName = url.pathname.split('/').pop()
+        if (fileName) return decodeURIComponent(fileName)
+      } catch {
+        const cleanUrl = fileString.split('?')[0].split('#')[0]
+        const fileName = cleanUrl.split('/').pop()
+        if (fileName) return decodeURIComponent(fileName)
+      }
     }
 
-    // Jika URL biasa
-    try {
-      const url = new URL(fileString)
-      const fileName = url.pathname.split('/').pop()
-      return fileName ? decodeURIComponent(fileName) : `File ${index + 1}`
-    } catch {
-      const cleanUrl = fileString.split('?')[0].split('#')[0]
-      const fileName = cleanUrl.split('/').pop()
-      return fileName ? decodeURIComponent(fileName) : `File ${index + 1}`
+    // 3. Fallback jika base64 murni tanpa objek metadata
+    const mime = fileString.split(';')[0].split(':')[1] || ''
+    const ext = mime.split('/')[1] || 'file'
+    return `Berkas_${index + 1}.${ext}`
+  }
+
+  // Handler untuk membuka/melihat file di tab baru
+  const handleViewFile = (item: string | FileUploadItem) => {
+    const fileString = toBase64String(item)
+    if (!fileString) return
+
+    if (fileString.startsWith('data:')) {
+      fetch(fileString)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const blobUrl = URL.createObjectURL(blob)
+          window.open(blobUrl, '_blank')
+        })
+        .catch(() => {
+          const win = window.open()
+          if (win) {
+            win.document.write(
+              `<iframe src="${fileString}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`,
+            )
+          }
+        })
+    } else {
+      window.open(fileString, '_blank')
     }
   }
 
   const handleFiles = async (files: FileList) => {
-    const newFileStrings: string[] = []
+    const newItems: FileUploadItem[] = []
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
       const ext = '.' + file.name.split('.').pop()?.toLowerCase()
 
-      if (
-        acceptedTypes
-          ? file.type.startsWith(acceptedTypes.split(',')[0])
-          : !ALLOWED_EXTENSIONS.includes(ext ?? '')
-      ) {
+      if (acceptedTypes ? file.type.startsWith(acceptedTypes.split(',')[0]) : !ALLOWED_EXTENSIONS.includes(ext ?? '')) {
         if (!ALLOWED_EXTENSIONS.includes(ext ?? '')) {
           continue
         }
       }
 
       if (file.size > maxSize) continue
-      if (value.length + newFileStrings.length >= maxFiles) continue
+      if (value.length + newItems.length >= maxFiles) continue
 
       const base64String = await convertToBase64(file)
-      newFileStrings.push(base64String)
+      // SIMPAN NAMA ASLI FILE KE DALAM OBJEK
+      newItems.push({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        base64: base64String,
+      })
     }
 
     if (multiple) {
-      onChange([
-        ...value.map(toBase64String).filter(Boolean),
-        ...newFileStrings,
-      ])
+      onChange([...value, ...newItems])
     } else {
-      onChange(newFileStrings.slice(0, 1))
+      onChange(newItems.slice(0, 1))
     }
   }
 
@@ -154,42 +167,29 @@ export const FileUpload = ({
   }
 
   const removeFile = (index: number) => {
-    onChange(
-      value
-        .map(toBase64String)
-        .filter((s) => s !== '')
-        .filter((_, i) => i !== index)
-    )
+    onChange(value.filter((_, i) => i !== index))
   }
 
   return (
     <div className={cn('flex flex-col h-full w-full gap-2', className)}>
-      <label className="block text-sm font-medium text-[var(--color-text)] shrink-0">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-[var(--color-text)] shrink-0">{label}</label>
 
-      {/* DROPZONE: Mengisi sisa ruang kosong (flex-1) & center alignment */}
+      {/* DROPZONE */}
       <div
         className={cn(
           'flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 text-center transition-colors min-h-[160px]',
           isDragging
             ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
-            : 'border-[var(--color-border)] hover:border-[var(--color-primary)] bg-[var(--color-bg)]'
+            : 'border-[var(--color-border)] hover:border-[var(--color-primary)] bg-[var(--color-bg)]',
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <MdUploadFile
-          size={36}
-          className="mx-auto mb-2 text-[var(--color-text-secondary)]"
-        />
-        <p className="text-sm font-medium text-[var(--color-text)] mb-1">
-          Drag & drop file atau klik untuk pilih
-        </p>
+        <MdUploadFile size={36} className="mx-auto mb-2 text-[var(--color-text-secondary)]" />
+        <p className="text-sm font-medium text-[var(--color-text)] mb-1">Drag & drop file atau klik untuk pilih</p>
         <p className="text-xs text-[var(--color-text-secondary)] mb-3">
-          PDF, Word, Excel, PPT, JPEG, PNG (Maks {maxSizeMB}MB per file, maks{' '}
-          {maxFiles} file)
+          PDF, Word, Excel, PPT, JPEG, PNG (Maks {maxSizeMB}MB per file, maks {maxFiles} file)
         </p>
 
         <input
@@ -206,13 +206,7 @@ export const FileUpload = ({
           variant="outline"
           size="sm"
           className="cursor-pointer"
-          onClick={() =>
-            document
-              .getElementById(
-                `file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`
-              )
-              ?.click()
-          }
+          onClick={() => document.getElementById(`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`)?.click()}
         >
           Pilih File
         </Button>
@@ -221,31 +215,41 @@ export const FileUpload = ({
       {/* DAFTAR FILE TER-UPLOAD */}
       {value.length > 0 && (
         <div className="space-y-2 mt-1 shrink-0 max-h-[140px] overflow-y-auto">
-          {value.map((fileString, index) => (
+          {value.map((fileItem, index) => (
             <div
               key={index}
               className="flex items-center p-3 justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <MdInsertDriveFile
-                  className="text-blue-500 shrink-0"
-                  size={20}
-                />
+                <MdInsertDriveFile className="text-blue-500 shrink-0" size={20} />
                 <div className="truncate">
-                  <p className="text-xs font-medium truncate">
-                    {getFileName(fileString, index)}
-                  </p>
+                  <p className="text-xs font-medium truncate">{getFileName(fileItem, index)}</p>
                 </div>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="cursor-pointer h-7 w-7 p-0"
-                onClick={() => removeFile(index)}
-              >
-                <MdDelete size={16} className="text-red-500" />
-              </Button>
+
+              {/* ACTION BUTTONS (LIHAT & HAPUS) */}
+              <div className="flex items-center gap-1 shrink-0">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  title="Lihat Berkas"
+                  className="h-7 px-3 text-xs font-medium border-blue-200 bg-blue-50/60 text-blue-700 hover:bg-blue-100 hover:border-blue-300 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400 dark:hover:bg-blue-900/60 rounded-md transition-all shadow-xs"
+                  onClick={() => handleViewFile(fileItem)}
+                >
+                  Lihat
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Hapus Berkas"
+                  className="cursor-pointer h-7 w-7 p-0"
+                  onClick={() => removeFile(index)}
+                >
+                  <MdDelete size={16} className="text-red-500 hover:text-red-600" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>

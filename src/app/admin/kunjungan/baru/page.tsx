@@ -278,7 +278,7 @@ export default function KegiatanBaruPage() {
 
       {/* Step 2: Lokasi */}
       {step === 1 && (
-        <div className="bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
+        <div className="min-h-screen rounded-md grid lg:grid-cols-3 grid-cols-2 lg:gap-16 gap-4">
           <div className="col-span-2 mt-[-12px]">
             <h2 className="text-xl font-semibold">Lokasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Tentukan lokasi kegiatan yang dilakukan</p>
@@ -409,7 +409,7 @@ export default function KegiatanBaruPage() {
       {/* Step 3: Detail */}
       {step === 2 && (
         <div className="bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
-          <div className="col-span-2 mt-[-12px]">
+          <div className="col-span-2 mt-[-12px] h-fit">
             <h2 className="text-xl font-semibold">Informasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Lengkapi detail kegiatan.</p>
 
@@ -554,7 +554,16 @@ export default function KegiatanBaruPage() {
             <h2 className="text-xl font-semibold">Dokumentasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Upload dokumentasi kegiatan (opsional).</p>
             <div className="max-w-xl">
-              <FileUpload label="Upload Foto" value={fotoFiles} onChange={setFotoFiles} />
+              <FileUpload
+                label="Upload Foto"
+                value={fotoFiles}
+                onChange={(files) => {
+                  const stringFiles = files
+                    .map((item) => (typeof item === 'string' ? item : item.base64 || ''))
+                    .filter(Boolean)
+                  setFotoFiles(stringFiles)
+                }}
+              />
             </div>
           </div>
           <div className="p-4 space-y-4 col-span-2 lg:col-span-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
