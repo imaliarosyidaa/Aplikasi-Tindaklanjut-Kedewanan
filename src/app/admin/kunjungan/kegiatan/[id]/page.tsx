@@ -56,20 +56,28 @@ export default function DetailKegiatanPage({ params }: DetailKegiatanProps): Rea
 
   const fields = [
     { label: 'Tanggal', value: formatTanggalJam(kegiatan?.tanggal || '', kegiatan?.jam || '') },
-    { label: 'Jenis Kegiatan', value: kegiatan?.jenis_kegiatan },
-    { label: 'Catatan Kegiatan', value: kegiatan?.catatan },
-    { label: 'Te Kegiatan', value: kegiatan?.tempat },
+    { label: 'Jenis Kegiatan', value: kegiatan?.jenis_kegiatan || '-' },
+    { label: 'Catatan Kegiatan', value: kegiatan?.catatan || '-' },
+    { label: 'Kegiatan', value: kegiatan?.tempat || '-' },
     {
       label: 'Link GMaps',
-      value: kegiatan?.link_gmaps,
+      value: kegiatan?.link_gmaps || '-',
       isLink: true,
     },
-    { label: 'Kelurahan', value: kegiatan?.kelurahan ?? '-' },
-    { label: 'Kecamatan', value: kegiatan?.kecamatan ?? '-' },
-    { label: 'Kota/Kabupaten', value: kegiatan?.kota ?? '-' },
-    { label: 'RT', value: kegiatan?.rt },
-    { label: 'RW', value: kegiatan?.rw },
-    { label: 'Jumlah Peserta', value: String(kegiatan?.jumlah_peserta) },
+    {
+      label: 'Alamat',
+      value: (() => {
+        const rtrw = [kegiatan?.rt ? `${kegiatan?.tempat} ${kegiatan?.alamat}` : ''].filter(Boolean).join('/')
+
+        const parts = [rtrw, kegiatan?.kelurahan, kegiatan?.kecamatan, kegiatan?.kota].filter(Boolean)
+
+        return parts.length > 0 ? parts.join(', ') : '-'
+      })(),
+    },
+    {
+      label: 'Jumlah Peserta',
+      value: kegiatan?.jumlah_peserta != null ? String(kegiatan.jumlah_peserta) : '-',
+    },
   ]
 
   return (
@@ -126,7 +134,7 @@ export default function DetailKegiatanPage({ params }: DetailKegiatanProps): Rea
             </div>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdLocationOn size={16} />
-              <span>{kegiatan?.lokasi}</span>
+              <span>{kegiatan?.alamat}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <MdPeople size={16} />
@@ -163,7 +171,7 @@ export default function DetailKegiatanPage({ params }: DetailKegiatanProps): Rea
                       className="block text-xs font-medium text-blue-600 hover:underline cursor-pointer"
                     >
                       <MdImage size={14} className="inline mr-1" />
-                      Lihat Foto {fotoList.length > 1 ? idx + 1 : ''}
+                      Lihat Lampiran {fotoList.length > 1 ? idx + 1 : ''}
                     </button>
                   ))}
                 </div>

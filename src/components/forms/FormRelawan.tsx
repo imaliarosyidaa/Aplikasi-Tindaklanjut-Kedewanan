@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import useSWR from 'swr'
+import { MdClose } from 'react-icons/md'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -106,6 +107,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (wilayahTouched.current) return
@@ -225,6 +227,14 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
     })
 
     router.push('/admin/relawan')
+  }
+
+  const handleRemoveFoto = () => {
+    setFotoBase64('')
+    setFotoName('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   return (
@@ -388,6 +398,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan, format PNG/JPG/JPEG)</span>
         </label>
         <input
+          ref={fileInputRef}
           id="foto"
           type="file"
           accept=".png,.jpg,.jpeg,image/png,image/jpeg"
@@ -396,18 +407,32 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         />
         {fotoBase64 && fotoBase64.startsWith('data:') && (
           <div className="flex justify-center">
-            <img
-              src={fotoBase64}
-              alt="Foto diri"
-              className="w-32 h-32 object-cover rounded-full border-4 border-[var(--color-primary-light)]"
-            />
+            {/* Kontainer Relative untuk posisi tombol absolute */}
+            <div className="relative w-32 h-32">
+              <img
+                src={fotoBase64}
+                alt="Foto diri"
+                className="w-full h-full object-cover rounded-full border-4 border-[var(--color-primary-light)]"
+              />
+              {/* Tombol Hapus */}
+              <button
+                type="button"
+                onClick={handleRemoveFoto}
+                title="Hapus foto"
+                className="absolute top-0 right-0 p-1.5 rounded-full bg-red-600 text-white shadow-md hover:bg-red-700 transition-all hover:scale-105 active:scale-95"
+              >
+                <MdClose size={16} />
+              </button>
+            </div>
           </div>
         )}
+
         {fotoName && (
           <p className="text-xs text-[var(--color-text-secondary)]">
             {fotoBase64.startsWith('data:') ? 'Foto tersimpan' : `Terpilih: ${fotoName}`}
           </p>
         )}
+
         {errors.foto && <p className="text-xs text-[var(--color-danger)]">{errors.foto}</p>}
       </div>
 

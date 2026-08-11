@@ -40,6 +40,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     nama_kegiatan: k.nama_kegiatan,
     link_gmaps: k.link_gmaps ?? '',
     tempat: k.tempat ?? '',
+    alamat: k.alamat ?? '',
     rt: k.rt ?? '',
     rw: k.rw ?? '',
     jumlah_peserta: k.jumlah_peserta ?? 0,

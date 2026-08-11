@@ -1,14 +1,14 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+
+import React, { useState, useEffect, useRef } from 'react'
 import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
+import { MdClose, MdPictureAsPdf, MdDescription, MdSlideshow, MdInsertDriveFile } from 'react-icons/md'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import { Card } from '@/components/ui/card'
 import { useRouter } from '@/routing'
-import { FileUpload } from '../ui/file-upload'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -23,6 +23,11 @@ interface KecamatanItem {
 interface KelurahanItem {
   id: string
   nama: string
+}
+
+interface FileItem {
+  base64: string
+  name: string
 }
 
 interface FormKunjunganInitialData {
@@ -57,6 +62,17 @@ const JENIS_KEGIATAN_OPTIONS = [
   { value: 'lainya', label: 'Lainnya' },
 ]
 
+const ALLOWED_MIME_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+]
+
 export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInitialData }): React.ReactNode => {
   const router = useRouter()
   const { data: session } = useSession()
@@ -75,10 +91,10 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   // Kunjungan fields
   const [tanggal, setTanggal] = useState(toDateInputValue(initialData?.tanggal ?? ''))
   const [jam, setJam] = useState(initialData?.jam ?? '')
-  const [jalan, setJalan] = useState(initialData?.kunjungan.jalan ?? '')
-  const [kotaId, setKotaId] = useState(initialData?.kunjungan.kota_id ?? '')
-  const [kecamatanId, setKecamatanId] = useState(initialData?.kunjungan.kecamatan_id ?? '')
-  const [kelurahanId, setKelurahanId] = useState(initialData?.kunjungan.kelurahan_id ?? '')
+  const [jalan, setJalan] = useState(initialData?.kunjungan?.jalan ?? '')
+  const [kotaId, setKotaId] = useState(initialData?.kunjungan?.kota_id ?? '')
+  const [kecamatanId, setKecamatanId] = useState(initialData?.kunjungan?.kecamatan_id ?? '')
+  const [kelurahanId, setKelurahanId] = useState(initialData?.kunjungan?.kelurahan_id ?? '')
   const [linkGmaps, setLinkGmaps] = useState(initialData?.link_gmaps ?? '')
 
   // Kegiatan fields
@@ -98,22 +114,28 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
     initialData?.jumlah_peserta ? String(initialData.jumlah_peserta) : '',
   )
   const [catatan, setCatatan] = useState(initialData?.catatan ?? '')
-  const [lampiran, setLampiran] = useState<string[]>(() => {
+
+  // Multi-file Lampiran State [{ base64, name }]
+  const [lampiran, setLampiran] = useState<FileItem[]>(() => {
     if (!initialData?.foto) return []
     try {
-      const parsed =
+      let parsed =
         typeof initialData.foto === 'string' && initialData.foto.startsWith('[')
           ? JSON.parse(initialData.foto)
-          : [initialData.foto]
-      return parsed.filter(Boolean)
+          : initialData.foto
+
+      if (!Array.isArray(parsed)) parsed = [parsed]
+
+      return parsed
+        .map((item: any, idx: number) => {
+          if (typeof item === 'string') return { base64: item, name: `Berkas ${idx + 1}` }
+          if (typeof item === 'object' && item !== null) {
+            return { base64: item.url || item.base64 || '', name: item.name || `Berkas ${idx + 1}` }
+          }
+          return null
+        })
+        .filter(Boolean) as FileItem[]
     } catch {
-      const f = initialData.foto
-      if (typeof f === 'string' && f.startsWith('data:')) {
-        return [f]
-      }
-      if (Array.isArray(f)) {
-        return f.filter(Boolean)
-      }
       return []
     }
   })
@@ -137,6 +159,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
@@ -151,6 +174,110 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
     return Object.keys(errs).length === 0
   }
 
+  // Handler Multi-File Upload
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    const selectedFiles = Array.from(files)
+    const newItems: FileItem[] = []
+    let hasError = false
+
+    for (const file of selectedFiles) {
+      if (file.size > 10 * 1024 * 1024) {
+        setErrors((prev) => ({ ...prev, foto: 'Terdapat file yang melebihi 10MB' }))
+        hasError = true
+        break
+      }
+
+      if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+        setErrors((prev) => ({
+          ...prev,
+          foto: 'Format file tidak didukung (Gunakan Gambar, PDF, Word, atau PPT)',
+        }))
+        hasError = true
+        break
+      }
+
+      // Convert file ke Base64
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+      })
+
+      newItems.push({ base64, name: file.name })
+    }
+
+    if (!hasError && newItems.length > 0) {
+      // TAMBAHKAN FILE BARU KE STATE LAMPIRAN SEBELUMNYA (APPEND)
+      setLampiran((prev) => [...prev, ...newItems])
+      setErrors((prev) => {
+        const next = { ...prev }
+        delete next.foto
+        return next
+      })
+    }
+
+    // Reset nilai input file agar dapat memilih file yang sama lagi jika perlu
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  // Handler Hapus File Berdasarkan Index
+  const handleRemoveFoto = (indexToRemove: number) => {
+    setLampiran((prev) => prev.filter((_, idx) => idx !== indexToRemove))
+  }
+
+  // Render Preview Grid Multiple Files
+  const renderPreview = () => {
+    if (lampiran.length === 0) return null
+
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-3">
+        {lampiran.map((item, index) => {
+          const isImage = item.base64?.startsWith('data:image/')
+          const isPdf = item.base64?.startsWith('data:application/pdf') || item.name.endsWith('.pdf')
+          const isWord =
+            item.base64?.includes('wordprocessing') || item.name.endsWith('.doc') || item.name.endsWith('.docx')
+          const isPpt =
+            item.base64?.includes('presentation') || item.name.endsWith('.ppt') || item.name.endsWith('.pptx')
+
+          return (
+            <div key={index} className="relative group">
+              {isImage ? (
+                <div className="w-full h-28 rounded-xl overflow-hidden border-2 border-[var(--color-primary-light)] shadow-sm">
+                  <img src={item.base64} alt={item.name} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-3 h-28 bg-slate-50 dark:bg-slate-800 rounded-xl border-2 border-dashed border-[var(--color-border)] text-center">
+                  {isPdf && <MdPictureAsPdf size={32} className="text-red-500 mb-1" />}
+                  {isWord && <MdDescription size={32} className="text-blue-600 mb-1" />}
+                  {isPpt && <MdSlideshow size={32} className="text-orange-500 mb-1" />}
+                  {!isPdf && !isWord && !isPpt && <MdInsertDriveFile size={32} className="text-slate-500 mb-1" />}
+                  <span className="text-[11px] font-medium max-w-[110px] truncate text-[var(--color-text)]">
+                    {item.name}
+                  </span>
+                </div>
+              )}
+
+              {/* Tombol Hapus per Item */}
+              <button
+                type="button"
+                onClick={() => handleRemoveFoto(index)}
+                title="Hapus berkas ini"
+                className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-red-600 text-white shadow-md hover:bg-red-700 transition-all hover:scale-110 active:scale-95"
+              >
+                <MdClose size={14} />
+              </button>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
@@ -158,6 +285,8 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
     try {
       const jenisKegiatanFinal = jenisKegiatan === 'lainya' ? jenisKegiatanLainnya : jenisKegiatan
+      // Ambil array string Base64 dari state lampiran untuk dikirim ke backend
+      const finalFoto = lampiran.map((item) => item.base64)
 
       if (isEdit && initialData) {
         await fetch(`/api/kegiatan/${initialData.id}`, {
@@ -170,21 +299,11 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             catatan,
             rt,
             rw,
-            jam: jam,
+            jam,
             jumlah_peserta: jumlahPeserta,
             link_gmaps: linkGmaps,
             tanggal,
-            foto:
-              lampiran.length > 0
-                ? lampiran
-                : (() => {
-                    if (!initialData?.foto) return []
-                    const f = initialData.foto
-                    if (typeof f === 'string' && f.startsWith('[')) return JSON.parse(f)
-                    if (typeof f === 'string') return [f]
-                    if (Array.isArray(f)) return f
-                    return []
-                  })(),
+            foto: finalFoto,
           }),
         })
         router.push('/admin/kunjungan')
@@ -208,7 +327,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
             rw,
             jumlah_peserta: jumlahPeserta,
             catatan,
-            foto: lampiran.length > 0 ? lampiran : [],
+            foto: finalFoto,
             dibuat_oleh_id: session?.user?.id,
           }),
         })
@@ -221,6 +340,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
       setLoading(false)
     }
   }
+
   useEffect(() => {
     if (initialData?.jenis_kegiatan) {
       const isKnown = JENIS_KEGIATAN_OPTIONS.some((opt) => opt.value === initialData.jenis_kegiatan)
@@ -294,6 +414,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           value={kelurahanId}
           onChange={(e) => setKelurahanId(e.target.value)}
           error={errors.kelurahan}
+          disabled={!kecamatanId}
         />
       </div>
 
@@ -358,7 +479,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
         onChange={(e) => setLinkGmaps(e.target.value)}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Input id="rt" label="RT" placeholder="001" value={rt} onChange={(e) => setRt(e.target.value)} />
         <Input id="rw" label="RW" placeholder="005" value={rw} onChange={(e) => setRw(e.target.value)} />
         <Input
@@ -384,8 +505,28 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           placeholder="Catatan tambahan..."
         />
       </div>
-      <div>
-        <FileUpload label="Upload Foto" value={lampiran} onChange={setLampiran} />
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-[var(--color-text)]">
+          Upload Lampiran{' '}
+          <span className="text-[var(--color-text-secondary)]">
+            (Bisa pilih multiple; Format: PNG, JPG, PDF, Word, PPT)
+          </span>
+        </label>
+        <input
+          ref={fileInputRef}
+          id="foto"
+          type="file"
+          multiple
+          accept=".png,.jpg,.jpeg,.pdf,.doc,.docx,.ppt,.pptx,image/png,image/jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          onChange={handleFileChange}
+          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] file:mr-3 file:rounded file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-1 file:text-sm file:font-medium file:text-[var(--color-primary)]"
+        />
+
+        {/* Tampilan Grid Multi Preview */}
+        {renderPreview()}
+
+        {errors.foto && <p className="text-xs text-[var(--color-danger)]">{errors.foto}</p>}
       </div>
 
       <div className="flex justify-end gap-3 pt-4">
@@ -393,7 +534,7 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           Batal
         </Button>
         <Button type="submit" disabled={loading}>
-          {isEdit ? 'Update' : 'Simpan'}
+          {loading ? 'Menyimpan...' : isEdit ? 'Update' : 'Simpan'}
         </Button>
       </div>
     </form>
