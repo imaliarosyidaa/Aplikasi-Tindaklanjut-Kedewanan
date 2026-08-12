@@ -1,13 +1,13 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react'
 
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from '@/routing'
 import { useCreateRelawan } from '@/hooks/useRelawan'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import useSWR from 'swr'
-import { MdClose } from 'react-icons/md'
+import { FileUpload } from '../ui/file-upload'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -15,12 +15,10 @@ interface KotaItem {
   id: string
   nama: string
 }
-
 interface KecamatanItem {
   id: string
   nama: string
 }
-
 interface KelurahanItem {
   id: string
   nama: string
@@ -81,13 +79,14 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const [jalan, setJalan] = useState('')
   const [rt, setRt] = useState('')
   const [rw, setRw] = useState('')
-  const [fotoBase64, setFotoBase64] = useState(initialData?.foto ?? '')
-  const [fotoName, setFotoName] = useState(initialData?.foto ? 'foto-existing' : '')
+
+  // FIX 1: State foto di-set sebagai Array String untuk kompatibilitas FileUpload
+  const [fotoFiles, setFotoFiles] = useState<string[]>(initialData?.foto ? [initialData.foto] : [])
+
   const [domisiliSesuaiKtp, setDomisiliSesuaiKtp] = useState(initialData?.domisili_sekarang ? 'Tidak' : 'Ya')
   const [domisiliSekarang, setDomisiliSekarang] = useState(initialData?.domisili_sekarang ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Setelah user mengubah wilayah, hentikan auto-populate dari initialData
   const wilayahTouched = useRef(false)
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
@@ -107,7 +106,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const isInitialized = useRef(false)
 
   useEffect(() => {
     if (wilayahTouched.current) return
@@ -134,7 +133,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
   }, [initialData, kelurahanList])
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && !isInitialized.current) {
       const parsed = parseAlamat(initialData.alamat)
       setJalan(parsed.jalan)
       setRt(parsed.rt)
@@ -144,33 +143,14 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
       setNoTelepon(initialData.no_telepon ?? '')
       setJenisKelamin(initialData.jenis_kelamin ?? '')
       setPosisi(initialData.posisi ?? '')
-      setFotoBase64(initialData.foto ?? '')
-      setFotoName(initialData.foto ? 'foto-existing' : '')
+      setFotoFiles(initialData.foto ? [initialData.foto] : [])
       setDomisiliSesuaiKtp(initialData.domisili_sekarang ? 'Tidak' : 'Ya')
       setDomisiliSekarang(initialData.domisili_sekarang ?? '')
+
+      // Tandai bahwa initialData sudah selesai di-set 1x
+      isInitialized.current = true
     }
   }, [initialData])
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const allowed = ['image/png', 'image/jpeg', 'image/jpg']
-    if (!allowed.includes(file.type)) {
-      setErrors((prev) => ({ ...prev, foto: 'Hanya file PNG/JPG/JPEG' }))
-      return
-    }
-    const reader = new FileReader()
-    reader.onload = () => {
-      setFotoBase64(reader.result as string)
-      setFotoName(file.name)
-      setErrors((prev) => {
-        const next = { ...prev }
-        delete next.foto
-        return next
-      })
-    }
-    reader.readAsDataURL(file)
-  }
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {}
@@ -190,6 +170,10 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
 
     const posisiFinal = posisi === 'LAINNYA' ? posisiLainnya : posisi
 
+    // Jika fotoFiles ada isinya, ambil URL pertama. Jika kosong, kirim null (bukan undefined/string kosong)
+    const finalFoto = fotoFiles.length > 0 ? fotoFiles[0] : null
+
+    console.log(finalFoto)
     if (isEdit && initialData) {
       await fetch(`/api/relawan/${initialData.id}`, {
         method: 'PATCH',
@@ -202,7 +186,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           posisi: posisiFinal,
           alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
           domisili_sekarang: domisiliSekarang,
-          foto: fotoBase64 || undefined,
+          foto: finalFoto, // <-- Kirim URL string atau null
           kota_kabupaten: kotaMap[kotaId],
           kecamatan: kecamatanMap[kecamatanId],
           kelurahan: kelurahanMap[kelurahanId],
@@ -223,18 +207,10 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
       alamat: `${jalan} RT ${rt} RW ${rw}`.trim(),
       domisili_sekarang: domisiliSekarang,
       posisi: posisiFinal as any,
-      foto: fotoBase64 || undefined,
+      foto: finalFoto ?? undefined, // <-- Pastikan SWR/Hook menerima payload foto
     })
 
     router.push('/admin/relawan')
-  }
-
-  const handleRemoveFoto = () => {
-    setFotoBase64('')
-    setFotoName('')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
   }
 
   return (
@@ -243,8 +219,10 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         NIK <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan)</span>
       </label>
       <Input id="nik" value={nik} onChange={(e) => setNik(e.target.value)} error={errors.nik} />
+
       <label className="block text-sm font-medium text-[var(--color-text)]">Nama Lengkap</label>
       <Input id="nama" value={nama} onChange={(e) => setNama(e.target.value)} error={errors.nama} required />
+
       <label className="block text-sm font-medium text-[var(--color-text)]">No. Telepon</label>
       <Input
         id="no_telepon"
@@ -254,6 +232,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         error={errors.noTelepon}
         required
       />
+
       <label className="block text-sm font-medium text-[var(--color-text)]">Jenis Kelamin</label>
       <Select
         id="jenis_kelamin"
@@ -263,6 +242,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         onChange={(e) => setJenisKelamin(e.target.value)}
         error={errors.jenisKelamin}
       />
+
       <label className="block text-sm font-medium text-[var(--color-text)]">Posisi</label>
       <Select
         id="posisi"
@@ -285,6 +265,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           required
         />
       )}
+
       <Select
         id="kota"
         label="Kota/Kabupaten"
@@ -356,6 +337,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
           </label>
         </div>
       </div>
+
       {domisiliSesuaiKtp === 'Tidak' && (
         <Input
           id="domisili_sekarang"
@@ -373,6 +355,7 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         value={jalan}
         onChange={(e) => setJalan(e.target.value)}
       />
+
       <div className="grid grid-cols-2 gap-4">
         <Input
           id="rt"
@@ -392,47 +375,15 @@ export const FormRelawan = ({ initialData }: { initialData?: FormRelawanInitialD
         />
       </div>
 
+      {/* FIX 3: FileUpload dengan State Array fotoFiles */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-[var(--color-text)]">
-          Upload Foto Diri{' '}
-          <span className="text-[var(--color-text-secondary)]">(Boleh dikosongkan, format PNG/JPG/JPEG)</span>
-        </label>
-        <input
-          ref={fileInputRef}
-          id="foto"
-          type="file"
-          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-          onChange={handleFileChange}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] file:mr-3 file:rounded file:border-0 file:bg-[var(--color-primary-light)] file:px-3 file:py-1 file:text-sm file:font-medium file:text-[var(--color-primary)]"
+        <FileUpload
+          label="Upload Foto Diri (Opsional)"
+          value={fotoFiles}
+          onChange={(files) => setFotoFiles(files as string[])}
+          maxFiles={1}
+          acceptedTypes="image/png,image/jpeg,image/jpg,image/webp"
         />
-        {fotoBase64 && fotoBase64.startsWith('data:') && (
-          <div className="flex justify-center">
-            {/* Kontainer Relative untuk posisi tombol absolute */}
-            <div className="relative w-32 h-32">
-              <img
-                src={fotoBase64}
-                alt="Foto diri"
-                className="w-full h-full object-cover rounded-full border-4 border-[var(--color-primary-light)]"
-              />
-              {/* Tombol Hapus */}
-              <button
-                type="button"
-                onClick={handleRemoveFoto}
-                title="Hapus foto"
-                className="absolute top-0 right-0 p-1.5 rounded-full bg-red-600 text-white shadow-md hover:bg-red-700 transition-all hover:scale-105 active:scale-95"
-              >
-                <MdClose size={16} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {fotoName && (
-          <p className="text-xs text-[var(--color-text-secondary)]">
-            {fotoBase64.startsWith('data:') ? 'Foto tersimpan' : `Terpilih: ${fotoName}`}
-          </p>
-        )}
-
         {errors.foto && <p className="text-xs text-[var(--color-danger)]">{errors.foto}</p>}
       </div>
 

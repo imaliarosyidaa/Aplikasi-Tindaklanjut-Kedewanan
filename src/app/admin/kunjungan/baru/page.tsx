@@ -408,7 +408,7 @@ export default function KegiatanBaruPage() {
 
       {/* Step 3: Detail */}
       {step === 2 && (
-        <div className="bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
+        <div className=" min-h-screen rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
           <div className="col-span-2 mt-[-12px] h-fit">
             <h2 className="text-xl font-semibold">Informasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Lengkapi detail kegiatan.</p>
@@ -549,20 +549,15 @@ export default function KegiatanBaruPage() {
 
       {/* Step 4: Upload */}
       {step === 3 && (
-        <div className="bg-white min-h-screen p-12 rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
+        <div className="min-h-screen rounded-md grid lg:grid-cols-3 grid-cols-2 gap-16">
           <div className="col-span-2 mt-[-12px]">
             <h2 className="text-xl font-semibold">Dokumentasi Kegiatan</h2>
             <p className="mb-6 text-slate-500">Upload dokumentasi kegiatan (opsional).</p>
             <div className="max-w-xl">
               <FileUpload
-                label="Upload Foto"
+                label="Upload Lampiran Kegiatan (Opsional)"
                 value={fotoFiles}
-                onChange={(files) => {
-                  const stringFiles = files
-                    .map((item) => (typeof item === 'string' ? item : item.base64 || ''))
-                    .filter(Boolean)
-                  setFotoFiles(stringFiles)
-                }}
+                onChange={(files) => setFotoFiles(files as string[])}
               />
             </div>
           </div>

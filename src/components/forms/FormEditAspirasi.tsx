@@ -330,12 +330,9 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
         onChange={(e) => setAlamat(e.target.value)}
       />
       <FileUpload
-        label="Upload Foto / Dokumen Lampiran"
+        label="Upload Lampiran Aspirasi (Opsional)"
         value={lampiran}
-        onChange={(files) => {
-          const stringFiles = files.map((item) => (typeof item === 'string' ? item : item.base64 || '')).filter(Boolean)
-          setLampiran(stringFiles)
-        }}
+        onChange={(files) => setLampiran(files)}
         multiple
       />
 

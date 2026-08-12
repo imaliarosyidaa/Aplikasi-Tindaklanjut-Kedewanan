@@ -727,12 +727,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             <FileUpload
               label="Upload Lampiran Aspirasi (Opsional)"
               value={lampiran}
-              onChange={(files) => {
-                const stringFiles = files
-                  .map((item) => (typeof item === 'string' ? item : item.base64 || ''))
-                  .filter(Boolean)
-                setLampiran(stringFiles)
-              }}
+              onChange={(files) => setLampiran(files as string[])}
             />
             <p className="text-xs text-[var(--color-text-secondary)]">*Boleh dikosongkan</p>
           </div>

@@ -75,14 +75,9 @@ export const FormUpdateAspirasi = ({ aspirasi, onSuccess }: FormUpdateAspirasiPr
         {/* KOLOM KANAN: Upload Bukti Tindak Lanjut */}
         <div className="flex flex-col h-full">
           <FileUpload
-            label="Bukti Tindak Lanjut"
+            label="Upload Lampiran Aspirasi (Opsional)"
             value={lampiranFiles}
-            onChange={(files) => {
-              const stringFiles = files
-                .map((item) => (typeof item === 'string' ? item : item.base64 || ''))
-                .filter(Boolean)
-              setLampiranFiles(stringFiles)
-            }}
+            onChange={(files) => setLampiranFiles(files as string[])}
           />
         </div>
       </div>

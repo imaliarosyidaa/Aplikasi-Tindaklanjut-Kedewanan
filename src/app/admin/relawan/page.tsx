@@ -377,13 +377,13 @@ export default function RelawanPage(): React.ReactNode {
             <tbody className="bg-[var(--color-bg)]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={10} className="px-4 py-8 text-center">
+                  <td colSpan={11} className="px-4 py-8 text-center">
                     <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-primary)] border-t-transparent" />
                   </td>
                 </tr>
               ) : allRelawans.length === 0 ? (
                 <tr className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50">
-                  <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
+                  <td colSpan={11} className="px-4 py-8 text-center text-[var(--color-text-secondary)]">
                     {hasFilter ? 'Tidak ada relawan dengan filter tersebut' : 'Belum ada data relawan'}
                   </td>
                 </tr>
