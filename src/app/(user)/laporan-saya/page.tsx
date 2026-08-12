@@ -56,7 +56,8 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
   const trackSedang = getLatestTracking(['SEDANG_DITINDAKLANJUTI'])
   const trackSudah = getLatestTracking(['SUDAH_DITINDAKLANJUTI', 'TIDAK_BISA_DITINDAKLANJUTI'])
   const trackSelesai = getLatestTracking(['SELESAI'])
-
+  console.log(trackBelum)
+  console.log(trackSudah)
   // Penentuan tahap aktif/sudah lewat berdasarkan status utama aspirasi
   const isSedangOrBeyond = [
     'SEDANG_DITINDAKLANJUTI',
@@ -79,7 +80,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
         </div>
 
         {/* Detail Informasi Pelapor & Lokasi */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+        <div className="grid grid-cols-1 gap-4 text-xs sm:text-sm">
           {/* Nama Pelapor */}
           <div className="flex items-center gap-2">
             <MdPerson size={18} className="text-[var(--color-text-secondary)] shrink-0" />
@@ -100,12 +101,14 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
           </div>
 
           {/* Alamat (Full Width di HP) */}
-          <div className="flex items-start gap-2 sm:col-span-2">
+          <div className="flex items-start gap-2">
             <MdLocationOn size={18} className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" />
             <div className="flex flex-wrap gap-x-1 text-[var(--color-text)]">
               <span className="text-[var(--color-text-secondary)]">Alamat:</span>
-              <span>{aspirasi.lokasi || '-'},</span>
-              <span>{aspirasi.kelurahan || '-'},</span>
+              <span>{aspirasi.lokasi || '-'}</span>
+              <span>{aspirasi.rt ? `RT ${aspirasi.rt}` : ''}</span>
+              <span>{aspirasi.rw ? `RW ${aspirasi.rw},` : ''}</span>
+              <span>{aspirasi.kelurahan || '-'}</span>
               <span>{aspirasi.kecamatan || '-'},</span>
               <span>{aspirasi.kota || '-'}</span>
             </div>
@@ -148,6 +151,27 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                 })}{' '}
                 WIB
               </p>
+              {aspirasi?.lampiran && aspirasi.lampiran.length > 0 && (
+                <div className="flex flex-col gap-1.5 mt-2">
+                  {aspirasi.lampiran.map((url, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        fetch(url)
+                          .then((r) => r.blob())
+                          .then((blob) => {
+                            window.open(URL.createObjectURL(blob), '_blank')
+                          })
+                      }}
+                      className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300 text-xs font-medium transition-colors cursor-pointer w-fit"
+                    >
+                      <MdDescription size={14} />
+                      Lihat Lampiran Detail
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -393,6 +417,7 @@ export default function LaporanSayaPage(): React.ReactNode {
 
   const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim() || queryId.trim()
 
+  console.log(results)
   return (
     <div>
       <Hero

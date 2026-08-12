@@ -45,6 +45,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     kecamatan: a.kecamatan?.nama ?? '',
     kelurahan: a.kelurahan?.nama ?? '',
     lokasi: a.alamat ?? '',
+    rt: a.rt ?? '',
+    rw: a.rw ?? '',
     trackings: a.trackings.map((t) => ({
       id: t.id,
       aspirasi_id: t.aspirasi_id,
@@ -92,9 +94,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         jenis_usulan: body.jenis_usulan ?? undefined,
         jenis_reses: body.jenis_reses ?? undefined,
         tindak_lanjut: body.tindak_lanjut ?? undefined,
-        tanggal_dibuat: body.tanggal_dibuat
-          ? new Date(body.tanggal_dibuat)
-          : undefined,
+        tanggal_dibuat: body.tanggal_dibuat ? new Date(body.tanggal_dibuat) : undefined,
         alamat: body.alamat ?? undefined,
         kota_id: body.kota_id ?? null,
         kecamatan_id: body.kecamatan_id ?? null,
@@ -132,6 +132,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     kota: updated.kota?.nama ?? '',
     kecamatan: updated.kecamatan?.nama ?? '',
     kelurahan: updated.kelurahan?.nama ?? '',
+    rt: updated.rt,
+    rw: updated.rw,
     lokasi: updated.alamat ?? '',
   })
 }

@@ -53,6 +53,8 @@ export interface Aspirasi {
   kecamatan?: string
   kelurahan?: string
   lokasi?: string
+  rt?: string
+  rw?: string
   trackings?: TrackingAspirasi[]
 }
 

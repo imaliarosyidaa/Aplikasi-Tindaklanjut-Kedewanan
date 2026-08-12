@@ -93,6 +93,8 @@ export async function GET(request: NextRequest) {
     kecamatan: a.kecamatan?.nama ?? '',
     kelurahan: a.kelurahan?.nama ?? '',
     lokasi: a.alamat ?? '',
+    rt: a.rt ?? '',
+    rw: a.rw ?? '',
     trackings: a.trackings.map((t) => ({
       id: t.id,
       aspirasi_id: t.aspirasi_id,
