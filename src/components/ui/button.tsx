@@ -2,19 +2,23 @@
 import React from 'react'
 
 import { cn } from '@/utils/cn'
+import { MdFilter, MdFilter5 } from 'react-icons/md'
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
   size?: 'sm' | 'md' | 'lg'
+  label?: string
 }
 
 export const Button = ({
   className,
   variant = 'primary',
   size = 'md',
+  label = '',
   children,
   ...props
 }: ButtonProps): React.ReactNode => {
-  const base = 'inline-flex cursor-pointer items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
+  const base =
+    'inline-flex cursor-pointer items-center justify-center rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
 
   const variants = {
     primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]',
@@ -31,8 +35,13 @@ export const Button = ({
   }
 
   return (
-    <button className={cn(base, variants[variant], sizes[size], className)} {...props}>
-      {children}
-    </button>
+    <div className="flex flex-col">
+      <label className="block text-sm font-medium text-[var(--color-text)]">{label}</label>
+      <div>
+        <button className={cn(base, variants[variant], sizes[size], className)} {...props}>
+          {children}
+        </button>
+      </div>
+    </div>
   )
 }

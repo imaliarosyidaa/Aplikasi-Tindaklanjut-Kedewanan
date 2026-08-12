@@ -25,6 +25,7 @@ import useSWR from 'swr'
 import { getKelurahanByKecamatanId } from '@/utils/masterWilayah'
 import Hero from '@/components/shared/Hero'
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import FilterLaporan from '@/components/shared/Filter'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -425,87 +426,85 @@ export default function LaporanSayaPage(): React.ReactNode {
         highlight="Status Aspirasi"
         subtitle="Masukkan nomor registrasi atau identitas pelapor untuk melihat perkembangan aspirasi yang telah diajukan."
       />
-      <div className="lg:px-16 p-4 w-full mx-auto bg-white border-purple-200">
-        <div className="space-y-4">
-          <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian Laporan</p>
-          <div className="flex flex-wrap gap-3">
-            <div className="min-w-[140px] flex-1">
-              <Select
-                id="kota"
-                label="Kota/Kabupaten"
-                placeholder="Semua Kota/Kabupaten"
-                options={kotaOptions}
-                value={kotaId}
-                onChange={(e) => {
-                  setKotaId(e.target.value)
-                  setKecamatanId('')
-                  setKelurahanId('')
-                }}
-              />
-            </div>
-            <div className="min-w-[160px] flex-1">
-              <SearchableSelect
-                id="kecamatan"
-                label="Kecamatan"
-                placeholder="Semua Kecamatan"
-                options={kecamatanOptions}
-                value={kecamatanId}
-                onChange={(value) => {
-                  setKecamatanId(value)
-                  setKelurahanId('')
-                }}
-              />
-            </div>
-            <div className="min-w-[160px] flex-1">
-              <SearchableSelect
-                id="kelurahan"
-                label="Kelurahan"
-                placeholder="Semua Kelurahan"
-                options={kelurahanOptions}
-                value={kelurahanId}
-                onChange={(value) => setKelurahanId(value)}
-              />
-            </div>
+      <FilterLaporan searched={searched}>
+        {/* 1. Filter Wilayah */}
+        <div className="flex flex-wrap gap-3">
+          <div className="min-w-[140px] flex-1">
+            <Select
+              id="kota"
+              label="Kota/Kabupaten"
+              placeholder="Semua Kota/Kabupaten"
+              options={kotaOptions}
+              value={kotaId}
+              onChange={(e) => {
+                setKotaId(e.target.value)
+                setKecamatanId('')
+                setKelurahanId('')
+              }}
+            />
           </div>
-          <div className="flex gap-3 items-end">
-            <div className="flex-1">
-              <Input
-                id="query"
-                label="Nama atau No. Telepon"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Contoh: Siti atau 081234567890"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSearch()
-                }}
-              />
-            </div>
+          <div className="min-w-[160px] flex-1">
+            <SearchableSelect
+              id="kecamatan"
+              label="Kecamatan"
+              placeholder="Semua Kecamatan"
+              options={kecamatanOptions}
+              value={kecamatanId}
+              onChange={(value) => {
+                setKecamatanId(value)
+                setKelurahanId('')
+              }}
+            />
           </div>
-          <div className="flex gap-3 items-end">
-            <div className="flex-1">
-              <Input
-                id="queryId"
-                label="ID Laporan"
-                value={queryId}
-                onChange={(e) => setQueryId(e.target.value)}
-                placeholder="Contoh: LAP-A7B3K9X2P1"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSearch()
-                }}
-              />
-            </div>
-            <Button onClick={handleSearch} disabled={!hasFilter}>
-              <MdSearch size={18} className="mr-1" />
-              Cari
-            </Button>
+          <div className="min-w-[160px] flex-1">
+            <SearchableSelect
+              id="kelurahan"
+              label="Kelurahan"
+              placeholder="Semua Kelurahan"
+              options={kelurahanOptions}
+              value={kelurahanId}
+              onChange={(value) => setKelurahanId(value)}
+            />
           </div>
         </div>
-        {!searched && (
-          <div className="lg:h-screen flex items-end justify-center">
-            <img src="/laporan.png" alt="Logo" className="lg:w-2/5 opacity-60 h-auto" />
+
+        {/* 2. Input Query Nama / Telp */}
+        <div className="flex gap-3 items-end">
+          <div className="flex-1">
+            <Input
+              id="query"
+              label="Nama atau No. Telepon"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Contoh: Siti atau 081234567890"
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
           </div>
-        )}
-      </div>
+        </div>
+
+        {/* 3. Input Query ID & Button */}
+        <div className="flex gap-3 items-end">
+          <div className="flex-1">
+            <Input
+              id="queryId"
+              label="ID Laporan"
+              value={queryId}
+              onChange={(e) => setQueryId(e.target.value)}
+              placeholder="Contoh: LAP-A7B3K9X2P1"
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+          </div>
+          <Button onClick={handleSearch} disabled={!hasFilter}>
+            <MdSearch size={18} className="mr-1" />
+            Cari
+          </Button>
+        </div>
+      </FilterLaporan>
+      {!searched && (
+        <div className="lg:h-screen flex items-end justify-center">
+          <img src="/laporan.png" alt="Logo" className="lg:w-2/5 opacity-60 h-auto" />
+        </div>
+      )}
 
       {searched && (
         <div className="space-y-4 px-4 lg:px-16 pt-8 pb-16">

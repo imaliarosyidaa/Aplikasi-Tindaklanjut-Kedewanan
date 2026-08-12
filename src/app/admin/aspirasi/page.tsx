@@ -12,10 +12,27 @@ import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
 import { Link } from '@/routing'
 import { Pagination } from '@/components/ui/pagination'
 import { Card } from '@/components/ui/card'
-import { MdVisibility, MdFilterList, MdEdit, MdDelete, MdSearch } from 'react-icons/md'
+import {
+  MdVisibility,
+  MdFilterList,
+  MdEdit,
+  MdDelete,
+  MdSearch,
+  MdClose,
+  MdRestore,
+  MdRestorePage,
+  MdLockReset,
+  MdRestoreFromTrash,
+} from 'react-icons/md'
 import type { Aspirasi, MasterKecamatan, MasterKelurahan, MasterKota } from '@/types'
 import { useSearchParams } from 'next/navigation'
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import Dialog from '@mui/material/Dialog'
+import Drawer from '@mui/material/Drawer'
+import { BiFilterAlt } from 'react-icons/bi'
+import Box from '@mui/material/Box'
+import { RadioButton } from '@/components/ui/radio-button'
+import { GrPowerReset } from 'react-icons/gr'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -114,6 +131,7 @@ export default function AspirasiPage(): React.ReactNode {
   const kotaMapRef = useRef(kotaMap)
   const kecamatanMapRef = useRef(kecamatanMap)
   const kelurahanMapRef = useRef(kelurahanMap)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     kotaMapRef.current = kotaMap
@@ -324,104 +342,120 @@ export default function AspirasiPage(): React.ReactNode {
       <Card className="p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian</p>
-            {activeFilters.bulan && (
-              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                Filter Bulan: {activeFilters.bulan}
-              </span>
-            )}
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <div className="min-w-[140px] flex-1">
-              <Select
-                id="filter-sumber"
-                label="Sumber"
-                placeholder="Semua Sumber"
-                options={sumberOptions}
-                value={filterSumber ?? ''}
-                onChange={(e) => {
-                  setFilterSumber(e.target.value)
-                }}
-              />
+            <Button onClick={() => setOpen(true)} label="Filter" variant="outline" className="flex gap-2">
+              <BiFilterAlt />
+              Filter Lainya
+            </Button>
+            <div className="flex items-end gap-3">
+              <div className="flex flex-wrap gap-3">
+                <div className="min-w-[160px] flex-1">
+                  <Select
+                    id="filter-status"
+                    label="Status"
+                    placeholder="Semua Status"
+                    options={statusOptions}
+                    value={filterStatus ?? ''}
+                    onChange={(val) => {
+                      const selectedValue = typeof val === 'string' ? val : val?.target?.value
+                      setFilterStatus(selectedValue)
+                    }}
+                  />
+                </div>
+                <div className="min-w-[140px] flex-1">
+                  <Select
+                    id="filter-sumber"
+                    label="Sumber"
+                    placeholder="Semua Sumber"
+                    options={sumberOptions}
+                    value={filterSumber ?? ''}
+                    onChange={(e) => {
+                      setFilterSumber(e.target.value)
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="relative flex items-center">
+                <MdSearch size={20} className="absolute left-3 bottom-2 text-gray-400 pointer-events-none" />
+                <Input
+                  id="search"
+                  value={searchText}
+                  label="Cari Nama, Telepon, atau Wilayah"
+                  onChange={(e) => setSearchText(e.target.value)}
+                  placeholder="Ketik nama, telepon / wilayah..."
+                  className="pl-10"
+                />
+              </div>
             </div>
-            <div className="min-w-[160px] flex-1">
-              <Select
-                id="filter-status"
-                label="Status"
-                placeholder="Semua Status"
-                options={statusOptions}
-                value={filterStatus ?? ''}
-                onChange={(val) => {
-                  const selectedValue = typeof val === 'string' ? val : val?.target?.value
-                  setFilterStatus(selectedValue)
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <div className="min-w-[140px] flex-1">
-              <Select
-                id="kota"
-                label="Kota/Kabupaten"
-                placeholder="Semua Kota/Kabupaten"
-                options={kotaOptions}
-                value={kotaId}
-                onChange={(val) => {
-                  setKotaId(getSelectValue(val))
-                  setKecamatanId('')
-                  setKelurahanId('')
-                }}
-              />
-            </div>
-            <div className="min-w-[160px] flex-1">
-              <SearchableSelect
-                id="kecamatan"
-                label="Kecamatan"
-                placeholder="Semua Kecamatan"
-                options={kecamatanOptions}
-                value={kecamatanId}
-                onChange={(val) => {
-                  setKecamatanId(getSelectValue(val))
-                  setKelurahanId('')
-                }}
-              />
-            </div>
-            <div className="min-w-[160px] flex-1">
-              <SearchableSelect
-                id="kelurahan"
-                label="Kelurahan"
-                placeholder="Semua Kelurahan"
-                options={kelurahanOptions}
-                value={kelurahanId}
-                onChange={(val) => handleKelurahanChange(val)}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <Input
-                id="search"
-                label="Cari Nama, Telepon, atau Wilayah"
-                value={searchText}
-                onChange={(e) => {
-                  setSearchText(e.target.value)
-                }}
-                placeholder="Ketik nama, telepon, ID laporan, atau wilayah..."
-              />
-            </div>
-            {hasFilter && (
-              <Button variant="outline" size="sm" className="mb-0.5" onClick={handleResetFilter}>
-                <MdFilterList size={16} className="mr-1" />
-                Tampilkan Semua
-              </Button>
-            )}
           </div>
         </div>
       </Card>
 
+      <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
+        <Box sx={{ width: 350 }} role="presentation">
+          {/* Header Drawer */}
+          <div className="flex p-4 items-center justify-between pb-3 border-b border-gray-200 dark:border-neutral-800">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Filter Laporan</h3>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              <MdClose size={20} />
+            </button>
+          </div>
+
+          {/* Isian Form Filter */}
+          <div className="flex flex-col">
+            <div className="flex flex-col p-3 gap-4">
+              <div className="w-full">
+                <RadioButton
+                  label="Kota/Kabupaten"
+                  name="status_laporan"
+                  options={kotaOptions}
+                  value={kotaId}
+                  onChange={(val) => {
+                    setKotaId(getSelectValue(val))
+                    setKecamatanId('')
+                    setKelurahanId('')
+                  }}
+                  size="md"
+                />
+              </div>
+
+              <div className="w-full">
+                <SearchableSelect
+                  id="kecamatan"
+                  label="Kecamatan"
+                  placeholder="Semua Kecamatan"
+                  options={kecamatanOptions}
+                  value={kecamatanId}
+                  onChange={(val) => {
+                    setKecamatanId(getSelectValue(val))
+                    setKelurahanId('')
+                  }}
+                />
+              </div>
+
+              <div className="w-full">
+                <SearchableSelect
+                  id="kelurahan"
+                  label="Kelurahan"
+                  placeholder="Semua Kelurahan"
+                  options={kelurahanOptions}
+                  value={kelurahanId}
+                  onChange={(val) => handleKelurahanChange(val)}
+                />
+              </div>
+            </div>
+            <div className="p-3 absolute w-full bottom-0">
+              <Button onClick={() => handleResetFilter()} className="w-full gap-2" variant="primary">
+                <GrPowerReset />
+                Reset
+              </Button>
+            </div>
+          </div>
+        </Box>
+      </Drawer>
       <div className="mb-2 flex items-center justify-end">
         {selectedIds.size > 0 && (
           <Button variant="danger" size="sm" onClick={handleBulkDelete} disabled={deleting}>
