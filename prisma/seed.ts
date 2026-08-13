@@ -100,6 +100,15 @@ async function main() {
   }
 
   // 2. Users
+  const defaultDprd = await prisma.dprd.upsert({
+    where: { name: 'Hj. Yuke Yurike, ST, MM' },
+    update: {},
+    create: {
+      name: 'Hj. Yuke Yurike, ST, MM',
+      description: 'Anggota DPRD Kota Jakarta Selatan - Dapil Jakarta Selatan 2',
+    },
+  })
+
   await prisma.user.createMany({
     data: [
       {
@@ -109,6 +118,7 @@ async function main() {
         password: 'admin123',
         name: 'Admin DPRD Jakarta Selatan',
         role: 'admin',
+        dprd_id: defaultDprd.id,
       },
       {
         id: '85b1bee3-c244-4797-8f71-daf56bf42c98',
@@ -117,6 +127,7 @@ async function main() {
         password: 'superadmin123',
         name: 'Super Admin',
         role: 'admin',
+        dprd_id: defaultDprd.id,
       },
     ],
   })

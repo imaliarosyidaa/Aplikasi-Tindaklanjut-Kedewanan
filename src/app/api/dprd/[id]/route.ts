@@ -43,10 +43,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  const teams = await prisma.team.findMany({ where: { dprd_id: id }, select: { id: true } })
+  const [teams, users] = await Promise.all([
+    prisma.team.findMany({ where: { dprd_id: id }, select: { id: true } }),
+    prisma.user.findMany({ where: { dprd_id: id }, select: { id: true } }),
+  ])
   if (teams.length > 0) {
     return NextResponse.json(
       { error: 'DPRD masih memiliki tim kerja. Hapus tim terlebih dahulu.' },
+      { status: 409 },
+    )
+  }
+  if (users.length > 0) {
+    return NextResponse.json(
+      { error: 'DPRD masih terhubung dengan user. Pindahkan atau hapus user tersebut terlebih dahulu.' },
       { status: 409 },
     )
   }

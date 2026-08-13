@@ -348,7 +348,7 @@ export default function KunjunganPage() {
           <div className="flex items-center justify-between">
             <Button onClick={() => setOpen(true)} label="Filter" variant="outline" className="flex gap-2">
               <BiFilterAlt />
-              Filter Lainya
+              <p className="lg:block hidden">Filter Lainya</p>
             </Button>
             <div className="flex items-end gap-3">
               <div className="relative flex items-center">

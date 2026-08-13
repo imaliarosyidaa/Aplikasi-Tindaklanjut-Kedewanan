@@ -344,11 +344,11 @@ export default function AspirasiPage(): React.ReactNode {
           <div className="flex items-center justify-between">
             <Button onClick={() => setOpen(true)} label="Filter" variant="outline" className="flex gap-2">
               <BiFilterAlt />
-              Filter Lainya
+              <p className="lg:block hidden">Filter Lainya</p>
             </Button>
             <div className="flex items-end gap-3">
               <div className="flex flex-wrap gap-3">
-                <div className="min-w-[160px] flex-1">
+                <div className="min-w-[160px] lg:flex lg:flex-1 hidden">
                   <Select
                     id="filter-status"
                     label="Status"
@@ -361,7 +361,7 @@ export default function AspirasiPage(): React.ReactNode {
                     }}
                   />
                 </div>
-                <div className="min-w-[140px] flex-1">
+                <div className="min-w-[140px] lg:flex lg:flex-1 hidden">
                   <Select
                     id="filter-sumber"
                     label="Sumber"
@@ -444,6 +444,31 @@ export default function AspirasiPage(): React.ReactNode {
                   options={kelurahanOptions}
                   value={kelurahanId}
                   onChange={(val) => handleKelurahanChange(val)}
+                />
+              </div>
+              <div className="min-w-[160px] flex-1 lg:hidden">
+                <Select
+                  id="filter-status"
+                  label="Status"
+                  placeholder="Semua Status"
+                  options={statusOptions}
+                  value={filterStatus ?? ''}
+                  onChange={(val) => {
+                    const selectedValue = typeof val === 'string' ? val : val?.target?.value
+                    setFilterStatus(selectedValue)
+                  }}
+                />
+              </div>
+              <div className="min-w-[140px] flex-1 lg:hidden">
+                <Select
+                  id="filter-sumber"
+                  label="Sumber"
+                  placeholder="Semua Sumber"
+                  options={sumberOptions}
+                  value={filterSumber ?? ''}
+                  onChange={(e) => {
+                    setFilterSumber(e.target.value)
+                  }}
                 />
               </div>
             </div>

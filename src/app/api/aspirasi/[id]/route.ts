@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, teamFilter } from '@/lib/scoping'
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  const a = await prisma.aspirasis.findUnique({
-    where: { id },
+  const scope = await getDataScope()
+  const a = await prisma.aspirasis.findFirst({
+    where: { id, ...teamFilter(scope) },
     include: {
       kota: true,
       kecamatan: true,
@@ -64,6 +66,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const { id } = await params
   const body = await request.json()
 
+  const scope = await getDataScope()
+  const existing = await prisma.aspirasis.findFirst({ where: { id, ...teamFilter(scope) } })
+  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
   if (body.status) {
     await prisma.aspirasis.update({
       where: { id },
@@ -99,6 +105,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         kota_id: body.kota_id ?? null,
         kecamatan_id: body.kecamatan_id ?? null,
         kelurahan_id: body.kelurahan_id ?? null,
+        ...(scope.isGlobal && body.team_id !== undefined
+          ? { team_id: body.team_id || null }
+          : {}),
       },
     })
   }
@@ -140,6 +149,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+
+  const scope = await getDataScope()
+  const existing = await prisma.aspirasis.findFirst({ where: { id, ...teamFilter(scope) } })
+  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
   await prisma.trackingAspirasi.deleteMany({ where: { aspirasi_id: id } })
   await prisma.aspirasis.delete({ where: { id } })
   return NextResponse.json({ success: true })

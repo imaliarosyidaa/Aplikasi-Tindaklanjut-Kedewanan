@@ -16,6 +16,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 
   const dprdRef = body.dprd_id ? await prisma.dprd.findUnique({ where: { id: body.dprd_id } }) : null
+  if (body.dprd_id !== undefined && !body.dprd_id) {
+    return NextResponse.json({ error: 'Linked with DPRD wajib dipilih' }, { status: 400 })
+  }
   if (body.dprd_id && !dprdRef) {
     return NextResponse.json({ error: 'DPRD tidak ditemukan' }, { status: 404 })
   }
@@ -40,7 +43,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       name: body.name !== undefined ? (body.name as string) : existing.name,
       role: body.role ?? existing.role,
       role_id: body.role_id !== undefined ? (body.role_id || null) : existing.role_id,
-      dprd_id: body.dprd_id !== undefined ? (body.dprd_id || null) : existing.dprd_id,
+      dprd_id: body.dprd_id !== undefined ? body.dprd_id : existing.dprd_id,
       userTeams:
         body.teams !== undefined
           ? {
