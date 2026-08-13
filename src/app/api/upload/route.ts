@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import path from 'path'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: Request) {
   try {
@@ -8,25 +7,64 @@ export async function POST(request: Request) {
     const file = formData.get('file') as File | null
 
     if (!file) {
-      return NextResponse.json({ success: false, message: 'File tidak ditemukan' }, { status: 400 })
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'File tidak ditemukan',
+        },
+        { status: 400 },
+      )
     }
 
-    // 1. Ambil bytes & buat buffer
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    // Buat nama file yang aman dan unik
+    const originalName = file.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9._-]/g, '')
 
-    // 2. Buat nama file unik
-    const uniqueFilename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
-    const filePath = path.join(process.cwd(), 'public/uploads', uniqueFilename)
+    const uniqueFilename = `${Date.now()}-${crypto.randomUUID()}-${originalName}`
 
-    // 3. Simpan file fisik ke folder /public/uploads/
-    await writeFile(filePath, buffer)
+    // Path di dalam bucket Supabase
+    const filePath = `uploads/${uniqueFilename}`
 
-    // 4. Return URL Relatif yang nantinya disimpan ke Database
-    const fileUrl = `/uploads/${uniqueFilename}`
+    // Ambil file sebagai ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer()
 
-    return NextResponse.json({ success: true, url: fileUrl })
+    // Upload ke Supabase Storage
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from('aplikasi-tindaklanjut')
+      .upload(filePath, arrayBuffer, {
+        contentType: file.type || 'application/octet-stream',
+        upsert: false,
+      })
+
+    if (uploadError) {
+      console.error('Supabase upload error:', uploadError)
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: uploadError.message,
+        },
+        { status: 500 },
+      )
+    }
+
+    // Ambil URL public
+    const { data: publicUrlData } = supabaseAdmin.storage.from('aplikasi-tindaklanjut').getPublicUrl(filePath)
+
+    return NextResponse.json({
+      success: true,
+      url: publicUrlData.publicUrl,
+      pathname: filePath,
+      filename: file.name,
+    })
   } catch (error) {
-    return NextResponse.json({ success: false, message: 'Gagal mengunggah file' }, { status: 500 })
+    console.error('UPLOAD ERROR:', error)
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Gagal mengunggah file',
+      },
+      { status: 500 },
+    )
   }
 }
