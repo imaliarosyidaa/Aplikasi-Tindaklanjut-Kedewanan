@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, resolveTeamIdForCreate, teamFilter } from '@/lib/scoping'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -12,7 +13,8 @@ export async function GET(request: NextRequest) {
   const kecamatanNama = searchParams.get('kecamatan')
   const kelurahanNama = searchParams.get('kelurahan')
 
-  const where: Record<string, unknown> = {}
+  const scope = await getDataScope()
+  const where: Record<string, unknown> = { ...teamFilter(scope) }
 
   if (kotaNama) {
     const kotas = await prisma.kota.findMany({
@@ -89,6 +91,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   const body = await request.json()
 
+  const scope = await getDataScope()
+
   const [kota, kecamatan, kelurahan] = await Promise.all([
     prisma.kota.findFirstOrThrow({ where: { nama: body.kota_kabupaten } }),
     prisma.kecamatan.findFirstOrThrow({ where: { nama: body.kecamatan } }),
@@ -108,6 +112,7 @@ export async function POST(request: Request) {
       kota_id: kota.id,
       kecamatan_id: kecamatan.id,
       kelurahan_id: kelurahan.id,
+      team_id: resolveTeamIdForCreate(scope, body.team_id ?? null),
     },
     include: {
       kota: true,

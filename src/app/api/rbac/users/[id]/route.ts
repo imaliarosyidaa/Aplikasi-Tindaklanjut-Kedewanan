@@ -15,6 +15,24 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: 'Role tidak ditemukan' }, { status: 404 })
   }
 
+  const dprdRef = body.dprd_id ? await prisma.dprd.findUnique({ where: { id: body.dprd_id } }) : null
+  if (body.dprd_id && !dprdRef) {
+    return NextResponse.json({ error: 'DPRD tidak ditemukan' }, { status: 404 })
+  }
+
+  const teams = Array.isArray(body?.teams)
+    ? (body.teams as { team_id: string; role?: 'KETUA' | 'ANGGOTA' }[])
+    : []
+
+  let validTeamIds: Set<string> = new Set()
+  if (teams.length) {
+    const validTeams = await prisma.team.findMany({
+      where: { id: { in: teams.map((t) => t.team_id) } },
+      select: { id: true },
+    })
+    validTeamIds = new Set(validTeams.map((t) => t.id))
+  }
+
   const updated = await prisma.user.update({
     where: { id },
     data: {
@@ -22,8 +40,22 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       name: body.name !== undefined ? (body.name as string) : existing.name,
       role: body.role ?? existing.role,
       role_id: body.role_id !== undefined ? (body.role_id || null) : existing.role_id,
+      dprd_id: body.dprd_id !== undefined ? (body.dprd_id || null) : existing.dprd_id,
+      userTeams:
+        body.teams !== undefined
+          ? {
+              deleteMany: {},
+              create: teams
+                .filter((t) => validTeamIds.has(t.team_id))
+                .map((t) => ({ team_id: t.team_id, role: t.role ?? 'ANGGOTA' })),
+            }
+          : undefined,
     },
-    include: { roleRef: true },
+    include: {
+      roleRef: true,
+      dprd: { select: { name: true } },
+      userTeams: { include: { team: { select: { name: true } } } },
+    },
   })
 
   return NextResponse.json({
@@ -34,6 +66,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     role: updated.role,
     role_id: updated.role_id ?? '',
     role_name: updated.roleRef?.name ?? '',
+    dprd_id: updated.dprd_id ?? '',
+    dprd_name: updated.dprd?.name ?? '',
+    teams: updated.userTeams.map((t) => ({
+      team_id: t.team_id,
+      team_name: t.team.name,
+      role: t.role,
+    })),
     created_at: updated.createdAt.toISOString(),
   })
 }

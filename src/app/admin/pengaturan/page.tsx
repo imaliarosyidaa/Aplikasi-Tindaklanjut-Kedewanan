@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
+import { DprdManager } from '@/components/dprd/DprdManager'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,6 +18,7 @@ import {
   MdMenuBook,
   MdPerson,
   MdGroup,
+  MdAccountBalance,
   MdVisibilityOff,
   MdVisibility,
 } from 'react-icons/md'
@@ -47,10 +49,21 @@ interface User {
   role: string
   role_id: string
   role_name: string
+  dprd_id: string
+  dprd_name: string
+  teams: { team_id: string; team_name: string; role: string }[]
   created_at: string
 }
 
-type Tab = 'rbac' | 'users'
+interface TeamOption {
+  id: string
+  dprd_id: string
+  name: string
+}
+
+type TeamRole = 'KETUA' | 'ANGGOTA'
+
+type Tab = 'rbac' | 'users' | 'dprd'
 
 export default function PengaturanPage() {
   const [tab, setTab] = useState<Tab>('rbac')
@@ -58,6 +71,7 @@ export default function PengaturanPage() {
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'rbac', label: 'RBAC', icon: <MdSecurity size={18} /> },
     { key: 'users', label: 'Manajemen User', icon: <MdGroup size={18} /> },
+    { key: 'dprd', label: 'Master Data DPRD', icon: <MdAccountBalance size={18} /> },
   ]
 
   return (
@@ -88,6 +102,7 @@ export default function PengaturanPage() {
 
       {tab === 'rbac' && <RbacTab />}
       {tab === 'users' && <UsersTab />}
+      {tab === 'dprd' && <DprdManager />}
     </div>
   )
 }
@@ -386,13 +401,15 @@ function RbacTab() {
 }
 
 function UsersTab() {
-  const { data, isLoading, mutate } = useSWR<{ roles: { id: string; name: string }[]; users: User[] }>(
-    '/api/rbac/users',
-    fetcher
-  )
+  const { data, isLoading, mutate } = useSWR<
+    { roles: { id: string; name: string }[]; users: User[]; dprds: { id: string; name: string }[] }
+  >('/api/rbac/users', fetcher)
+  const { data: teamsData } = useSWR<{ teams: TeamOption[] }>('/api/teams', fetcher)
   const [showPassword, setShowPassword] = useState(false)
   const roles = data?.roles ?? []
   const users = data?.users ?? []
+  const dprds = data?.dprds ?? []
+  const teams = teamsData?.teams ?? []
 
   const [showAdd, setShowAdd] = useState(false)
   const [editing, setEditing] = useState<User | null>(null)
@@ -402,7 +419,9 @@ function UsersTab() {
     password: '',
     name: '',
     role_id: '',
+    dprd_id: '',
   })
+  const [teamSelections, setTeamSelections] = useState<Record<string, TeamRole>>({})
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -413,7 +432,9 @@ function UsersTab() {
       password: '',
       name: '',
       role_id: '',
+      dprd_id: '',
     })
+    setTeamSelections({})
     setError('')
     setShowAdd(true)
   }
@@ -426,9 +447,20 @@ function UsersTab() {
       password: '',
       name: u.name,
       role_id: u.role_id,
+      dprd_id: u.dprd_id,
     })
+    setTeamSelections(
+      u.teams.reduce<Record<string, TeamRole>>((acc, t) => {
+        acc[t.team_id] = (t.role as TeamRole) || 'ANGGOTA'
+        return acc
+      }, {}),
+    )
     setError('')
   }
+
+  const availableTeams = dprds.some((d) => d.id === form.dprd_id)
+    ? teams.filter((t) => t.dprd_id === form.dprd_id)
+    : []
 
   const handleSave = async () => {
     if (!form.username.trim() || !form.name.trim() || (!editing && !form.password)) {
@@ -439,12 +471,14 @@ function UsersTab() {
     setError('')
     try {
       const isEdit = !!editing
-      const payload: Record<string, string> = {
+      const payload: Record<string, unknown> = {
         username: form.username,
         email: form.email,
         name: form.name,
         role_id: form.role_id,
-        role: 'admin'
+        role: 'admin',
+        dprd_id: form.dprd_id,
+        teams: Object.entries(teamSelections).map(([team_id, role]) => ({ team_id, role })),
       }
       if (form.password) payload.password = form.password
 
@@ -537,6 +571,17 @@ function UsersTab() {
               {u.email && (
                 <p className="text-xs text-[var(--color-text-secondary)]">{u.email}</p>
               )}
+              {u.dprd_name && <Badge variant="info">DPRD: {u.dprd_name}</Badge>}
+              {u.teams.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {u.teams.map((t) => (
+                    <Badge key={t.team_id} variant="default">
+                      {t.team_name}
+                      {t.role ? ` (${t.role})` : ''}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -614,7 +659,75 @@ function UsersTab() {
                 value={form.role_id}
                 onChange={(e) => setForm({ ...form, role_id: e.target.value })}
               />
+              <Select
+                id="user-dprd"
+                label="Linked with DPRD"
+                placeholder="Pilih DPRD (opsional)"
+                options={dprds.map((d) => ({ value: d.id, label: d.name }))}
+                value={form.dprd_id}
+                onChange={(e) => {
+                  setForm({ ...form, dprd_id: e.target.value })
+                  setTeamSelections({})
+                }}
+              />
             </div>
+
+            {form.dprd_id && (
+              <div>
+                <p className="text-sm font-medium text-[var(--color-text)] mb-2">
+                  Tim Kerja
+                </p>
+                {availableTeams.length === 0 ? (
+                  <p className="text-xs text-[var(--color-text-secondary)]">
+                    Belum ada tim kerja untuk DPRD ini.
+                  </p>
+                ) : (
+                  <div className="max-h-48 overflow-y-auto rounded-lg border border-[var(--color-border)] divide-y divide-[var(--color-border)]">
+                    {availableTeams.map((t) => {
+                      const checked = teamSelections[t.id] !== undefined
+                      return (
+                        <div
+                          key={t.id}
+                          className="flex items-center justify-between gap-2 p-3"
+                        >
+                          <label className="flex items-center gap-2 cursor-pointer text-sm text-[var(--color-text)]">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() =>
+                                setTeamSelections((prev) => {
+                                  const next = { ...prev }
+                                  if (checked) delete next[t.id]
+                                  else next[t.id] = 'ANGGOTA'
+                                  return next
+                                })
+                              }
+                              className="cursor-pointer"
+                            />
+                            {t.name}
+                          </label>
+                          {checked && (
+                            <select
+                              value={teamSelections[t.id]}
+                              onChange={(e) =>
+                                setTeamSelections((prev) => ({
+                                  ...prev,
+                                  [t.id]: e.target.value as TeamRole,
+                                }))
+                              }
+                              className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-2 py-1 text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] cursor-pointer"
+                            >
+                              <option value="ANGGOTA">Anggota</option>
+                              <option value="KETUA">Ketua</option>
+                            </select>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
 

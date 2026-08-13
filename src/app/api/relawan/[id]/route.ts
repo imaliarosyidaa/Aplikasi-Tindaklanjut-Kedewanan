@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, teamFilter } from '@/lib/scoping'
+
+async function findRelawanOrScoped(id: string) {
+  const scope = await getDataScope()
+  const where: Record<string, unknown> = { id, ...teamFilter(scope) }
+  const r = await prisma.relawan.findFirst({
+    where,
+    include: { kota: true, kecamatan: true, kelurahan: true },
+  })
+  return { scope, relawan: r }
+}
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
-  const r = await prisma.relawan.findUnique({
-    where: { id },
-    include: { kota: true, kecamatan: true, kelurahan: true },
-  })
+  const { relawan: r } = await findRelawanOrScoped(id)
   if (!r) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json({
     id: r.id,
@@ -24,14 +32,18 @@ export async function GET(
     kota_kabupaten: r.kota.nama,
     kecamatan: r.kecamatan.nama,
     kelurahan: r.kelurahan.nama,
+    team_id: r.team_id ?? '',
   })
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  const { scope, relawan: existing } = await findRelawanOrScoped(id)
+  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
   const body = await request.json()
 
   const updateData: Record<string, unknown> = {}
@@ -43,6 +55,10 @@ export async function PATCH(
   if (body.alamat !== undefined) updateData.alamat = body.alamat
   if (body.domisili_sekarang !== undefined) updateData.domisili_sekarang = body.domisili_sekarang
   if (body.foto !== undefined) updateData.foto = body.foto || null
+
+  if (body.team_id !== undefined && scope.isGlobal) {
+    updateData.team_id = body.team_id || null
+  }
 
   if (body.kota_kabupaten || body.kecamatan || body.kelurahan) {
     if (body.kota_kabupaten) {
@@ -69,14 +85,18 @@ export async function PATCH(
     id: updated.id,
     nama: updated.nama,
     nik: updated.nik ?? '',
+    team_id: updated.team_id ?? '',
   })
 }
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  const { relawan: existing } = await findRelawanOrScoped(id)
+  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
   await prisma.relawan.delete({ where: { id } })
   return NextResponse.json({ success: true })
 }

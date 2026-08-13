@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, teamFilter } from '@/lib/scoping'
 
 export async function GET() {
+  const scope = await getDataScope()
+  const scopedWhere = teamFilter(scope)
+
   const [
-    total_kunjungan,
     total_kegiatan,
     total_aspirasi,
     kunjungan_all,
@@ -14,13 +17,17 @@ export async function GET() {
     statusGroup,
     sumberGroup,
   ] = await Promise.all([
-    prisma.kunjungan.count(),
-    prisma.kegiatan.count(),
+    prisma.kegiatan.count({ where: scopedWhere }),
     prisma.aspirasis.count(),
     prisma.kunjungan.findMany({
+      where:
+        Object.keys(scopedWhere).length > 0
+          ? { kegiatans: { some: scopedWhere } }
+          : undefined,
       select: { tanggal: true, kelurahan_id: true },
     }),
     prisma.kegiatan.findMany({
+      where: scopedWhere,
       select: { kunjungan: { select: { kelurahan_id: true } }, tanggal: true },
     }),
     prisma.aspirasis.findMany({
@@ -32,6 +39,7 @@ export async function GET() {
     prisma.aspirasis.groupBy({ by: ['sumber'], _count: { sumber: true } }),
   ])
 
+  const total_kunjungan = kunjungan_all.length
   const total_kelurahan = kelurahans.length
 
   const kelurahan_dikunjungi = new Set(

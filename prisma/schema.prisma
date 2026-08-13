@@ -12,6 +12,54 @@ enum UserRole {
   user
 }
 
+enum TeamRole {
+  KETUA
+  ANGGOTA
+}
+
+model Dprd {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique
+  description String   @default("")
+  is_active   Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  teams       Team[]
+  users       User[]
+
+  @@map("dprds")
+}
+
+model Team {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dprd_id     String     @db.Uuid
+  name        String
+  description String     @default("")
+  is_active   Boolean    @default(true) @map("is_active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  dprd        Dprd       @relation(fields: [dprd_id], references: [id], onDelete: Cascade)
+  userTeams   UserTeam[]
+  kegiatans   Kegiatan[]
+  relawans    Relawan[]
+
+  @@map("teams")
+}
+
+model UserTeam {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id   String   @db.Uuid
+  team_id   String   @db.Uuid
+  role      TeamRole @default(ANGGOTA)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [team_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, team_id])
+  @@map("user_teams")
+}
+
 model Role {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String        @unique
@@ -62,7 +110,10 @@ model User {
   name      String
   role      UserRole @default(admin)
   role_id   String?    @map("role_id") @db.Uuid
+  dprd_id   String?    @map("dprd_id") @db.Uuid
   roleRef   Role?      @relation("UserRoleRef", fields: [role_id], references: [id])
+  dprd      Dprd?      @relation(fields: [dprd_id], references: [id])
+  userTeams UserTeam[]
   aspirasis Aspirasis[]
   kegiatans Kegiatan[]
   trackings TrackingAspirasi[]
@@ -208,10 +259,12 @@ model Relawan {
   kota_id        String  @db.Uuid
   kecamatan_id   String  @db.Uuid
   kelurahan_id   String  @db.Uuid
+  team_id        String? @db.Uuid
 
   kota           Kota        @relation(fields: [kota_id], references: [id])
   kecamatan      Kecamatan   @relation(fields: [kecamatan_id], references: [id])
   kelurahan      Kelurahan   @relation(fields: [kelurahan_id], references: [id])
+  team           Team?       @relation(fields: [team_id], references: [id], onDelete: SetNull)
   @@map("relawans")
 }
 
@@ -232,8 +285,10 @@ model Kegiatan {
   jumlah_peserta Int?
   catatan        String?
   dibuat_oleh_id String?  @db.Uuid
+  team_id        String?  @db.Uuid
   kunjungan      Kunjungan @relation(fields: [kunjungan_id], references: [id])
   dibuatOleh     User?    @relation(fields: [dibuat_oleh_id], references: [id])
+  team           Team?    @relation(fields: [team_id], references: [id], onDelete: SetNull)
 
   @@map("kegiatans")
 }

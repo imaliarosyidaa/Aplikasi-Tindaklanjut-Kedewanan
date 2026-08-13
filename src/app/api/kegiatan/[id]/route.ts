@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, teamFilter } from '@/lib/scoping'
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  const k = await prisma.kegiatan.findUnique({
-    where: { id },
+  const scope = await getDataScope()
+
+  const k = await prisma.kegiatan.findFirst({
+    where: { id, ...teamFilter(scope) },
     include: {
       kunjungan: {
         include: {
@@ -53,24 +56,36 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+
+  const scope = await getDataScope()
+  const existing = await prisma.kegiatan.findFirst({ where: { id, ...teamFilter(scope) } })
+  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
   const body = await request.json()
 
   const fotoVal =
     body.foto !== undefined ? (Array.isArray(body.foto) ? JSON.stringify(body.foto) : body.foto || null) : undefined
 
+  const updateData: Record<string, unknown> = {}
+  if (body.nama_kegiatan !== undefined) updateData.nama_kegiatan = body.nama_kegiatan
+  if (body.jenis_kegiatan !== undefined) updateData.jenis_kegiatan = body.jenis_kegiatan
+  if (body.lokasi !== undefined) updateData.tempat = body.lokasi
+  if (body.catatan !== undefined) updateData.catatan = body.catatan
+  if (body.rt !== undefined) updateData.rt = body.rt
+  if (body.rw !== undefined) updateData.rw = body.rw
+  if (body.jumlah_peserta !== undefined) updateData.jumlah_peserta = body.jumlah_peserta ? Number(body.jumlah_peserta) : undefined
+  if (body.link_gmaps !== undefined) updateData.link_gmaps = body.link_gmaps
+  if (body.tanggal !== undefined) updateData.tanggal = body.tanggal ? new Date(body.tanggal) : undefined
+  if (body.foto !== undefined) updateData.foto = fotoVal
+
+  if (body.team_id !== undefined && scope.isGlobal) {
+    updateData.team_id = body.team_id || null
+  }
+
   const updated = await prisma.kegiatan.update({
     where: { id },
     data: {
-      nama_kegiatan: body.nama_kegiatan,
-      jenis_kegiatan: body.jenis_kegiatan,
-      tempat: body.lokasi,
-      catatan: body.catatan,
-      rt: body.rt,
-      rw: body.rw,
-      jumlah_peserta: body.jumlah_peserta ? Number(body.jumlah_peserta) : undefined,
-      link_gmaps: body.link_gmaps,
-      tanggal: body.tanggal ? new Date(body.tanggal) : undefined,
-      foto: fotoVal,
+      ...updateData,
       kunjungan: body.jam
         ? {
             update: {
@@ -96,7 +111,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const kegiatan = await prisma.kegiatan.findUnique({ where: { id }, select: { kunjungan_id: true } })
+
+  const scope = await getDataScope()
+  const kegiatan = await prisma.kegiatan.findFirst({
+    where: { id, ...teamFilter(scope) },
+    select: { kunjungan_id: true },
+  })
   if (!kegiatan) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   await prisma.$transaction([

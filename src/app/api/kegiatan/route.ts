@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, resolveTeamIdForCreate, teamFilter } from '@/lib/scoping'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -13,7 +14,8 @@ export async function GET(request: NextRequest) {
   const kunjunganId = searchParams.get('kunjungan_id')
   const search = searchParams.get('search')?.trim()
 
-  const where: Record<string, unknown> = {}
+  const scope = await getDataScope()
+  const where: Record<string, unknown> = { ...teamFilter(scope) }
 
   const kunjunganConstraints: Record<string, unknown>[] = []
 
@@ -144,6 +146,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   const body = await request.json()
 
+  const scope = await getDataScope()
   const fotoVal = Array.isArray(body.foto) ? JSON.stringify(body.foto) : (body.foto ?? '')
 
   const created = await prisma.kegiatan.create({
@@ -162,7 +165,8 @@ export async function POST(request: Request) {
       rw: body.rw ?? '',
       jumlah_peserta: body.jumlah_peserta ? parseInt(body.jumlah_peserta) : null,
       catatan: body.catatan ?? '',
-      dibuat_oleh_id: body.dibuat_oleh_id ?? null,
+      dibuat_oleh_id: body.dibuat_oleh_id ?? scope.userId,
+      team_id: resolveTeamIdForCreate(scope, body.team_id ?? null),
     },
     include: {
       kunjungan: {
