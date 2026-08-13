@@ -139,7 +139,7 @@ model Aspirasis {
   pelapor_nama         String
   pelapor_email        String?    @default("")
   pelapor_telepon      String
-  lampiran             String?            @default("[]")
+  lampiran             String[]            @default([])
   kategori_usulan      String
   jenis_usulan         String
   jenis_reses          String
@@ -168,7 +168,7 @@ model TrackingAspirasi {
   aspirasi_id    String         @db.Uuid
   status         AspirasiStatus
   catatan        String?
-  lampiran       String?          @default("[]")
+  lampiran       String[]          @default([])
   created_at     DateTime       @default(now())
 
   aspirasi       Aspirasis      @relation(fields: [aspirasi_id], references: [id], onDelete: Cascade)
@@ -222,7 +222,7 @@ model Kegiatan {
   isi            String?
   hari           String?
   tanggal        DateTime?
-  foto           String?
+  foto           String[]     @default([])
   nama_kegiatan  String
   link_gmaps     String?
   tempat         String?

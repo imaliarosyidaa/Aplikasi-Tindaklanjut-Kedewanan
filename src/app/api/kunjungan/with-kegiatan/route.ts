@@ -61,14 +61,7 @@ export async function POST(request: Request) {
       isi: result.isi ?? '',
       hari: result.hari ?? '',
       tanggal: result.tanggal?.toISOString() ?? '',
-      foto: (() => {
-        try {
-          const f = result.foto ?? ''
-          return f.startsWith('[') ? JSON.parse(f) : f
-        } catch {
-          return result.foto ?? ''
-        }
-      })(),
+      foto: result.foto,
       nama_kegiatan: result.nama_kegiatan,
       link_gmaps: result.link_gmaps ?? '',
       lokasi: result.tempat ?? '',

@@ -29,14 +29,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     hari: k.hari ?? '',
     tanggal: k.tanggal?.toISOString() ?? '',
     jam: k.kunjungan.jam ?? '',
-    foto: (() => {
-      try {
-        const f = k.foto ?? ''
-        return f.startsWith('[') ? JSON.parse(f) : f
-      } catch {
-        return k.foto ?? ''
-      }
-    })(),
+    foto: k.foto,
     nama_kegiatan: k.nama_kegiatan,
     link_gmaps: k.link_gmaps ?? '',
     tempat: k.tempat ?? '',

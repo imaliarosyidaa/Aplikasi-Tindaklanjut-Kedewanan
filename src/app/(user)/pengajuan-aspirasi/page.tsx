@@ -25,12 +25,15 @@ import {
   MdEventNote,
   MdCategory,
   MdBadge,
+  MdPictureAsPdf,
+  MdInsertDriveFile,
 } from 'react-icons/md'
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
 import { ClipboardList, Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
 import { MasterKecamatan, MasterKelurahan, MasterKota } from '../../../types/index'
 import { SearchableSelect } from '@/components/ui/searchable-select'
+import { isImageUrl, getFileName } from '@/helper/file'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -267,32 +270,46 @@ function TicketLaporan({ data, onReset }: { data: TicketData; onReset: () => voi
                 <MdDescription size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
                 <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Lampiran</span>
                 <div className="flex flex-wrap gap-2">
-                  {data.lampiran.map((f, i) =>
-                    f.startsWith('data:application/pdf') ? (
+                  {data.lampiran.map((url, i) => {
+                    const isImage = isImageUrl(url)
+                    const fileName = getFileName(url)
+                    const isPdf = url.toLowerCase().includes('.pdf')
+
+                    if (isImage) {
+                      return (
+                        <img
+                          key={i}
+                          src={url}
+                          alt={fileName}
+                          title="Klik untuk membuka"
+                          onClick={() => window.open(url, '_blank')}
+                          className="w-20 h-20 object-cover rounded border border-[var(--color-border)] cursor-pointer hover:opacity-80 transition-opacity"
+                        />
+                      )
+                    }
+
+                    return (
                       <button
                         key={i}
                         type="button"
-                        onClick={() => {
-                          fetch(f)
-                            .then((r) => r.blob())
-                            .then((blob) => {
-                              window.open(URL.createObjectURL(blob), '_blank')
-                            })
-                        }}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+                        onClick={() => window.open(url, '_blank')}
+                        title={fileName}
+                        className="flex items-center gap-2 h-20 px-3 max-w-[180px] rounded border border-[var(--color-border)] bg-[var(--color-bg-secondary)] hover:bg-[var(--color-border)] transition-colors text-left cursor-pointer"
                       >
-                        <MdDescription size={14} />
-                        Detail PDF
+                        {isPdf ? (
+                          <MdPictureAsPdf className="text-red-500 shrink-0" size={28} />
+                        ) : (
+                          <MdInsertDriveFile className="text-blue-500 shrink-0" size={28} />
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-[var(--color-text)] truncate">{fileName}</p>
+                          <span className="text-[10px] text-[var(--color-text-secondary)] uppercase">
+                            {isPdf ? 'Dokumen PDF' : 'Berkas'}
+                          </span>
+                        </div>
                       </button>
-                    ) : (
-                      <img
-                        key={i}
-                        src={f}
-                        alt="Lampiran"
-                        className="w-20 h-20 object-cover rounded border border-[var(--color-border)]"
-                      />
-                    ),
-                  )}
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -727,7 +744,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             <FileUpload
               label="Upload Lampiran Aspirasi (Opsional)"
               value={lampiran}
-              onChange={(files) => setLampiran(files as string[])}
+              onChange={(files) => setLampiran(files)}
             />
             <p className="text-xs text-[var(--color-text-secondary)]">*Boleh dikosongkan</p>
           </div>

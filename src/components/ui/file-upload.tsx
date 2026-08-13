@@ -68,13 +68,8 @@ export const FileUpload = ({
 }: FileUploadProps): React.ReactNode => {
   const [isDragging, setIsDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
-
-  // Pastikan value selalu dibaca sebagai Array
   const fileList = ensureArray(value)
 
-  console.log('FileUpload value:', value)
-  console.log('FileUpload fileList:', fileList)
-  // Ambil nama file dari URL path
   const getFileName = (fileString: string, index: number): string => {
     if (!fileString) return `File ${index + 1}`
     if (fileString.startsWith('data:')) return `File_Base64_${index + 1}`
@@ -83,14 +78,10 @@ export const FileUpload = ({
     const fileName = cleanUrl.split('/').pop()
     return fileName ? decodeURIComponent(fileName) : `File ${index + 1}`
   }
-
-  // Buka file di tab baru saat tombol "Lihat" diklik
   const handleViewFile = (fileString: string) => {
     if (!fileString) return
     window.open(fileString, '_blank')
   }
-
-  // Upload file fisik ke API /api/upload
   const handleFiles = async (inputFiles: FileList) => {
     const filesToUpload = Array.from(inputFiles)
     if (filesToUpload.length === 0) return

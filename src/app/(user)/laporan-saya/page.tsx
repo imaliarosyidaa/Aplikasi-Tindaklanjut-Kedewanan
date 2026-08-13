@@ -277,7 +277,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                   : 'Laporan Anda Sudah Ditindak Lanjuti'}
               </p>
 
-              {trackSudah?.lampiran && trackSudah.lampiran.length > 0 && (
+              {isSudahOrBeyond && trackSudah?.lampiran && trackSudah.lampiran.length > 0 && (
                 <div className="flex flex-col gap-1.5 mt-2">
                   {trackSudah.lampiran.map((url, idx) => (
                     <button
@@ -299,7 +299,7 @@ function TrackingTicket({ aspirasi }: { aspirasi: Aspirasi }) {
                 </div>
               )}
 
-              {trackSudah?.catatan && (
+              {isSudahOrBeyond && trackSudah?.catatan && (
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1 italic break-words bg-[var(--color-bg-secondary)]/50 p-2 rounded-md">
                   "{trackSudah.catatan}"
                 </p>
@@ -473,7 +473,7 @@ export default function LaporanSayaPage(): React.ReactNode {
           <div className="flex-1">
             <Input
               id="query"
-              label="Nama atau No. Telepon"
+              label="Nama atau Nomor Handphone"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Contoh: Siti atau 081234567890"

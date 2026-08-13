@@ -6,10 +6,20 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/routing'
-import { MdArrowBack, MdCheck, MdContentCopy, MdDescription, MdEdit, MdFlag } from 'react-icons/md'
+import {
+  MdArrowBack,
+  MdCheck,
+  MdContentCopy,
+  MdDescription,
+  MdEdit,
+  MdFlag,
+  MdInsertDriveFile,
+  MdPictureAsPdf,
+} from 'react-icons/md'
 import { Aspirasi } from '@/types'
 import { Modal } from '@/components/ui/modal'
 import { FormUpdateAspirasi } from '@/components/forms/FormUpdateAspirasi'
+import { getFileName, isImageUrl } from '@/helper/file'
 
 interface AspirasiDetailProps {
   params: Promise<{ id: string }>
@@ -199,57 +209,51 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
           {/* Isi Aspirasi (2 unit) */}
           <Card className="p-5 space-y-4 lg:row-span-2 flex flex-col overflow-y-auto">
             <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">Isi Aspirasi Anda</h3>
-            <p className="text-[var(--color-text)] text-sm">{aspirasi?.deskripsi}</p>
+            <p className="text-[var(--color-text)] text-sm">{aspirasi?.deskripsi || '-'}</p>
 
             <p className="text-sm font-semibold text-[var(--color-text)]">Lampiran</p>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">
               {Array.isArray(aspirasi?.lampiran)
-                ? (() => {
-                    const total = aspirasi?.lampiran.length
-                    const maxVisible = 4
-                    const visible = aspirasi?.lampiran.slice(0, maxVisible)
-                    const remaining = total - maxVisible
+                ? aspirasi?.lampiran.map((url, i) => {
+                    const isImage = isImageUrl(url)
+                    const fileName = getFileName(url)
+                    const isPdf = url.toLowerCase().includes('.pdf')
 
-                    return visible.map((url: unknown, i: number) => {
-                      const isLast = i === maxVisible - 1 && remaining > 0
-                      const f = typeof url === 'string' ? url : ''
-                      const isPdf = f.startsWith('data:application/pdf') || f.toLowerCase().includes('.pdf')
-
+                    if (isImage) {
                       return (
-                        <div
+                        <img
                           key={i}
-                          className="relative aspect-square rounded-lg overflow-hidden border border-[var(--color-border)] bg-gray-50 group cursor-pointer"
-                          onClick={() => {
-                            if (isLast) return
-                            if (f.startsWith('data:')) {
-                              fetch(f)
-                                .then((r) => r.blob())
-                                .then((blob) => window.open(URL.createObjectURL(blob), '_blank'))
-                            } else {
-                              window.open(f, '_blank')
-                            }
-                          }}
-                        >
-                          {isPdf ? (
-                            <div className="flex items-center justify-center h-full text-xs text-blue-600 font-medium p-1 text-center">
-                              PDF
-                            </div>
-                          ) : f.startsWith('data:') ? (
-                            <img src={f} alt="Lampiran" className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="flex items-center justify-center h-full text-xs text-blue-600 underline truncate p-1">
-                              File {i + 1}
-                            </div>
-                          )}
-                          {isLast && (
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                              <span className="text-white text-lg font-bold">+{remaining} lainnya</span>
-                            </div>
-                          )}
-                        </div>
+                          src={url}
+                          alt={fileName}
+                          title="Klik untuk membuka"
+                          onClick={() => window.open(url, '_blank')}
+                          className="h-20 w-full object-cover rounded border border-[var(--color-border)] cursor-pointer hover:opacity-80 transition-opacity"
+                        />
                       )
-                    })
-                  })()
+                    }
+
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => window.open(url, '_blank')}
+                        title={fileName}
+                        className="flex items-center gap-2 h-20 px-3 max-w-[180px] rounded border border-[var(--color-border)] bg-[var(--color-bg-secondary)] hover:bg-[var(--color-border)] transition-colors text-left cursor-pointer"
+                      >
+                        {isPdf ? (
+                          <MdPictureAsPdf className="text-red-500 shrink-0" size={28} />
+                        ) : (
+                          <MdInsertDriveFile className="text-blue-500 shrink-0" size={28} />
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-[var(--color-text)] truncate">{fileName}</p>
+                          <span className="text-[10px] text-[var(--color-text-secondary)] uppercase">
+                            {isPdf ? 'Dokumen PDF' : 'Berkas'}
+                          </span>
+                        </div>
+                      </button>
+                    )
+                  })
                 : typeof aspirasi?.lampiran === 'string'
                   ? aspirasi.lampiran
                   : '-'}

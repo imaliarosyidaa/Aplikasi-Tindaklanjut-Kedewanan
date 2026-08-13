@@ -123,14 +123,7 @@ export async function GET(request: NextRequest) {
     isi: k.isi ?? '',
     hari: k.hari ?? '',
     tanggal: k.tanggal?.toISOString() ?? '',
-    foto: (() => {
-      try {
-        const f = k.foto ?? ''
-        return f.startsWith('[') ? JSON.parse(f) : f
-      } catch {
-        return k.foto ?? ''
-      }
-    })(),
+    foto: k.foto,
     nama_kegiatan: k.nama_kegiatan,
     link_gmaps: k.link_gmaps ?? '',
     lokasi: k.tempat ?? '',
@@ -186,14 +179,7 @@ export async function POST(request: Request) {
       isi: created.isi ?? '',
       hari: created.hari ?? '',
       tanggal: created.tanggal?.toISOString() ?? '',
-      foto: (() => {
-        try {
-          const f = created.foto ?? ''
-          return f.startsWith('[') ? JSON.parse(f) : f
-        } catch {
-          return created.foto ?? ''
-        }
-      })(),
+      foto: created.foto,
       nama_kegiatan: created.nama_kegiatan,
       link_gmaps: created.link_gmaps ?? '',
       lokasi: created.tempat ?? '',
