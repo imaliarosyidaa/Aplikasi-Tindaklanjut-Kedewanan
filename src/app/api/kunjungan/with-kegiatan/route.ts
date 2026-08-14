@@ -23,8 +23,6 @@ export async function POST(request: Request) {
       },
     })
 
-    const fotoVal = Array.isArray(body.foto) ? JSON.stringify(body.foto) : (body.foto ?? '')
-
     const kegiatan = await tx.kegiatan.create({
       data: {
         jenis_kegiatan: body.jenis_kegiatan ?? '',
@@ -32,7 +30,7 @@ export async function POST(request: Request) {
         isi: body.isi ?? '',
         hari: body.hari ?? '',
         tanggal: body.tanggal ? new Date(body.tanggal) : null,
-        foto: fotoVal,
+        foto: body.foto,
         nama_kegiatan: body.nama_kegiatan,
         link_gmaps: body.link_gmaps ?? '',
         tempat: body.tempat ?? '',

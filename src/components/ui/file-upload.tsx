@@ -114,7 +114,7 @@ export const FileUpload = ({
         if (data.success && data.url) {
           newUploadedUrls.push(data.url)
         } else {
-          alert(`Gagal mengunggah file ${selectedFile.name}`)
+          alert(`Gagal mengunggah ${selectedFile.name}\n\n` + `Alasan: ${data.message || 'Unknown error'}`)
         }
       }
 

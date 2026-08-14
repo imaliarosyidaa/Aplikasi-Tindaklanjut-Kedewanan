@@ -147,7 +147,6 @@ export async function POST(request: Request) {
   const body = await request.json()
 
   const scope = await getDataScope()
-  const fotoVal = Array.isArray(body.foto) ? JSON.stringify(body.foto) : (body.foto ?? '')
 
   const created = await prisma.kegiatan.create({
     data: {
@@ -156,7 +155,7 @@ export async function POST(request: Request) {
       isi: body.isi ?? '',
       hari: body.hari ?? '',
       tanggal: body.tanggal ? new Date(body.tanggal) : null,
-      foto: fotoVal,
+      foto: body.foto,
       nama_kegiatan: body.nama_kegiatan,
       link_gmaps: body.link_gmaps ?? '',
       tempat: body.tempat ?? '',

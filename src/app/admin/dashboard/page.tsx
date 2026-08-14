@@ -8,18 +8,12 @@ import { BarChart } from '@/components/dashboard/BarChart'
 import { PieChart } from '@/components/dashboard/PieChart'
 import { Modal } from '@/components/ui/modal'
 import { useRouter } from '@/routing'
-import {
-  MdDirectionsWalk,
-  MdTrackChanges,
-  MdCheckCircle,
-  MdPending,
-  MdChevronRight,
-} from 'react-icons/md'
-import { IoMdCloseCircle } from "react-icons/io";
+import { MdDirectionsWalk, MdTrackChanges, MdCheckCircle, MdPending, MdChevronRight } from 'react-icons/md'
+import { IoMdCloseCircle } from 'react-icons/io'
 import type { KecamatanStat } from '@/types'
 import { Card } from '@/components/ui/card'
-import { TbCalendarWeek } from "react-icons/tb";
-import { BsBinoculars } from "react-icons/bs";
+import { TbCalendarWeek } from 'react-icons/tb'
+import { BsBinoculars } from 'react-icons/bs'
 import { useSession } from 'next-auth/react'
 
 // 1. Master Legenda Status
@@ -40,11 +34,7 @@ const LEGENDA_SUMBER = [
   { key: 'CALL_CENTER', label: 'Call Center', color: '#F59E0B' },
 ]
 
-export const KecamatanList = ({
-  kecamatanStats,
-}: {
-  kecamatanStats: KecamatanStat[]
-}) => {
+export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanStat[] }) => {
   const router = useRouter()
 
   // State untuk mengontrol Modal & Kecamatan yang sedang dipilih
@@ -86,18 +76,14 @@ export const KecamatanList = ({
       <Card className="p-4 relative w-full h-full min-h-[340px]">
         <div className="flex items-center gap-2 mb-4">
           <BsBinoculars className="text-blue-600" />
-          <h3 className="text-sm font-semibold text-[var(--color-text)]">
-            Status Kegiatan Per Wilayah Kecamatan
-          </h3>
+          <h3 className="text-sm font-semibold text-[var(--color-text)]">Status Kegiatan Per Wilayah Kecamatan</h3>
         </div>
 
         <div className="space-y-3 transition-all max-h-[260px] duration-500 ease-in-out overflow-y-auto pb-12">
           {sortedStats.map((k) => {
             const visited = k.kelurahan_dikunjungi > 0
             const percentage =
-              k.jumlah_kelurahan > 0
-                ? Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100)
-                : 0
+              k.jumlah_kelurahan > 0 ? Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100) : 0
 
             return (
               <div
@@ -112,9 +98,7 @@ export const KecamatanList = ({
                     <IoMdCloseCircle size={24} className="text-red-500 shrink-0" />
                   )}
                   <div>
-                    <p className="font-medium text-[var(--color-text)] text-sm">
-                      {k.kecamatan}
-                    </p>
+                    <p className="font-medium text-[var(--color-text)] text-sm">{k.kecamatan}</p>
                   </div>
                 </div>
 
@@ -132,11 +116,8 @@ export const KecamatanList = ({
                 </p>
 
                 <p
-                  className={`text-xs font-medium ${percentage < 50
-                    ? 'text-red-500'
-                    : percentage < 75
-                      ? 'text-yellow-500'
-                      : 'text-green-500'
+                  className={`text-xs font-medium ${
+                    percentage < 50 ? 'text-red-500' : percentage < 75 ? 'text-yellow-500' : 'text-green-500'
                   }`}
                 >
                   {percentage}%
@@ -154,9 +135,7 @@ export const KecamatanList = ({
         title={`Daftar Kelurahan - Kecamatan ${selectedKecamatan?.kecamatan || ''}`}
       >
         <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-          <p className="text-xs mb-3">
-            Kelurahan yang sudah memiliki kegiatan: {count}
-          </p>
+          <p className="text-xs mb-3">Kelurahan yang sudah memiliki kegiatan: {count}</p>
 
           {(() => {
             const list = selectedKecamatan?.kelurahan_list ?? []
@@ -176,17 +155,16 @@ export const KecamatanList = ({
                     ) : (
                       <IoMdCloseCircle size={20} className="shrink-0 text-red-500" />
                     )}
-                    <span className="text-sm font-medium text-[var(--color-text)]">
-                      {kel.nama}
-                    </span>
+                    <span className="text-sm font-medium text-[var(--color-text)]">{kel.nama}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${isKelVisited
-                        ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300'
-                        : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
-                        }`}
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        isKelVisited
+                          ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300'
+                          : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
+                      }`}
                     >
                       {kel.jumlah_kunjungan ?? 0} Kegiatan
                     </span>
@@ -211,53 +189,40 @@ export default function AdminDashboardPage(): React.ReactNode {
 
   const kecamatanStats = data?.kunjungan_per_kecamatan ?? []
   const totalKecamatan = kecamatanStats.length
-  
-  const palingBanyak = kecamatanStats.toSorted(
-    (a, b) => b.jumlah_kunjungan - a.jumlah_kunjungan
-  )[0]
-  const palingSedikit = kecamatanStats.toSorted(
-    (a, b) => a.jumlah_kunjungan - b.jumlah_kunjungan
-  )[0]
-  const rataKunjungan =
-    totalKecamatan > 0
-      ? Math.round((data?.total_kunjungan ?? 0) / totalKecamatan)
-      : 0
 
-  const kunjunganPerBulan =
-    (data?.kunjungan_per_bulan ?? []).map((k) => ({
-      label: k.bulan,
-      value: k.jumlah,
-    }))
+  const palingBanyak = kecamatanStats.toSorted((a, b) => b.jumlah_kunjungan - a.jumlah_kunjungan)[0]
+  const palingSedikit = kecamatanStats.toSorted((a, b) => a.jumlah_kunjungan - b.jumlah_kunjungan)[0]
+  const rataKunjungan = totalKecamatan > 0 ? Math.round((data?.total_kunjungan ?? 0) / totalKecamatan) : 0
 
-  const aspirasiPerBulan =
-    (data?.aspirasi_per_bulan ?? []).map((a) => ({
-      label: a.bulan,
+  const kunjunganPerBulan = (data?.kunjungan_per_bulan ?? []).map((k) => ({
+    label: k.bulan,
+    value: k.jumlah,
+  }))
+
+  const aspirasiPerBulan = (data?.aspirasi_per_bulan ?? []).map((a) => ({
+    label: a.bulan,
+    value: a.jumlah,
+  }))
+
+  const aspirasiPerStatus = (data?.aspirasi_per_status ?? []).map((a) => {
+    const matchLegenda = LEGENDA_STATUS.find((l) => l.label.toLowerCase() === a.status.toLowerCase())
+    return {
+      label: a.status,
       value: a.jumlah,
-    }))
+      color: matchLegenda?.color ?? '#6B7280',
+    }
+  })
 
-  const aspirasiPerStatus =
-    (data?.aspirasi_per_status ?? []).map((a) => {
-      const matchLegenda = LEGENDA_STATUS.find(
-        (l) => l.label.toLowerCase() === a.status.toLowerCase()
-      )
-      return {
-        label: a.status,
-        value: a.jumlah,
-        color: matchLegenda?.color ?? '#6B7280',
-      }
-    })
-
-  const aspirasiPerSumber =
-    (data?.aspirasi_per_sumber ?? []).map((a) => {
-      const matchLegenda = LEGENDA_SUMBER.find(
-        (s) => s.key === a.sumber || s.label.toLowerCase() === a.sumber.toLowerCase()
-      )
-      return {
-        label: matchLegenda?.label ?? a.sumber,
-        value: a.jumlah,
-        color: matchLegenda?.color ?? 'var(--color-primary)',
-      }
-    })
+  const aspirasiPerSumber = (data?.aspirasi_per_sumber ?? []).map((a) => {
+    const matchLegenda = LEGENDA_SUMBER.find(
+      (s) => s.key === a.sumber || s.label.toLowerCase() === a.sumber.toLowerCase(),
+    )
+    return {
+      label: matchLegenda?.label ?? a.sumber,
+      value: a.jumlah,
+      color: matchLegenda?.color ?? 'var(--color-primary)',
+    }
+  })
 
   const [currentTime, setCurrentTime] = useState(new Date())
 
@@ -269,16 +234,16 @@ export default function AdminDashboardPage(): React.ReactNode {
     return () => clearInterval(interval)
   }, [])
 
-  const date = currentTime.toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
+  const date = currentTime.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
   })
 
-  const time = currentTime.toLocaleTimeString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
+  const time = currentTime.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
   })
   const [isMounted, setIsMounted] = useState(false)
 
@@ -299,27 +264,25 @@ export default function AdminDashboardPage(): React.ReactNode {
       <Card className="shadow-md bg-[url('/bg-stats.png')] bg-cover bg-no-repeat lg:bg-[length:120%] bg-right">
         <div className="grid lg:grid-cols-2 grid-cols-1 justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-[var(--color-text)]">
-              Selamat Datang, {session?.user?.name} 👋
-            </h1>
+            <h1 className="text-2xl font-bold text-[var(--color-text)]">Selamat Datang, {session?.user?.name} 👋</h1>
             <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
               Statistik kegiatan dan aspirasi DPRD Jakarta Selatan
             </p>
           </div>
           <div className="flex items-end justify-end gap-2">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-[var(--color-text-secondary)]">
-            <TbCalendarWeek size={18} />
-            {isMounted ? (
-              <>
-                <span>{date}</span>
-                <span>|</span>
-            <span>{time} WIB</span>
-              </>
-            ) : (
-              /* Placeholder transparan/skeleton singkat saat SSR */
-              <span className="opacity-0">Loading time...</span>
-            )}
-          </div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-[var(--color-text-secondary)]">
+              <TbCalendarWeek size={18} />
+              {isMounted ? (
+                <>
+                  <span>{date}</span>
+                  <span>|</span>
+                  <span>{time} WIB</span>
+                </>
+              ) : (
+                /* Placeholder transparan/skeleton singkat saat SSR */
+                <span className="opacity-0">Loading time...</span>
+              )}
+            </div>
           </div>
         </div>
         {/* Rangkuman Data Total */}
@@ -449,9 +412,7 @@ export default function AdminDashboardPage(): React.ReactNode {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-[var(--color-bg-secondary)] p-4 text-center">
-              <p className="text-2xl font-bold text-[var(--color-text)]">
-                {selectedKecamatan?.jumlah_kunjungan ?? 0}
-              </p>
+              <p className="text-2xl font-bold text-[var(--color-text)]">{selectedKecamatan?.jumlah_kunjungan ?? 0}</p>
               <p className="text-xs text-[var(--color-text-secondary)]">Total Kegiatan</p>
             </div>
             <div className="rounded-lg bg-[var(--color-bg-secondary)] p-4 text-center">
@@ -484,15 +445,10 @@ export default function AdminDashboardPage(): React.ReactNode {
             <span className="text-[var(--color-text)]">{rataKunjungan} kegiatan/kec</span>
           </div>
           {kecamatanStats.map((k) => (
-            <div
-              key={k.kecamatan}
-              className="rounded-lg border border-[var(--color-border)] p-3"
-            >
+            <div key={k.kecamatan} className="rounded-lg border border-[var(--color-border)] p-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-[var(--color-text)]">{k.kecamatan}</span>
-                <span className="text-sm text-[var(--color-text-secondary)]">
-                  {k.jumlah_kunjungan} kegiatan
-                </span>
+                <span className="text-sm text-[var(--color-text-secondary)]">{k.jumlah_kunjungan} kegiatan</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[var(--color-bg-secondary)]">
                 <div

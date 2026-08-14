@@ -12,10 +12,7 @@ async function findRelawanOrScoped(id: string) {
   return { scope, relawan: r }
 }
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { relawan: r } = await findRelawanOrScoped(id)
   if (!r) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -36,10 +33,7 @@ export async function GET(
   })
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { scope, relawan: existing } = await findRelawanOrScoped(id)
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -89,10 +83,7 @@ export async function PATCH(
   })
 }
 
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { relawan: existing } = await findRelawanOrScoped(id)
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })

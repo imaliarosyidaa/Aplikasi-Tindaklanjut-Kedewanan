@@ -63,9 +63,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   const body = await request.json()
 
-  const fotoVal =
-    body.foto !== undefined ? (Array.isArray(body.foto) ? JSON.stringify(body.foto) : body.foto || null) : undefined
-
   const updateData: Record<string, unknown> = {}
   if (body.nama_kegiatan !== undefined) updateData.nama_kegiatan = body.nama_kegiatan
   if (body.jenis_kegiatan !== undefined) updateData.jenis_kegiatan = body.jenis_kegiatan
@@ -73,10 +70,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (body.catatan !== undefined) updateData.catatan = body.catatan
   if (body.rt !== undefined) updateData.rt = body.rt
   if (body.rw !== undefined) updateData.rw = body.rw
-  if (body.jumlah_peserta !== undefined) updateData.jumlah_peserta = body.jumlah_peserta ? Number(body.jumlah_peserta) : undefined
+  if (body.jumlah_peserta !== undefined)
+    updateData.jumlah_peserta = body.jumlah_peserta ? Number(body.jumlah_peserta) : undefined
   if (body.link_gmaps !== undefined) updateData.link_gmaps = body.link_gmaps
   if (body.tanggal !== undefined) updateData.tanggal = body.tanggal ? new Date(body.tanggal) : undefined
-  if (body.foto !== undefined) updateData.foto = fotoVal
+  if (body.foto !== undefined) updateData.foto = body.foto
 
   if (body.team_id !== undefined && scope.isGlobal) {
     updateData.team_id = body.team_id || null
