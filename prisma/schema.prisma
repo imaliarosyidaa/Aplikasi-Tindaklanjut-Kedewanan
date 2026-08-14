@@ -42,7 +42,6 @@ model Team {
   userTeams   UserTeam[]
   kegiatans   Kegiatan[]
   relawans    Relawan[]
-  aspirasis   Aspirasis[]
 
   @@map("teams")
 }
@@ -110,10 +109,10 @@ model User {
   password  String
   name      String
   role      UserRole @default(admin)
-  role_id   String?   @map("role_id") @db.Uuid
-  dprd_id   String    @map("dprd_id") @db.Uuid
-  roleRef   Role?     @relation("UserRoleRef", fields: [role_id], references: [id])
-  dprd      Dprd     @relation(fields: [dprd_id], references: [id])
+  role_id   String?    @map("role_id") @db.Uuid
+  dprd_id   String?    @map("dprd_id") @db.Uuid
+  roleRef   Role?      @relation("UserRoleRef", fields: [role_id], references: [id])
+  dprd      Dprd?      @relation(fields: [dprd_id], references: [id])
   userTeams UserTeam[]
   aspirasis Aspirasis[]
   kegiatans Kegiatan[]
@@ -204,12 +203,10 @@ model Aspirasis {
   rt                   String?
   rw                   String?
   user_id              String?         @db.Uuid
-  team_id              String?         @db.Uuid
   created_at           DateTime        @default(now())
   updated_at           DateTime        @updatedAt
 
   user                 User?           @relation(fields: [user_id], references: [id])
-  team                 Team?           @relation(fields: [team_id], references: [id], onDelete: SetNull)
   kota                 Kota?           @relation(fields: [kota_id], references: [id])
   kecamatan            Kecamatan?      @relation(fields: [kecamatan_id], references: [id])
   kelurahan            Kelurahan?      @relation(fields: [kelurahan_id], references: [id])

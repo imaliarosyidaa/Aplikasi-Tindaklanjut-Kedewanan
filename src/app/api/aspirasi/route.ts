@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getDataScope, resolveTeamIdForCreate, teamFilter } from '@/lib/scoping'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -15,8 +14,7 @@ export async function GET(request: NextRequest) {
   const kecamatanNama = searchParams.get('kecamatan')
   const kelurahanNama = searchParams.get('kelurahan')
 
-  const scope = await getDataScope()
-  const where: Record<string, unknown> = { ...teamFilter(scope) }
+  const where: Record<string, unknown> = {}
 
   if (sumber) where.sumber = sumber
   if (status) where.status = status
@@ -117,8 +115,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   const body = await request.json()
 
-  const scope = await getDataScope()
-
   let kotaId: string | undefined
   let kecamatanId: string | undefined
   let kelurahanId: string | undefined
@@ -158,7 +154,6 @@ export async function POST(request: Request) {
       alamat: body.lokasi ?? body.alamat ?? '',
       rt: body.rt ?? '',
       rw: body.rw ?? '',
-      team_id: resolveTeamIdForCreate(scope, body.team_id ?? null),
     },
   })
 

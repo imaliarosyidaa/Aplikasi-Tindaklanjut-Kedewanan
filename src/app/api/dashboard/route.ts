@@ -18,7 +18,7 @@ export async function GET() {
     sumberGroup,
   ] = await Promise.all([
     prisma.kegiatan.count({ where: scopedWhere }),
-    prisma.aspirasis.count({ where: scopedWhere }),
+    prisma.aspirasis.count(),
     prisma.kunjungan.findMany({
       where:
         Object.keys(scopedWhere).length > 0
@@ -31,13 +31,12 @@ export async function GET() {
       select: { kunjungan: { select: { kelurahan_id: true } }, tanggal: true },
     }),
     prisma.aspirasis.findMany({
-      where: scopedWhere,
       select: { created_at: true, status: true, sumber: true },
     }),
     prisma.kecamatan.findMany({ select: { id: true, nama: true } }),
     prisma.kelurahan.findMany({ select: { id: true, nama: true, kecamatan_id: true } }),
-    prisma.aspirasis.groupBy({ where: scopedWhere, by: ['status'], _count: { status: true } }),
-    prisma.aspirasis.groupBy({ where: scopedWhere, by: ['sumber'], _count: { sumber: true } }),
+    prisma.aspirasis.groupBy({ by: ['status'], _count: { status: true } }),
+    prisma.aspirasis.groupBy({ by: ['sumber'], _count: { sumber: true } }),
   ])
 
   const total_kunjungan = kunjungan_all.length

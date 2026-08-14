@@ -461,8 +461,11 @@ export default function KunjunganPage() {
                   />
                 </th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No</th>
-                <th className="px-4 py-3 w-[25%] text-left font-medium text-[var(--color-text-secondary)]">
+                <th className="px-4 py-3 w-[20%] text-left font-medium text-[var(--color-text-secondary)]">
                   Nama Kegiatan
+                </th>
+                <th className="px-4 py-3 w-[15%] text-left font-medium text-[var(--color-text-secondary)]">
+                  Jenis Kegiatan
                 </th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tempat Kegiatan</th>
                 <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
@@ -509,6 +512,9 @@ text-[var(--color-text-secondary)]"
                     </td>
                     <td className="px-4 py-3 font-medium text-[var(--color-text)]">
                       {item.nama_kegiatan || (item as unknown as Record<string, string>).isi || '-'}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-[var(--color-text)]">
+                      {item.jenis_kegiatan || (item as unknown as Record<string, string>).isi || '-'}
                     </td>
                     <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi || '-'}</td>
                     <td className="px-4 py-3 text-[var(--color-text)]">

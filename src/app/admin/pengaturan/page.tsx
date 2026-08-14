@@ -467,10 +467,6 @@ function UsersTab() {
       setError('Username, nama, dan password wajib diisi')
       return
     }
-    if (!form.dprd_id) {
-      setError('Linked with DPRD wajib dipilih')
-      return
-    }
     setSaving(true)
     setError('')
     try {
@@ -666,7 +662,7 @@ function UsersTab() {
               <Select
                 id="user-dprd"
                 label="Linked with DPRD"
-                placeholder="Pilih DPRD"
+                placeholder="Pilih DPRD (opsional)"
                 options={dprds.map((d) => ({ value: d.id, label: d.name }))}
                 value={form.dprd_id}
                 onChange={(e) => {

@@ -142,8 +142,6 @@ Tambahkan field **Linked with DPRD** pada form `Add User`.
 
 Field ini berupa **select box** yang menampilkan daftar DPRD yang tersedia.
 
-**Bersifat wajib** — user harus terhubung ke salah satu DPRD (`dprd_id` pada tabel `users` bersifat NOT NULL).
-
 Tujuannya adalah untuk menentukan user tersebut bekerja di bawah/terhubung dengan DPRD tertentu.
 
 Contoh:
@@ -517,7 +515,6 @@ Fitur dianggap selesai jika:
 - [x] Admin dapat menambahkan DPRD.
 - [x] Seeder membuat DPRD `Hj. Yuke Yurike, ST, MM`.
 - [x] Form Add User memiliki select box `Linked with DPRD`.
-- [x] Field `Linked with DPRD` bersifat wajib (`dprd_id` NOT NULL di tabel `users`).
 - [x] User dapat dihubungkan dengan DPRD.
 - [x] Satu DPRD dapat memiliki banyak Team/Pansus.
 - [x] Satu user dapat tergabung dalam banyak Team.
@@ -526,7 +523,6 @@ Fitur dianggap selesai jika:
 - [x] Role `KETUA` dan `ANGGOTA` berlaku berdasarkan Team.
 - [x] Data kegiatan memiliki `team_id`.
 - [x] Data relawan dan data lain yang bersifat team-scoped menggunakan `team_id`.
-- [x] Data aspirasi memiliki `team_id` dan ikut di-scope per tim (GET/POST/PATCH/DELETE/bulk-delete/dashboard).
 - [x] User biasa hanya melihat data dari team yang diikutinya.
 - [x] `SUPER_ADMIN` dapat melihat seluruh data.
 - [x] `SEKRETARIAT` dapat melihat seluruh data.

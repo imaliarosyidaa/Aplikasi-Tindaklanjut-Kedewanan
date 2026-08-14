@@ -39,7 +39,7 @@ export async function getDataScope(): Promise<DataScope> {
 
   if (!user) return { isGlobal: false, teamIds: [], dprdId: null, userId: session.user.id }
 
-  const isGlobal = isGlobalRole(user.roleRef?.name ?? null)
+  const isGlobal = isGlobalRole(user.roleRef?.name ?? null) || user.role === 'admin' && !user.dprd_id
 
   return {
     isGlobal,

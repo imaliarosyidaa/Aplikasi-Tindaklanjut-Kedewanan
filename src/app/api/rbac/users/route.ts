@@ -78,8 +78,8 @@ export async function POST(request: Request) {
   }
 
   const dprdRef = dprd_id ? await prisma.dprd.findUnique({ where: { id: dprd_id } }) : null
-  if (!dprd_id || !dprdRef) {
-    return NextResponse.json({ error: 'Linked with DPRD wajib dipilih' }, { status: 400 })
+  if (dprd_id && !dprdRef) {
+    return NextResponse.json({ error: 'DPRD tidak ditemukan' }, { status: 404 })
   }
 
   const validTeams = teams.length
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
       name: name.trim(),
       role: role ?? 'user',
       role_id: role_id ?? null,
-      dprd_id,
+      dprd_id: dprd_id ?? null,
       userTeams: {
         create: teams
           .filter((t) => validTeamIds.has(t.team_id))
