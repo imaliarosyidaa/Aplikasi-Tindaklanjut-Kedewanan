@@ -40,6 +40,7 @@ async function main() {
   await prisma.aspirasis.deleteMany()
   await prisma.relawan.deleteMany()
   await prisma.kunjungan.deleteMany()
+  await prisma.userTeam.deleteMany()
   await prisma.kelurahan.deleteMany()
   await prisma.kecamatan.deleteMany()
   await prisma.kota.deleteMany()
@@ -47,6 +48,8 @@ async function main() {
   await prisma.role.deleteMany()
   await prisma.permission.deleteMany()
   await prisma.user.deleteMany()
+  await prisma.team.deleteMany()
+  await prisma.dprd.deleteMany()
 
   // 1. Parse CSV & Create Wilayah
   const rows = parseCsv()
@@ -99,7 +102,27 @@ async function main() {
     return { kotaId, kecamatanId, kelurahanId }
   }
 
-  // 2. Users
+  // 2. DPRD & Team
+  const dprd = await prisma.dprd.create({
+    data: {
+      name: 'DPRD Kota Jakarta Selatan',
+      description: 'Dewan Perwakilan Rakyat Daerah Kota Jakarta Selatan',
+      is_active: true,
+    },
+  })
+  console.log('  1 dprd created')
+
+  const team = await prisma.team.create({
+    data: {
+      dprd_id: dprd.id,
+      name: 'Tim Eksternal (Kantor)',
+      description: 'Tim kerja utama',
+      is_active: true,
+    },
+  })
+  console.log('  1 team created')
+
+  // 3. Users
   await prisma.user.createMany({
     data: [
       {
@@ -109,6 +132,7 @@ async function main() {
         password: 'admin123',
         name: 'Admin DPRD Jakarta Selatan',
         role: 'admin',
+        dprd_id: dprd.id,
       },
       {
         id: '85b1bee3-c244-4797-8f71-daf56bf42c98',
@@ -117,12 +141,26 @@ async function main() {
         password: 'superadmin123',
         name: 'Super Admin',
         role: 'admin',
+        dprd_id: dprd.id,
       },
     ],
   })
   console.log('  2 users created')
 
-  // 3. Kunjungan
+  const seededUsers = await prisma.user.findMany({
+    where: { username: { in: ['admin', 'superadmin'] } },
+    select: { id: true, username: true },
+  })
+  await prisma.userTeam.createMany({
+    data: seededUsers.map((u) => ({
+      user_id: u.id,
+      team_id: team.id,
+      role: u.username === 'superadmin' ? 'KETUA' : 'ANGGOTA',
+    })),
+  })
+  console.log('  2 user_teams created')
+
+  // 4. Kunjungan
   const kunjunganInput = [
     {
       id: randomUUID(),
@@ -333,6 +371,7 @@ async function main() {
           kota_id: kotaId,
           kecamatan_id: kecamatanId,
           kelurahan_id: kelurahanId,
+          team_id: team.id,
         },
       })
     }),
@@ -348,7 +387,7 @@ async function main() {
       hari: 'Senin',
       tanggal: new Date('2026-03-10'),
       tempat: 'Jl. Bukit Duri Selatan No. 12, Bukit Duri',
-      foto: 'foto-sosialisasi-bukit-duri.jpg',
+      foto: ['foto-sosialisasi-bukit-duri.jpg'],
       jenis_kegiatan: 'Sosialisasi',
       nama_kegiatan: 'Sosialisasi Kesehatan Lingkungan',
       link_gmaps: 'https://maps.google.com/?q=Bukit+Duri+Selatan+12',
@@ -367,6 +406,7 @@ async function main() {
         data: {
           ...k,
           kunjungan_id: kunjungan.id,
+          team_id: team.id,
         },
       })
     }),
@@ -375,18 +415,34 @@ async function main() {
 
   // 6. RBAC: Roles & Permissions
   const permissionData = [
+    // Dashboard
     { name: 'dashboard:read', resource: 'dashboard', action: 'read', description: 'Melihat dashboard' },
+    // Aspirasi
     { name: 'aspirasi:read', resource: 'aspirasi', action: 'read', description: 'Melihat aspirasi' },
     { name: 'aspirasi:write', resource: 'aspirasi', action: 'write', description: 'Input & edit aspirasi' },
     { name: 'aspirasi:delete', resource: 'aspirasi', action: 'delete', description: 'Menghapus aspirasi' },
+    // Kunjungan / Kegiatan
     { name: 'kunjungan:read', resource: 'kunjungan', action: 'read', description: 'Melihat kunjungan' },
     { name: 'kunjungan:write', resource: 'kunjungan', action: 'write', description: 'Input & edit kunjungan' },
     { name: 'kunjungan:delete', resource: 'kunjungan', action: 'delete', description: 'Menghapus kunjungan' },
+    // Relawan
     { name: 'relawan:read', resource: 'relawan', action: 'read', description: 'Melihat relawan' },
     { name: 'relawan:write', resource: 'relawan', action: 'write', description: 'Input & edit relawan' },
     { name: 'relawan:delete', resource: 'relawan', action: 'delete', description: 'Menghapus relawan' },
+    // Pengaturan
     { name: 'pengaturan:read', resource: 'pengaturan', action: 'read', description: 'Melihat pengaturan' },
     { name: 'pengaturan:write', resource: 'pengaturan', action: 'write', description: 'Ubah pengaturan' },
+    // RBAC (kelola role & permission)
+    { name: 'rbac:read', resource: 'rbac', action: 'read', description: 'Melihat role & permission' },
+    { name: 'rbac:write', resource: 'rbac', action: 'write', description: 'Kelola role & permission' },
+    // Teams
+    { name: 'teams:read', resource: 'teams', action: 'read', description: 'Melihat tim kerja' },
+    { name: 'teams:write', resource: 'teams', action: 'write', description: 'Input & edit tim kerja' },
+    { name: 'teams:delete', resource: 'teams', action: 'delete', description: 'Menghapus tim kerja' },
+    // DPRD
+    { name: 'dprd:read', resource: 'dprd', action: 'read', description: 'Melihat DPRD' },
+    { name: 'dprd:write', resource: 'dprd', action: 'write', description: 'Input & edit DPRD' },
+    { name: 'dprd:delete', resource: 'dprd', action: 'delete', description: 'Menghapus DPRD' },
   ]
 
   const permissionRecords = []
@@ -399,8 +455,25 @@ async function main() {
   const roleData = [
     {
       name: 'Super Admin',
-      description: 'Akses penuh ke semua fitur aplikasi',
+      description: 'Akses penuh ke semua fitur & pengaturan aplikasi',
       permissions: permissionData.map((p) => p.name),
+    },
+    {
+      name: 'Sekretariat',
+      description: 'Mengelola data & melihat seluruh tim (scope global)',
+      permissions: [
+        'dashboard:read',
+        'aspirasi:read',
+        'aspirasi:write',
+        'kunjungan:read',
+        'kunjungan:write',
+        'relawan:read',
+        'relawan:write',
+        'pengaturan:read',
+        'rbac:read',
+        'teams:read',
+        'dprd:read',
+      ],
     },
     {
       name: 'Admin DPRD',
@@ -417,6 +490,19 @@ async function main() {
         'relawan:write',
         'relawan:delete',
         'pengaturan:read',
+      ],
+    },
+    {
+      name: 'User',
+      description: 'User biasa yang hanya input data',
+      permissions: [
+        'dashboard:read',
+        'aspirasi:read',
+        'aspirasi:write',
+        'kunjungan:read',
+        'kunjungan:write',
+        'relawan:read',
+        'relawan:write',
       ],
     },
   ]
