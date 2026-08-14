@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, resolveTeamIdForCreate } from '@/lib/scoping'
 
 export async function POST(request: Request) {
   const body = await request.json()
+  const scope = await getDataScope()
 
   const [kota, kecamatan, kelurahan] = await Promise.all([
     prisma.kota.findFirstOrThrow({ where: { nama: body.kota ?? 'Jakarta Selatan' } }),
@@ -39,7 +41,8 @@ export async function POST(request: Request) {
         rw: body.rw ?? '',
         jumlah_peserta: body.jumlah_peserta ? parseInt(body.jumlah_peserta) : null,
         catatan: body.catatan ?? '',
-        dibuat_oleh_id: body.dibuat_oleh_id ?? null,
+        dibuat_oleh_id: body.dibuat_oleh_id ?? scope.userId,
+        team_id: resolveTeamIdForCreate(scope, body.team_id ?? null),
       },
       include: {
         kunjungan: {

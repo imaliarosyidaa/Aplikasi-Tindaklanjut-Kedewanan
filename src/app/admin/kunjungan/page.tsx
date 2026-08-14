@@ -518,7 +518,7 @@ text-[var(--color-text-secondary)]"
                     </td>
                     <td className="px-4 py-3 text-[var(--color-text)]">{item.lokasi || '-'}</td>
                     <td className="px-4 py-3 text-[var(--color-text)]">
-                      {item.alamat || '-'} {item.kelurahan || '-'}, {item.kecamatan || '-'}, {item.kota || '-'}
+                      {item?.alamat} {item?.kelurahan}, {item?.kecamatan}, {item?.kota}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <div className="inline-flex items-center gap-2">

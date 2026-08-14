@@ -62,7 +62,7 @@ export function teamFilter(scope: DataScope): Record<string, unknown> {
 
 /**
  * Menentukan team_id default untuk data baru yang dibuat user.
- * - Global role: pakai team_id dari body jika dikirim, selain itu null.
+ * - Global role: pakai team_id dari body jika dikirim, selain itu tim pertama user.
  * - User biasa: selalu diarahkan ke tim pertamanya (tidak bisa pilih tim lain).
  */
 export function resolveTeamIdForCreate(
@@ -70,7 +70,7 @@ export function resolveTeamIdForCreate(
   requestedTeamId?: string | null,
 ): string | null {
   if (scope.isGlobal) {
-    return requestedTeamId || null
+    return requestedTeamId || scope.teamIds[0] || null
   }
   return scope.teamIds[0] ?? null
 }
