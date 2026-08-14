@@ -176,6 +176,14 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
                   <span className="text-[var(--color-text-secondary)]">Alamat</span>
                   <span className="text-[var(--color-text)] font-medium">{aspirasi?.lokasi || '-'}</span>
                 </div>
+                <div className="grid grid-cols-2 items-center gap-2">
+                  <span className="text-[var(--color-text-secondary)]">RT</span>
+                  <span className="text-[var(--color-text)] font-medium">{aspirasi?.rt || '-'}</span>
+                </div>
+                <div className="grid grid-cols-2 items-center gap-2">
+                  <span className="text-[var(--color-text-secondary)]">RW</span>
+                  <span className="text-[var(--color-text)] font-medium">{aspirasi?.rw || '-'}</span>
+                </div>
               </div>
             </div>
           </Card>

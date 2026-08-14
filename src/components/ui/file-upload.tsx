@@ -174,7 +174,7 @@ export const FileUpload = ({
           {uploading ? 'Mengunggah file...' : 'Drag & drop file atau klik untuk pilih'}
         </p>
         <p className="text-xs text-[var(--color-text-secondary)] mb-3">
-          PDF, Word, Excel, PPT, JPEG, PNG (Maks {maxSizeMB}MB per file, maks {maxFiles} file)
+          PDF, Word, Excel, PPT, JPEG, JPG, PNG (Maks {maxSizeMB}MB per file, maks {maxFiles} file)
         </p>
 
         <input
