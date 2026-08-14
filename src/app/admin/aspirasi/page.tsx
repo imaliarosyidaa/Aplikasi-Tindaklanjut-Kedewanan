@@ -598,7 +598,7 @@ export default function AspirasiPage(): React.ReactNode {
 
                   {/* Deskripsi */}
                   <td className="px-2 py-2 text-[var(--color-text-secondary)]">
-                    <p className="line-clamp-2 max-w-[180px]">{aspirasi.deskripsi}</p>
+                    <p className="line-clamp-2 max-w-[180px]">{aspirasi?.deskripsi || '-'}</p>
                   </td>
 
                   {/* Pelapor */}

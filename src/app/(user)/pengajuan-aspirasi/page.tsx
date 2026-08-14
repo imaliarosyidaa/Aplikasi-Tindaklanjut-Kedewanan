@@ -422,7 +422,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
       return
     }
     if (!pengaduan.trim() && lampiran.length === 0) {
-      setError('Salah satu isi antara pengaduan atau lampiran aspirasi harus diisi')
+      setError('Harap isi deskripsi pengaduan atau unggah lampiran aspirasi.')
       return
     }
 
