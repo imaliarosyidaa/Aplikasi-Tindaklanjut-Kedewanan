@@ -28,6 +28,7 @@ model Dprd {
   users       User[]
 
   @@map("dprds")
+  aspirasis Aspirasis[]
 }
 
 model Team {
@@ -205,12 +206,14 @@ model Aspirasis {
   user_id              String?         @db.Uuid
   created_at           DateTime        @default(now())
   updated_at           DateTime        @updatedAt
+  master_dewan         String?         @db.Uuid
 
   user                 User?           @relation(fields: [user_id], references: [id])
   kota                 Kota?           @relation(fields: [kota_id], references: [id])
   kecamatan            Kecamatan?      @relation(fields: [kecamatan_id], references: [id])
   kelurahan            Kelurahan?      @relation(fields: [kelurahan_id], references: [id])
   trackings            TrackingAspirasi[]
+  dewan                Dprd?           @relation(fields: [master_dewan], references: [id])
   @@map("aspirasis")
 }
 

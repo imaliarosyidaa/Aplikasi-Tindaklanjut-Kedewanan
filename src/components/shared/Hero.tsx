@@ -14,24 +14,26 @@ export default function Hero({
   children,
 }: HeroProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 md:py-32">
-      {/* Background */}
-      <div className="absolute inset-0 opacity-40">
-        <div className="absolute left-10 top-10 h-72 w-72 rounded-full bg-blue-200 blur-3xl" />
-        <div className="absolute right-10 top-40 h-72 w-72 rounded-full bg-purple-200 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-pink-200 blur-3xl" />
-      </div>
+    <section className="relative w-full overflow-hidden bg-white pb-44 text-center text-sm">
+      {/* Grid background */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(5,0,64,0.06) 39px, rgba(5,0,64,0.06) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(5,0,64,0.06) 39px, rgba(5,0,64,0.06) 40px)',
+        }}
+      />
 
-      <div className="relative mx-auto max-w-5xl px-6 text-center">
+      <div className="relative mx-auto max-w-5xl px-6">
         {badge && (
-          <span className="inline-flex rounded-full bg-blue-100 px-4 py-1 text-sm font-medium text-blue-700">
-            {badge}
-          </span>
+          <div className="mx-auto mt-16 md:mt-24 w-max flex items-center gap-2 rounded-full border border-[var(--color-border)] px-4 py-2">
+            <span className="text-sm text-[var(--color-text-secondary)]">{badge}</span>
+          </div>
         )}
 
-        <h1 className="mt-6 text-4xl font-bold leading-tight text-gray-900 md:text-6xl">
+        <h1 className="mx-auto mt-8 max-w-[850px] text-4xl font-semibold leading-tight text-[var(--color-text)] md:text-7xl">
           {title}
-
           {highlight && (
             <>
               {" "}
@@ -43,13 +45,13 @@ export default function Hero({
         </h1>
 
         {subtitle && (
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-gray-600">
+          <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-[var(--color-text-secondary)] md:text-base">
             {subtitle}
           </p>
         )}
 
         {children && (
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mx-auto mt-4 flex w-full items-center justify-center gap-3">
             {children}
           </div>
         )}

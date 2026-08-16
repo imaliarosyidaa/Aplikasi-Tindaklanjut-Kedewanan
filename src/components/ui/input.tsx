@@ -7,13 +7,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
-export const Input = ({
-  className,
-  label,
-  error,
-  id,
-  ...props
-}: InputProps): React.ReactNode => {
+export const Input = ({ className, label, error, id, ...props }: InputProps): React.ReactNode => {
   return (
     <div className="space-y-1">
       {label && (
@@ -26,8 +20,9 @@ export const Input = ({
         className={cn(
           'w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent',
           error && 'border-[var(--color-danger)] focus:ring-[var(--color-danger)]',
-          className
+          className,
         )}
+        autoComplete={'off'}
         {...props}
       />
       {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}

@@ -1,0 +1,2299 @@
+{
+  "exportedAt": "2026-08-16T05:24:33.735Z",
+  "kotas": [
+    {
+      "id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Jakarta Pusat"
+    },
+    {
+      "id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Jakarta Barat"
+    },
+    {
+      "id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Jakarta Selatan"
+    },
+    {
+      "id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Jakarta Timur"
+    },
+    {
+      "id": "9586fb77-a97d-4c91-af18-ea4d4086c93c",
+      "nama": "Jakarta Utara"
+    },
+    {
+      "id": "737cdaa2-d331-4639-a997-417d8b77bb29",
+      "nama": "Kepulauan Seribu"
+    }
+  ],
+  "kecamatans": [
+    {
+      "id": "0b3e2578-1813-483d-825b-819c1fba3171",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Gambir"
+    },
+    {
+      "id": "08b5c2ad-2dc8-4ece-afb2-f929a94da1a0",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Sawah Besar"
+    },
+    {
+      "id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Kemayoran"
+    },
+    {
+      "id": "3abf2fd9-ad24-4c79-b235-0ca1789052e3",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Senen"
+    },
+    {
+      "id": "56788599-ddfd-4a4d-8a11-2410d6ed5d4e",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Cempaka Putih"
+    },
+    {
+      "id": "717d0800-9a70-4c7d-ac2c-505594832eb4",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Menteng"
+    },
+    {
+      "id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Tanah Abang"
+    },
+    {
+      "id": "8ca2ac49-f640-4d91-8f4d-f3877e1af082",
+      "kota_id": "b19f84d8-0fc4-4772-8bce-28a721045ae2",
+      "nama": "Johar Baru"
+    },
+    {
+      "id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Cengkareng"
+    },
+    {
+      "id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Grogol Petamburan"
+    },
+    {
+      "id": "dd5c7aeb-8d18-4d38-a562-1a792a347be2",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Kalideres"
+    },
+    {
+      "id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Kebon Jeruk"
+    },
+    {
+      "id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Kembangan"
+    },
+    {
+      "id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Palmerah"
+    },
+    {
+      "id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Taman Sari"
+    },
+    {
+      "id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "nama": "Tambora"
+    },
+    {
+      "id": "d064449d-41d8-4317-98bb-4ce04b0f35e6",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Cilandak"
+    },
+    {
+      "id": "7f1088c3-765e-4838-881d-2367406bdb78",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Jagakarsa"
+    },
+    {
+      "id": "653e018f-6707-459f-90fd-956abde89734",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Kebayoran Baru"
+    },
+    {
+      "id": "98d7f3e9-8e78-464c-9b91-d58d51277ce5",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Kebayoran Lama"
+    },
+    {
+      "id": "c8ee650f-a82d-4718-99bc-32e580ba1c16",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Mampang Prapatan"
+    },
+    {
+      "id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Pancoran"
+    },
+    {
+      "id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Pasar Minggu"
+    },
+    {
+      "id": "9e982b85-4c74-43d1-9aae-61f68bebfa9b",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Pesanggrahan"
+    },
+    {
+      "id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Setiabudi"
+    },
+    {
+      "id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "nama": "Tebet"
+    },
+    {
+      "id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Cakung"
+    },
+    {
+      "id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Cipayung"
+    },
+    {
+      "id": "1004900f-bbc0-47c6-8563-1e403a2e6695",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Ciracas"
+    },
+    {
+      "id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Duren Sawit"
+    },
+    {
+      "id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Jatinegara"
+    },
+    {
+      "id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Kramat Jati"
+    },
+    {
+      "id": "b4440784-1977-4b83-a144-2e834ad9a05b",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Makasar"
+    },
+    {
+      "id": "94f20574-1407-4cb0-bde7-71bf06e96dbc",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Matraman"
+    },
+    {
+      "id": "5391ec76-eb30-453a-be79-07b6137b8181",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Pasar Rebo"
+    },
+    {
+      "id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "kota_id": "450dfb8a-8b31-4980-81be-307a0883791c",
+      "nama": "Pulo Gadung"
+    },
+    {
+      "id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "kota_id": "9586fb77-a97d-4c91-af18-ea4d4086c93c",
+      "nama": "Cilincing"
+    },
+    {
+      "id": "fc38f50c-fd17-4ab4-8eee-f796a4784b64",
+      "kota_id": "9586fb77-a97d-4c91-af18-ea4d4086c93c",
+      "nama": "Kelapa Gading"
+    },
+    {
+      "id": "b8984137-15fd-4f69-89e7-347a77535684",
+      "kota_id": "9586fb77-a97d-4c91-af18-ea4d4086c93c",
+      "nama": "Koja"
+    },
+    {
+      "id": "ac5ceb01-e283-44dc-bc6f-082eee7fad11",
+      "kota_id": "9586fb77-a97d-4c91-af18-ea4d4086c93c",
+      "nama": "Pademangan"
+    },
+    {
+      "id": "0aee3192-41c9-43b8-96fd-c0072798a838",
+      "kota_id": "9586fb77-a97d-4c91-af18-ea4d4086c93c",
+      "nama": "Penjaringan"
+    },
+    {
+      "id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "kota_id": "9586fb77-a97d-4c91-af18-ea4d4086c93c",
+      "nama": "Tanjung Priok"
+    },
+    {
+      "id": "fac6f383-f395-403c-9867-b519b0c389ee",
+      "kota_id": "737cdaa2-d331-4639-a997-417d8b77bb29",
+      "nama": "Kepulauan Seribu Selatan"
+    },
+    {
+      "id": "a31bb6d2-2d29-49cf-b0da-2a3cb49f89c2",
+      "kota_id": "737cdaa2-d331-4639-a997-417d8b77bb29",
+      "nama": "Kepulauan Seribu Utara"
+    }
+  ],
+  "kelurahans": [
+    {
+      "id": "15670c3d-fe77-4602-a2c5-da2f9128812e",
+      "kecamatan_id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "nama": "Kota Bambu Utara"
+    },
+    {
+      "id": "354f813a-7ff1-4c7e-848c-d781e2a1087f",
+      "kecamatan_id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "nama": "Palmerah"
+    },
+    {
+      "id": "f7cf3c22-c066-4dc2-9607-072eaa22e223",
+      "kecamatan_id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "nama": "Slipi"
+    },
+    {
+      "id": "f69ccce6-b54a-4fc2-ad86-9c7855afaf4f",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Glodok"
+    },
+    {
+      "id": "c600eb94-6e23-431f-814e-7c142aed9308",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Keagungan"
+    },
+    {
+      "id": "392008b8-dc85-45ef-9aeb-a08a3c5346af",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Krukut"
+    },
+    {
+      "id": "60598a87-f1ad-4724-b2a0-5908118c8e64",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Mangga Besar"
+    },
+    {
+      "id": "3431b696-a337-4d0d-b09e-a63c39e7cd64",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Maphar"
+    },
+    {
+      "id": "2029d46c-e077-4baa-9359-a726f01c8d43",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Pinangsia"
+    },
+    {
+      "id": "f8af498e-d212-42d3-9fef-7784fc2333c1",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Taman Sari"
+    },
+    {
+      "id": "09a6e535-c4a0-460e-98a9-a332249fcf59",
+      "kecamatan_id": "4f65d204-2641-4d9b-b5d7-ff8ca7103d79",
+      "nama": "Tangki"
+    },
+    {
+      "id": "d330d6ee-3257-45c9-908c-9b44e074f1e4",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Angke"
+    },
+    {
+      "id": "ff749d8e-2985-4f6f-be9f-f0e41c0954f2",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Duri Selatan"
+    },
+    {
+      "id": "38ca3433-3af0-4fa5-926f-c34fb59752bf",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Duri Utara"
+    },
+    {
+      "id": "bcaa9d7d-49fd-4bf0-9d75-63e59a02ff73",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Jembatan Besi"
+    },
+    {
+      "id": "e3dbb2aa-f392-4aa3-9ebf-a0ae537f9981",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Jembatan Lima"
+    },
+    {
+      "id": "1b063a1a-e840-427a-b508-9795e66a5649",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Kali Anyar"
+    },
+    {
+      "id": "0d60e443-19e1-4d8f-8fe1-2e1c26711d45",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Krendang"
+    },
+    {
+      "id": "4072c95c-2bc4-4da2-a24b-4bc24e7feadf",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Pekojan"
+    },
+    {
+      "id": "eab04f71-f584-430a-bcfa-34fbd52c0622",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Roa Malaka"
+    },
+    {
+      "id": "5580fd01-5142-46e1-bf90-13f7c1ed6b04",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Tambora"
+    },
+    {
+      "id": "59c9fdc9-d81e-4aee-a75c-2e4797744ffa",
+      "kecamatan_id": "34670a50-9cbb-419b-aee9-88d787b59924",
+      "nama": "Tanah Sereal"
+    },
+    {
+      "id": "877de0fc-1ab4-45ac-93dd-97d176df99ee",
+      "kecamatan_id": "d064449d-41d8-4317-98bb-4ce04b0f35e6",
+      "nama": "Cilandak Barat"
+    },
+    {
+      "id": "de87086b-8f7e-4f39-841e-fbffb2da47a0",
+      "kecamatan_id": "d064449d-41d8-4317-98bb-4ce04b0f35e6",
+      "nama": "Cipete Selatan"
+    },
+    {
+      "id": "a4faccc9-154d-4da8-9148-5318fe2737b0",
+      "kecamatan_id": "d064449d-41d8-4317-98bb-4ce04b0f35e6",
+      "nama": "Gandaria Selatan"
+    },
+    {
+      "id": "8fe36585-84dc-426c-a03d-113bf147dc7b",
+      "kecamatan_id": "d064449d-41d8-4317-98bb-4ce04b0f35e6",
+      "nama": "Lebak Bulus"
+    },
+    {
+      "id": "039d3ce5-744e-440d-8b1e-4cc6a5e7302a",
+      "kecamatan_id": "d064449d-41d8-4317-98bb-4ce04b0f35e6",
+      "nama": "Pondok Labu"
+    },
+    {
+      "id": "2ec91d31-a8fa-48da-aa09-48c4a2e2d4a6",
+      "kecamatan_id": "7f1088c3-765e-4838-881d-2367406bdb78",
+      "nama": "Ciganjur"
+    },
+    {
+      "id": "d89d667f-d282-46ff-bf7a-d9ebbb48cf22",
+      "kecamatan_id": "7f1088c3-765e-4838-881d-2367406bdb78",
+      "nama": "Cipedak"
+    },
+    {
+      "id": "2016739b-63c2-44c1-84cb-a52b0600f498",
+      "kecamatan_id": "7f1088c3-765e-4838-881d-2367406bdb78",
+      "nama": "Jagakarsa"
+    },
+    {
+      "id": "2f8ddd6b-5b5d-44ac-b049-7a81dadcf84c",
+      "kecamatan_id": "7f1088c3-765e-4838-881d-2367406bdb78",
+      "nama": "Lenteng Agung"
+    },
+    {
+      "id": "be4a95f0-03e0-4efb-af68-3f85ca2cc756",
+      "kecamatan_id": "7f1088c3-765e-4838-881d-2367406bdb78",
+      "nama": "Srengseng Sawah"
+    },
+    {
+      "id": "8e02bc10-29ed-42c4-b09b-c0b3ae8d32e9",
+      "kecamatan_id": "7f1088c3-765e-4838-881d-2367406bdb78",
+      "nama": "Tanjung Barat"
+    },
+    {
+      "id": "f7d94201-9261-4b1e-b8c7-832bfa9bd93c",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Cipete Utara"
+    },
+    {
+      "id": "0dcd6034-660e-41f0-8c43-cfe582a68d75",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Gandaria Utara"
+    },
+    {
+      "id": "9e4eb760-f7c0-48d2-ab16-d389ba2c9bcf",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Gunung"
+    },
+    {
+      "id": "e0578630-42ea-4599-966a-9d49a1fa4ede",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Kramat Pela"
+    },
+    {
+      "id": "02a3c62f-2600-45c8-a081-79608e105ed6",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Melawai"
+    },
+    {
+      "id": "e7d2cfdf-e8d7-4a12-93af-cc7aa2778510",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Petogogan"
+    },
+    {
+      "id": "4e872185-763d-4333-82ec-f88e2548f9e5",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Pulo"
+    },
+    {
+      "id": "5016ee3a-bd6e-42ac-984c-b69a890d3d59",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Rawa Barat"
+    },
+    {
+      "id": "d9100646-b3af-458e-9a48-c9e1d6bfd1ef",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Selong"
+    },
+    {
+      "id": "08132bf7-3ac6-412e-a4b4-cd8e7879cc54",
+      "kecamatan_id": "653e018f-6707-459f-90fd-956abde89734",
+      "nama": "Senayan"
+    },
+    {
+      "id": "958793eb-c152-4e70-a105-9554d3f98bd3",
+      "kecamatan_id": "98d7f3e9-8e78-464c-9b91-d58d51277ce5",
+      "nama": "Cipulir"
+    },
+    {
+      "id": "730c46d3-3a07-4bc7-af93-fdcab6561c5d",
+      "kecamatan_id": "98d7f3e9-8e78-464c-9b91-d58d51277ce5",
+      "nama": "Grogol Selatan"
+    },
+    {
+      "id": "3752e881-c252-4103-8508-ea08661bd97c",
+      "kecamatan_id": "98d7f3e9-8e78-464c-9b91-d58d51277ce5",
+      "nama": "Grogol Utara"
+    },
+    {
+      "id": "a85ce45d-0e8b-4b74-a72e-6b011f9ee7fe",
+      "kecamatan_id": "98d7f3e9-8e78-464c-9b91-d58d51277ce5",
+      "nama": "Kebayoran Lama Selatan"
+    },
+    {
+      "id": "a78e949a-e6a9-4c11-9c61-2069d58265e6",
+      "kecamatan_id": "98d7f3e9-8e78-464c-9b91-d58d51277ce5",
+      "nama": "Kebayoran Lama Utara"
+    },
+    {
+      "id": "e0cd3fa3-9aaa-4c0d-8a1b-b1ad22e30d08",
+      "kecamatan_id": "98d7f3e9-8e78-464c-9b91-d58d51277ce5",
+      "nama": "Pondok Pinang"
+    },
+    {
+      "id": "2f340e0d-697f-4ce9-b00c-48ecc3d33977",
+      "kecamatan_id": "c8ee650f-a82d-4718-99bc-32e580ba1c16",
+      "nama": "Bangka"
+    },
+    {
+      "id": "24cdc606-13ec-4f98-b76f-fd9d88c6cae4",
+      "kecamatan_id": "c8ee650f-a82d-4718-99bc-32e580ba1c16",
+      "nama": "Kuningan Barat"
+    },
+    {
+      "id": "589af9b4-ba72-405c-aad5-78ebbf4cacc3",
+      "kecamatan_id": "c8ee650f-a82d-4718-99bc-32e580ba1c16",
+      "nama": "Mampang Prapatan"
+    },
+    {
+      "id": "f768823b-d753-458b-96b2-ad48b6c96f44",
+      "kecamatan_id": "c8ee650f-a82d-4718-99bc-32e580ba1c16",
+      "nama": "Pela Mampang"
+    },
+    {
+      "id": "d3febf1d-a252-4f53-9d45-537de113113a",
+      "kecamatan_id": "c8ee650f-a82d-4718-99bc-32e580ba1c16",
+      "nama": "Tegal Parang"
+    },
+    {
+      "id": "3af4f851-a2ce-4319-b650-102143ac757c",
+      "kecamatan_id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "nama": "Cikoko"
+    },
+    {
+      "id": "6e941d82-2ce4-4446-98a5-fbb0bd3e3ec0",
+      "kecamatan_id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "nama": "Duren Tiga"
+    },
+    {
+      "id": "b4634292-8921-43cc-9b2f-ea1da3798959",
+      "kecamatan_id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "nama": "Kalibata"
+    },
+    {
+      "id": "0740cbce-9da4-49dd-87ee-08fde68aafda",
+      "kecamatan_id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "nama": "Pancoran"
+    },
+    {
+      "id": "9f1f64ed-ff61-4501-90d9-1cb6c85b90a8",
+      "kecamatan_id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "nama": "Pengadegan"
+    },
+    {
+      "id": "014b665b-17fd-4d82-b9c9-7f0eb4a0bca4",
+      "kecamatan_id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "nama": "Rawa Jati"
+    },
+    {
+      "id": "50e72417-83bf-4598-80d6-3554b3cbd247",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "nama": "Cilandak Timur"
+    },
+    {
+      "id": "b63f5b08-06c5-48ac-acbb-b164e1329c3a",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "nama": "Jati Padang"
+    },
+    {
+      "id": "3732297e-991d-414e-b538-3f3e57e56a83",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "nama": "Kebagusan"
+    },
+    {
+      "id": "000887a7-b59b-4e09-aa6d-751147b06b03",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "nama": "Pasar Minggu"
+    },
+    {
+      "id": "d2532cf1-4eae-43de-86c5-5282b405f69a",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "nama": "Pejaten Barat"
+    },
+    {
+      "id": "aad17c41-fbdd-47b4-9bfd-cbeb32e7f874",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "nama": "Pejaten Timur"
+    },
+    {
+      "id": "5041e473-cd88-43ab-9548-8b7a4b0f826b",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "nama": "Ragunan"
+    },
+    {
+      "id": "06977162-c5d5-4781-a481-2bf386416bdf",
+      "kecamatan_id": "9e982b85-4c74-43d1-9aae-61f68bebfa9b",
+      "nama": "Bintaro"
+    },
+    {
+      "id": "c1b54bf8-353f-429c-90b4-8ea3078ca446",
+      "kecamatan_id": "9e982b85-4c74-43d1-9aae-61f68bebfa9b",
+      "nama": "Pesanggrahan"
+    },
+    {
+      "id": "77ac7b88-49ad-44e0-a13a-ee30a1df8aea",
+      "kecamatan_id": "9e982b85-4c74-43d1-9aae-61f68bebfa9b",
+      "nama": "Petukangan Selatan"
+    },
+    {
+      "id": "9f30014a-09dc-4771-9973-2225109a5102",
+      "kecamatan_id": "9e982b85-4c74-43d1-9aae-61f68bebfa9b",
+      "nama": "Petukangan Utara"
+    },
+    {
+      "id": "a008c3fa-e1be-495e-836e-48d5f39b5bfc",
+      "kecamatan_id": "9e982b85-4c74-43d1-9aae-61f68bebfa9b",
+      "nama": "Ulujami"
+    },
+    {
+      "id": "6155756b-5cc2-4ed9-ac3f-bcf52af9bb22",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Guntur"
+    },
+    {
+      "id": "f5a67c71-5434-4e7e-b1d8-c4d6339f9c31",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Karet"
+    },
+    {
+      "id": "39baeef7-67b7-4113-b6e8-2c7b8a0ea7ba",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Karet Kuningan"
+    },
+    {
+      "id": "7675600e-81ce-4a85-862d-c509cbecf036",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Karet Semanggi"
+    },
+    {
+      "id": "0bd9830f-54c1-4eb7-8fce-afd2e1bdbf34",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Menteng Atas"
+    },
+    {
+      "id": "48e9d632-6d85-4060-a860-c299bf04aca5",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Pasar Manggis"
+    },
+    {
+      "id": "e0fd2d98-cdf7-4238-920a-1d4e02750365",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Setiabudi"
+    },
+    {
+      "id": "4b3dbdd4-0c83-403a-8df5-06e37067e89d",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "nama": "Bukit Duri"
+    },
+    {
+      "id": "e369b87b-a226-461e-a776-91097d2f5feb",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "nama": "Kebon Baru"
+    },
+    {
+      "id": "2b96e6ac-ded2-46fe-bd34-73553edd80ae",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "nama": "Manggarai"
+    },
+    {
+      "id": "222dc54b-2648-442e-a339-3fd714d059b6",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "nama": "Manggarai Selatan"
+    },
+    {
+      "id": "8a0ed99e-085c-4195-bf6d-60c8d8934cf5",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "nama": "Menteng Dalam"
+    },
+    {
+      "id": "1ab7f966-3d3f-4aed-9970-5e5c75aba355",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "nama": "Tebet Barat"
+    },
+    {
+      "id": "f7e71eb4-7da4-4091-8136-069c1ab7c3f3",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "nama": "Tebet Timur"
+    },
+    {
+      "id": "52d73ac8-4614-44a4-bb9a-57b6c95aa743",
+      "kecamatan_id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "nama": "Cakung Barat"
+    },
+    {
+      "id": "c0e7c3f2-34aa-4e2b-8b4a-2369cb648ad5",
+      "kecamatan_id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "nama": "Cakung Timur"
+    },
+    {
+      "id": "0bf90722-7bf1-435e-926d-c27aa2961a97",
+      "kecamatan_id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "nama": "Jatinegara"
+    },
+    {
+      "id": "c85db80d-8b81-4c9c-957a-3fe9aaa6ad53",
+      "kecamatan_id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "nama": "Penggilingan"
+    },
+    {
+      "id": "ba089d3a-ddb7-45a6-b968-94d3ff981d8b",
+      "kecamatan_id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "nama": "Pulo Gebang"
+    },
+    {
+      "id": "fe435014-2e9b-4cba-ba4e-973143c5b586",
+      "kecamatan_id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "nama": "Rawa Terate"
+    },
+    {
+      "id": "ac3a7bef-c981-4792-85d3-74efa82f9125",
+      "kecamatan_id": "e5c1d51a-be8b-463d-af90-985d6a154bd2",
+      "nama": "Ujung Menteng"
+    },
+    {
+      "id": "9be95357-0bb9-4edc-b321-9f78e020f9ce",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Bambu Apus"
+    },
+    {
+      "id": "d7ec9b3d-ec5b-4c32-b1c8-def17150512b",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Ceger"
+    },
+    {
+      "id": "415098d9-fd0d-420c-865e-293f1356b36b",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Cilangkap"
+    },
+    {
+      "id": "bbba9fae-4f22-45a2-8a5e-69e869a0c18c",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Cipayung"
+    },
+    {
+      "id": "7b47f9c8-4f09-417a-8768-ac6d2106794c",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Lubang Buaya"
+    },
+    {
+      "id": "3c9c1952-8c37-47f2-a775-f27255472034",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Munjul"
+    },
+    {
+      "id": "64d86705-ec29-4f43-a369-d0d5ef3e8dc0",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Pondok Ranggon"
+    },
+    {
+      "id": "8f4c8c1c-290d-4c89-838f-769a3f1daecc",
+      "kecamatan_id": "60c9e9ac-ac95-4083-b237-746d7c4ffd44",
+      "nama": "Setu"
+    },
+    {
+      "id": "00236021-675f-4c78-99f6-fb07336674f3",
+      "kecamatan_id": "1004900f-bbc0-47c6-8563-1e403a2e6695",
+      "nama": "Cibubur"
+    },
+    {
+      "id": "de33a4f0-945a-4203-b3ea-7d5d186fa462",
+      "kecamatan_id": "1004900f-bbc0-47c6-8563-1e403a2e6695",
+      "nama": "Ciracas"
+    },
+    {
+      "id": "ba544454-96b1-49c8-a981-026a849d71a1",
+      "kecamatan_id": "1004900f-bbc0-47c6-8563-1e403a2e6695",
+      "nama": "Kelapa Dua Wetan"
+    },
+    {
+      "id": "750d2758-72ae-41e8-a9f0-52271c8d2c5a",
+      "kecamatan_id": "1004900f-bbc0-47c6-8563-1e403a2e6695",
+      "nama": "Rambutan"
+    },
+    {
+      "id": "0eacef26-737e-4137-9af7-83c5d02b570a",
+      "kecamatan_id": "1004900f-bbc0-47c6-8563-1e403a2e6695",
+      "nama": "Susukan"
+    },
+    {
+      "id": "dcd5b53b-1e33-4292-9152-b60cf9503ebd",
+      "kecamatan_id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "nama": "Duren Sawit"
+    },
+    {
+      "id": "7aad856f-34ad-436d-a03f-ae5bf6b3e516",
+      "kecamatan_id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "nama": "Klender"
+    },
+    {
+      "id": "c3e63cbf-ce00-4de9-a75c-689e4097e5b8",
+      "kecamatan_id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "nama": "Malaka Jaya"
+    },
+    {
+      "id": "1b763a6a-5cee-4756-8aa6-649d6519c30b",
+      "kecamatan_id": "0b3e2578-1813-483d-825b-819c1fba3171",
+      "nama": "Cideng"
+    },
+    {
+      "id": "fd8b1559-4c42-4ec7-8849-235e6c6687bd",
+      "kecamatan_id": "0b3e2578-1813-483d-825b-819c1fba3171",
+      "nama": "Duri Pulo"
+    },
+    {
+      "id": "2c697775-2243-4002-996d-88a5e0d943a5",
+      "kecamatan_id": "0b3e2578-1813-483d-825b-819c1fba3171",
+      "nama": "Gambir"
+    },
+    {
+      "id": "b03eab74-00c2-425c-a51b-73a91d26997d",
+      "kecamatan_id": "0b3e2578-1813-483d-825b-819c1fba3171",
+      "nama": "Kebon Kelapa"
+    },
+    {
+      "id": "832659cf-25d5-4b24-82e2-05ea9aaef70b",
+      "kecamatan_id": "0b3e2578-1813-483d-825b-819c1fba3171",
+      "nama": "Petojo Selatan"
+    },
+    {
+      "id": "8107ab2f-c7ea-4754-be3a-d362bad2e8eb",
+      "kecamatan_id": "0b3e2578-1813-483d-825b-819c1fba3171",
+      "nama": "Petojo Utara"
+    },
+    {
+      "id": "8e3d3f06-26da-4ed7-9b5a-904ab221b617",
+      "kecamatan_id": "08b5c2ad-2dc8-4ece-afb2-f929a94da1a0",
+      "nama": "Gunung Sahari Utara"
+    },
+    {
+      "id": "f4b395b7-9a23-4e8d-a6f0-b77c6bc93e1a",
+      "kecamatan_id": "08b5c2ad-2dc8-4ece-afb2-f929a94da1a0",
+      "nama": "Karang Anyar"
+    },
+    {
+      "id": "b5269c20-2846-4398-b45b-a6989425234c",
+      "kecamatan_id": "08b5c2ad-2dc8-4ece-afb2-f929a94da1a0",
+      "nama": "Kartini"
+    },
+    {
+      "id": "d14cd8cd-4cd6-42cd-87f7-6a3dcc84035e",
+      "kecamatan_id": "08b5c2ad-2dc8-4ece-afb2-f929a94da1a0",
+      "nama": "Mangga Dua Selatan"
+    },
+    {
+      "id": "ed12957c-d2df-4038-b4a5-585eb4e03210",
+      "kecamatan_id": "08b5c2ad-2dc8-4ece-afb2-f929a94da1a0",
+      "nama": "Pasar Baru"
+    },
+    {
+      "id": "8b4adff1-4bb8-4b9e-aa94-35ad7d4c8f05",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Cempaka Baru"
+    },
+    {
+      "id": "afc506c1-1b43-49c0-96c2-8686ba3df56e",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Gunung Sahari Selatan"
+    },
+    {
+      "id": "21c4d2e9-ef10-48d6-a668-b01f988f52e8",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Harapan Mulia"
+    },
+    {
+      "id": "636c3261-2382-43eb-988a-13c66eda7f85",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Kebon Kosong"
+    },
+    {
+      "id": "30e31a78-3b5b-49a1-a3e5-c30b453a720a",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Kemayoran"
+    },
+    {
+      "id": "5f3840ea-6d2e-4d72-900d-dad102937fad",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Serdang"
+    },
+    {
+      "id": "3ff9e7d9-757e-4723-b22c-87784a3b529d",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Sumur Batu"
+    },
+    {
+      "id": "ac5467b3-4afd-4edb-81af-7c557f1481cd",
+      "kecamatan_id": "a5e0dd5f-ed27-4a80-9b8b-3a631d5fd9e5",
+      "nama": "Utan Panjang"
+    },
+    {
+      "id": "1b40b888-ba93-47a0-80d1-fd193653e8a2",
+      "kecamatan_id": "3abf2fd9-ad24-4c79-b235-0ca1789052e3",
+      "nama": "Bungur"
+    },
+    {
+      "id": "e51266d7-c5bd-4991-be03-b24796ca68ea",
+      "kecamatan_id": "3abf2fd9-ad24-4c79-b235-0ca1789052e3",
+      "nama": "Kenari"
+    },
+    {
+      "id": "f5561ee6-d2d9-41ea-94b6-abc067dcbe92",
+      "kecamatan_id": "3abf2fd9-ad24-4c79-b235-0ca1789052e3",
+      "nama": "Kramat"
+    },
+    {
+      "id": "9475a6fc-7897-46aa-aef6-5887c36cf62f",
+      "kecamatan_id": "3abf2fd9-ad24-4c79-b235-0ca1789052e3",
+      "nama": "Kwitang"
+    },
+    {
+      "id": "ad0c34ff-3dbc-4d49-b359-ce4452a9f24c",
+      "kecamatan_id": "3abf2fd9-ad24-4c79-b235-0ca1789052e3",
+      "nama": "Paseban"
+    },
+    {
+      "id": "b457d595-8a49-490b-8586-d958151d97d6",
+      "kecamatan_id": "3abf2fd9-ad24-4c79-b235-0ca1789052e3",
+      "nama": "Senen"
+    },
+    {
+      "id": "a35d8dfb-6420-4c7e-b05e-2e871ce84496",
+      "kecamatan_id": "56788599-ddfd-4a4d-8a11-2410d6ed5d4e",
+      "nama": "Cempaka Putih Barat"
+    },
+    {
+      "id": "53d76aec-1bb4-41f8-b2ea-192ed6e527da",
+      "kecamatan_id": "56788599-ddfd-4a4d-8a11-2410d6ed5d4e",
+      "nama": "Cempaka Putih Timur"
+    },
+    {
+      "id": "396f519a-0d12-4a08-bd48-3ee15e5bc0c4",
+      "kecamatan_id": "56788599-ddfd-4a4d-8a11-2410d6ed5d4e",
+      "nama": "Rawasari"
+    },
+    {
+      "id": "fd725c27-b473-4d43-af9b-a82b3fe97e92",
+      "kecamatan_id": "717d0800-9a70-4c7d-ac2c-505594832eb4",
+      "nama": "Cikini"
+    },
+    {
+      "id": "c6419ebe-d19f-4bc6-8847-0f644c34bfb5",
+      "kecamatan_id": "717d0800-9a70-4c7d-ac2c-505594832eb4",
+      "nama": "Gondangdia"
+    },
+    {
+      "id": "36e4be14-0762-4442-82c5-94514fedf3f5",
+      "kecamatan_id": "717d0800-9a70-4c7d-ac2c-505594832eb4",
+      "nama": "Kebon Sirih"
+    },
+    {
+      "id": "cc56d100-189c-4693-a66c-1a1f750bb80f",
+      "kecamatan_id": "717d0800-9a70-4c7d-ac2c-505594832eb4",
+      "nama": "Menteng"
+    },
+    {
+      "id": "62e5751a-32db-4df2-9e6c-fe85ab0b55a8",
+      "kecamatan_id": "717d0800-9a70-4c7d-ac2c-505594832eb4",
+      "nama": "Pegangsaan"
+    },
+    {
+      "id": "f1c1fe0f-30d6-42c3-a522-e74a997e441f",
+      "kecamatan_id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "nama": "Bendungan Hilir"
+    },
+    {
+      "id": "af9ababa-7cdc-498e-a535-629f32698a8b",
+      "kecamatan_id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "nama": "Gelora"
+    },
+    {
+      "id": "e4f944bf-3fb4-4f97-a515-a75676c56762",
+      "kecamatan_id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "nama": "Kampung Bali"
+    },
+    {
+      "id": "7eed5d4a-30c9-4431-931c-e84471cacedf",
+      "kecamatan_id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "nama": "Karet Tengsin"
+    },
+    {
+      "id": "dbc64cf3-d7d6-490b-a293-4b9f66a52909",
+      "kecamatan_id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "nama": "Kebon Kacang"
+    },
+    {
+      "id": "4fa29cf2-f386-4ec3-bb47-ff6dc8bb5594",
+      "kecamatan_id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "nama": "Kebon Melati"
+    },
+    {
+      "id": "d4c75623-2026-4298-9596-53ebc0119dd1",
+      "kecamatan_id": "417adbd4-2395-450c-a816-3c27c926c473",
+      "nama": "Petamburan"
+    },
+    {
+      "id": "cac52983-b46d-4485-a3fa-1a9cd710d6f9",
+      "kecamatan_id": "8ca2ac49-f640-4d91-8f4d-f3877e1af082",
+      "nama": "Galur"
+    },
+    {
+      "id": "01ac2e98-dd38-4a2c-bd80-ea6df8f0f431",
+      "kecamatan_id": "8ca2ac49-f640-4d91-8f4d-f3877e1af082",
+      "nama": "Johar Baru"
+    },
+    {
+      "id": "1f1e2c05-7a6d-4131-abcb-ed607ed3bf82",
+      "kecamatan_id": "8ca2ac49-f640-4d91-8f4d-f3877e1af082",
+      "nama": "Kampung Rawa"
+    },
+    {
+      "id": "310dd543-7faf-40f8-bfc8-679f85f9828f",
+      "kecamatan_id": "8ca2ac49-f640-4d91-8f4d-f3877e1af082",
+      "nama": "Tanah Tinggi"
+    },
+    {
+      "id": "c306b8b1-c9da-4e88-86c5-24e6b9ab01f9",
+      "kecamatan_id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "nama": "Cengkareng Barat"
+    },
+    {
+      "id": "a3438832-cc30-4d07-91c9-83f1314b6f0a",
+      "kecamatan_id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "nama": "Cengkareng Timur"
+    },
+    {
+      "id": "33bb95b5-857d-43b2-b7e6-98542cf441e7",
+      "kecamatan_id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "nama": "Duri Kosambi"
+    },
+    {
+      "id": "d928847a-7d2c-4645-ad0b-dc3f1228b112",
+      "kecamatan_id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "nama": "Kapuk"
+    },
+    {
+      "id": "58e4ba0c-0238-4ffc-a8b8-874c3e5a0fa9",
+      "kecamatan_id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "nama": "Kedaung Kali Angke"
+    },
+    {
+      "id": "69c1e26b-11c5-4a2f-ad97-a013788d3755",
+      "kecamatan_id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "nama": "Rawa Buaya"
+    },
+    {
+      "id": "0611b5be-19ec-4e43-ac61-964e09b4ed4f",
+      "kecamatan_id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "nama": "Grogol"
+    },
+    {
+      "id": "eaeb2959-25ae-4843-aa62-60cb6f9f1cdc",
+      "kecamatan_id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "nama": "Jelambar"
+    },
+    {
+      "id": "0fc655da-1526-4e7b-bacd-9628849662d0",
+      "kecamatan_id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "nama": "Jelambar Baru"
+    },
+    {
+      "id": "21c76ef9-f7fd-4e4b-a1ac-48e43ba4a943",
+      "kecamatan_id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "nama": "Tanjung Duren Selatan"
+    },
+    {
+      "id": "832f06d0-3456-4d69-9a82-28e20b67734e",
+      "kecamatan_id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "nama": "Tanjung Duren Utara"
+    },
+    {
+      "id": "e88c7cc5-a545-4e96-877d-534e023f4c0d",
+      "kecamatan_id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "nama": "Tomang"
+    },
+    {
+      "id": "0cd89b8d-34fa-4853-957c-01d1d5737d1c",
+      "kecamatan_id": "78a917eb-1960-4efc-865a-663969d8d310",
+      "nama": "Wijaya Kusuma"
+    },
+    {
+      "id": "60a7d07e-4162-4dba-a628-2cb570af742f",
+      "kecamatan_id": "dd5c7aeb-8d18-4d38-a562-1a792a347be2",
+      "nama": "Kalideres"
+    },
+    {
+      "id": "9ade97a7-dcad-419a-9b34-45a4be0d647d",
+      "kecamatan_id": "dd5c7aeb-8d18-4d38-a562-1a792a347be2",
+      "nama": "Kamal"
+    },
+    {
+      "id": "8420d64e-b0be-498e-a6cf-137d070eb3f9",
+      "kecamatan_id": "dd5c7aeb-8d18-4d38-a562-1a792a347be2",
+      "nama": "Pegadungan"
+    },
+    {
+      "id": "c0e9559c-8b92-4074-8aeb-06d7e0f5bceb",
+      "kecamatan_id": "dd5c7aeb-8d18-4d38-a562-1a792a347be2",
+      "nama": "Semanan"
+    },
+    {
+      "id": "543df567-3d7a-4174-b4d8-f6f07b5eda15",
+      "kecamatan_id": "dd5c7aeb-8d18-4d38-a562-1a792a347be2",
+      "nama": "Tegal Alur"
+    },
+    {
+      "id": "001bb094-6c64-428d-8e06-784a4bf04ba4",
+      "kecamatan_id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "nama": "Duri Kepa"
+    },
+    {
+      "id": "7046d7a5-fcc0-4125-b061-7302caed199b",
+      "kecamatan_id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "nama": "Kebon Jeruk"
+    },
+    {
+      "id": "3edb2d33-f337-479c-8f8d-2337a459aca1",
+      "kecamatan_id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "nama": "Kedoya Selatan"
+    },
+    {
+      "id": "1e9f6655-d0c9-401e-9504-adc2236283e0",
+      "kecamatan_id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "nama": "Kedoya Utara"
+    },
+    {
+      "id": "5b3ec9f3-9d07-4b2f-8ec7-2bd74068e37a",
+      "kecamatan_id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "nama": "Kelapa Dua"
+    },
+    {
+      "id": "bcfa5f3f-9408-401b-a38a-d81f4ecb1dd1",
+      "kecamatan_id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "nama": "Sukabumi Selatan"
+    },
+    {
+      "id": "06d05d43-a7b4-423b-acb2-ff31af1dce95",
+      "kecamatan_id": "55235e12-0e4c-4f8e-b124-7161838bb8d5",
+      "nama": "Sukabumi Utara"
+    },
+    {
+      "id": "612ec26a-f09b-4667-a100-977d8339ea08",
+      "kecamatan_id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "nama": "Joglo"
+    },
+    {
+      "id": "51c77bce-3b2c-48f4-8d1c-599835fab36b",
+      "kecamatan_id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "nama": "Kembangan Selatan"
+    },
+    {
+      "id": "d0f25550-381e-4380-ab6b-f9426d63c5bf",
+      "kecamatan_id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "nama": "Kembangan Utara"
+    },
+    {
+      "id": "66f2fd5a-4456-4772-96a7-84841770cfc7",
+      "kecamatan_id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "nama": "Meruya Selatan"
+    },
+    {
+      "id": "6b653ee0-405d-4756-844b-cbb7087a18a2",
+      "kecamatan_id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "nama": "Meruya Utara"
+    },
+    {
+      "id": "bdd622d5-90e5-4a9c-9293-3e92569defc0",
+      "kecamatan_id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "nama": "Srengseng"
+    },
+    {
+      "id": "e6c524b6-eb56-48b3-8991-12c31bf0d6c3",
+      "kecamatan_id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "nama": "Jatipulo"
+    },
+    {
+      "id": "9f2f0744-e603-41dc-a621-a073facd010e",
+      "kecamatan_id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "nama": "Kemanggisan"
+    },
+    {
+      "id": "ac07352d-f5d3-4ec0-9bf1-e624b6ec80c4",
+      "kecamatan_id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "nama": "Kota Bambu Selatan"
+    },
+    {
+      "id": "a248e63a-b0fb-429b-af45-68dcb5c96000",
+      "kecamatan_id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "nama": "Malaka Sari"
+    },
+    {
+      "id": "7abd299b-fbc1-46c9-b5ad-e3afb3259055",
+      "kecamatan_id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "nama": "Pondok Bambu"
+    },
+    {
+      "id": "69f02714-79e3-4841-852c-8e7d2b499d33",
+      "kecamatan_id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "nama": "Pondok Kelapa"
+    },
+    {
+      "id": "d6ce46e6-c7c0-4559-ba22-c0cba66e0de1",
+      "kecamatan_id": "3fdac1c0-5c17-464c-9735-2a926db2dc78",
+      "nama": "Pondok Kopi"
+    },
+    {
+      "id": "eaa2aa90-aa55-4929-bcb3-8675b0e5b3dc",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Bali Mester"
+    },
+    {
+      "id": "b597b167-b032-4b79-a837-dfdc0eade572",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Bidara Cina"
+    },
+    {
+      "id": "0b68dbfd-b000-48cb-9e07-a9a54838901c",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Cipinang Besar Selatan"
+    },
+    {
+      "id": "b599bcbb-796f-4629-8227-8e79428f65a0",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Cipinang Besar Utara"
+    },
+    {
+      "id": "549b9ee9-e4a1-43a8-b6a8-fae6e8c11da1",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Cipinang Cempedak"
+    },
+    {
+      "id": "ca1fb39b-c445-4c37-ba71-0d6a51161cc1",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Cipinang Muara"
+    },
+    {
+      "id": "03989d04-4040-4c79-9f55-508c508c61f0",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Kampung Melayu"
+    },
+    {
+      "id": "aef48b9d-63f8-430a-a2fc-9e2a1c878608",
+      "kecamatan_id": "9cf491c8-8995-4b3a-a15f-17155d8e54a3",
+      "nama": "Rawa Bunga"
+    },
+    {
+      "id": "b046bed9-21b8-4396-93eb-51840cda838f",
+      "kecamatan_id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "nama": "Balekambang"
+    },
+    {
+      "id": "3c4c6093-30a1-4079-8f42-3426a81dcea0",
+      "kecamatan_id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "nama": "Batu Ampar"
+    },
+    {
+      "id": "6b0f327b-cb9a-4fe2-b2bf-e5850917e552",
+      "kecamatan_id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "nama": "Cawang"
+    },
+    {
+      "id": "d36afa1e-e22e-4d9a-a1d2-cecfb3691732",
+      "kecamatan_id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "nama": "Cililitan"
+    },
+    {
+      "id": "515156da-0d1b-4fa5-8068-030e23319cd6",
+      "kecamatan_id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "nama": "Dukuh"
+    },
+    {
+      "id": "e7a86b25-1033-4c73-9708-45d482956154",
+      "kecamatan_id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "nama": "Kramat Jati"
+    },
+    {
+      "id": "c1803031-795a-4386-b591-32a0902f3f05",
+      "kecamatan_id": "7ffa1173-f56e-4c00-b88e-b91a1e7fb086",
+      "nama": "Tengah"
+    },
+    {
+      "id": "d9478a70-22a1-4f63-88da-238aea6fb211",
+      "kecamatan_id": "b4440784-1977-4b83-a144-2e834ad9a05b",
+      "nama": "Cipinang Melayu"
+    },
+    {
+      "id": "c1e7156b-9a49-4cd6-b82a-84d10a22fe9e",
+      "kecamatan_id": "b4440784-1977-4b83-a144-2e834ad9a05b",
+      "nama": "Halim Perdana Kusuma"
+    },
+    {
+      "id": "5dd9ad87-b4df-40f4-bc5c-22bff2e02138",
+      "kecamatan_id": "b4440784-1977-4b83-a144-2e834ad9a05b",
+      "nama": "Kebon Pala"
+    },
+    {
+      "id": "606aaa26-021c-4cd5-8429-e7765baa0f72",
+      "kecamatan_id": "b4440784-1977-4b83-a144-2e834ad9a05b",
+      "nama": "Makasar"
+    },
+    {
+      "id": "4f42f537-5ca4-45f6-8108-65cad5294676",
+      "kecamatan_id": "b4440784-1977-4b83-a144-2e834ad9a05b",
+      "nama": "Pinang Ranti"
+    },
+    {
+      "id": "86ef8dd1-c7c9-42f3-aa77-a459c07dacc4",
+      "kecamatan_id": "94f20574-1407-4cb0-bde7-71bf06e96dbc",
+      "nama": "Kayu Manis"
+    },
+    {
+      "id": "b57f4a5c-d743-4825-8add-5229e265f35f",
+      "kecamatan_id": "94f20574-1407-4cb0-bde7-71bf06e96dbc",
+      "nama": "Kebon Manggis"
+    },
+    {
+      "id": "501e3b96-45b4-4a8a-ac04-d74f71c52830",
+      "kecamatan_id": "94f20574-1407-4cb0-bde7-71bf06e96dbc",
+      "nama": "Pal Meriam"
+    },
+    {
+      "id": "25769083-11a3-4952-af4e-20b450150a1d",
+      "kecamatan_id": "94f20574-1407-4cb0-bde7-71bf06e96dbc",
+      "nama": "Pisangan Baru"
+    },
+    {
+      "id": "7f330d7a-f39e-4503-a565-7c1aadbfd60e",
+      "kecamatan_id": "94f20574-1407-4cb0-bde7-71bf06e96dbc",
+      "nama": "Utan Kayu Selatan"
+    },
+    {
+      "id": "1d3a6016-c5e8-41ed-a97c-2a25e3cf6e81",
+      "kecamatan_id": "94f20574-1407-4cb0-bde7-71bf06e96dbc",
+      "nama": "Utan Kayu Utara"
+    },
+    {
+      "id": "838a670e-bf30-429e-b363-3ae596e2315e",
+      "kecamatan_id": "5391ec76-eb30-453a-be79-07b6137b8181",
+      "nama": "Baru"
+    },
+    {
+      "id": "7fbe0557-cede-416b-bb5d-21e784a573ef",
+      "kecamatan_id": "5391ec76-eb30-453a-be79-07b6137b8181",
+      "nama": "Cijantung"
+    },
+    {
+      "id": "1b816e3d-6125-463a-9168-5096987fca4e",
+      "kecamatan_id": "5391ec76-eb30-453a-be79-07b6137b8181",
+      "nama": "Gedong"
+    },
+    {
+      "id": "bf47b77c-815d-4160-800e-b317f52f1405",
+      "kecamatan_id": "5391ec76-eb30-453a-be79-07b6137b8181",
+      "nama": "Kalisari"
+    },
+    {
+      "id": "fb44e8e7-cbcd-44c8-b0f4-cd479a88a175",
+      "kecamatan_id": "5391ec76-eb30-453a-be79-07b6137b8181",
+      "nama": "Pekayon"
+    },
+    {
+      "id": "a871ba71-8105-49cd-bf71-5d03df0efc67",
+      "kecamatan_id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "nama": "Jati"
+    },
+    {
+      "id": "f1a0285d-57ee-4782-bf1c-c5e06fe16419",
+      "kecamatan_id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "nama": "Jatinegara Kaum"
+    },
+    {
+      "id": "bf4f1b25-53e3-4737-991f-df7de06a6aba",
+      "kecamatan_id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "nama": "Kayu Putih"
+    },
+    {
+      "id": "54f33715-e10d-4886-9629-2c593f53731d",
+      "kecamatan_id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "nama": "Pisangan Timur"
+    },
+    {
+      "id": "5c7042e4-2313-4740-860b-e045727e72d1",
+      "kecamatan_id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "nama": "Pulo Gadung"
+    },
+    {
+      "id": "f0fc855d-5149-4e50-a991-60bec3bfaf09",
+      "kecamatan_id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "nama": "Rawamangun"
+    },
+    {
+      "id": "fc8e143b-bd2e-430e-937d-509bc716d5c9",
+      "kecamatan_id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "nama": "Cilincing"
+    },
+    {
+      "id": "b26d2ed6-5b2a-4170-ac41-a14359a47c8b",
+      "kecamatan_id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "nama": "Kalibaru"
+    },
+    {
+      "id": "b9698e09-0ab5-45dd-856b-c6ab528fe6a3",
+      "kecamatan_id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "nama": "Marunda"
+    },
+    {
+      "id": "cb1ddd0b-af56-4671-b326-fd9f3b6d2ef4",
+      "kecamatan_id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "nama": "Rorotan"
+    },
+    {
+      "id": "5901d814-cb95-4958-938d-dd56cea00ed3",
+      "kecamatan_id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "nama": "Semper Barat"
+    },
+    {
+      "id": "28423ab6-89d4-4f73-9af7-aa324fd0bd66",
+      "kecamatan_id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "nama": "Semper Timur"
+    },
+    {
+      "id": "edafb84c-2ef0-4ca6-9251-c3c429f17fce",
+      "kecamatan_id": "6a236e33-5b35-4bf6-9b89-4607834b7ca4",
+      "nama": "Sukapura"
+    },
+    {
+      "id": "752b49a2-9a8f-4c63-9f11-15e7046575f4",
+      "kecamatan_id": "fc38f50c-fd17-4ab4-8eee-f796a4784b64",
+      "nama": "Kelapa Gading Barat"
+    },
+    {
+      "id": "99a06502-8e0a-4e07-b042-8aa1f92cbe0d",
+      "kecamatan_id": "fc38f50c-fd17-4ab4-8eee-f796a4784b64",
+      "nama": "Kelapa Gading Timur"
+    },
+    {
+      "id": "2939825b-9a1e-4428-9f4c-5d2518667d04",
+      "kecamatan_id": "fc38f50c-fd17-4ab4-8eee-f796a4784b64",
+      "nama": "Pegangsaan Dua"
+    },
+    {
+      "id": "3250da3d-5835-4428-baaa-2428ec613273",
+      "kecamatan_id": "b8984137-15fd-4f69-89e7-347a77535684",
+      "nama": "Koja"
+    },
+    {
+      "id": "e827fbf2-c5c9-4c10-bda5-d10c12b008e6",
+      "kecamatan_id": "b8984137-15fd-4f69-89e7-347a77535684",
+      "nama": "Lagoa"
+    },
+    {
+      "id": "3e864d64-4a83-48a2-8541-a3019e15b34e",
+      "kecamatan_id": "b8984137-15fd-4f69-89e7-347a77535684",
+      "nama": "Rawa Badak Selatan"
+    },
+    {
+      "id": "f7fb711f-d27d-433b-9d52-5d082ad30c87",
+      "kecamatan_id": "b8984137-15fd-4f69-89e7-347a77535684",
+      "nama": "Rawa Badak Utara"
+    },
+    {
+      "id": "5ecf7554-7d16-41d2-9a38-d3455ecbf89e",
+      "kecamatan_id": "b8984137-15fd-4f69-89e7-347a77535684",
+      "nama": "Tugu Selatan"
+    },
+    {
+      "id": "76c33eb9-b965-4e13-85f7-785d29ddbc46",
+      "kecamatan_id": "b8984137-15fd-4f69-89e7-347a77535684",
+      "nama": "Tugu Utara"
+    },
+    {
+      "id": "a0543b82-ecc7-4bf9-b0e2-d7b2b601f321",
+      "kecamatan_id": "ac5ceb01-e283-44dc-bc6f-082eee7fad11",
+      "nama": "Ancol"
+    },
+    {
+      "id": "fa5e76fd-7d12-49b2-9c99-b6079df49548",
+      "kecamatan_id": "ac5ceb01-e283-44dc-bc6f-082eee7fad11",
+      "nama": "Pademangan Barat"
+    },
+    {
+      "id": "4ae9345b-a2b0-4c1a-9d09-9129205db451",
+      "kecamatan_id": "ac5ceb01-e283-44dc-bc6f-082eee7fad11",
+      "nama": "Pademangan Timur"
+    },
+    {
+      "id": "96231ab0-1b65-48d1-ab4c-47cf3ec1694d",
+      "kecamatan_id": "0aee3192-41c9-43b8-96fd-c0072798a838",
+      "nama": "Kamal Muara"
+    },
+    {
+      "id": "1cad1439-f463-4f07-a28a-4bddf8b4d913",
+      "kecamatan_id": "0aee3192-41c9-43b8-96fd-c0072798a838",
+      "nama": "Kapuk Muara"
+    },
+    {
+      "id": "40516f1c-b70d-44da-ad7c-b59be178ad71",
+      "kecamatan_id": "0aee3192-41c9-43b8-96fd-c0072798a838",
+      "nama": "Pejagalan"
+    },
+    {
+      "id": "28248885-7579-4a52-add1-51287832492e",
+      "kecamatan_id": "0aee3192-41c9-43b8-96fd-c0072798a838",
+      "nama": "Penjaringan"
+    },
+    {
+      "id": "ba039e08-7ffb-4ade-9726-c8ced9047f23",
+      "kecamatan_id": "0aee3192-41c9-43b8-96fd-c0072798a838",
+      "nama": "Pluit"
+    },
+    {
+      "id": "9f37bfc4-21a7-4b26-b5c5-8e38b5126256",
+      "kecamatan_id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "nama": "Kebon Bawang"
+    },
+    {
+      "id": "d0d3c45e-09f8-4edc-8d10-233fb42cb03d",
+      "kecamatan_id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "nama": "Papanggo"
+    },
+    {
+      "id": "5799c761-5dc6-4181-a9e6-8ab732d5ec5d",
+      "kecamatan_id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "nama": "Sunter Agung"
+    },
+    {
+      "id": "d9557055-d019-48b0-b08f-68e831b0ff53",
+      "kecamatan_id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "nama": "Sunter Jaya"
+    },
+    {
+      "id": "ca09cc7c-6f58-481f-bb60-dc1b5fbada6f",
+      "kecamatan_id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "nama": "Tanjung Priok"
+    },
+    {
+      "id": "590b942f-fb60-4ad4-9c50-5c22faba58da",
+      "kecamatan_id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "nama": "Warakas"
+    },
+    {
+      "id": "9ccf01ca-f2ec-48b9-aae7-fc3c9a0a0ae2",
+      "kecamatan_id": "fac6f383-f395-403c-9867-b519b0c389ee",
+      "nama": "Pulau Pari"
+    },
+    {
+      "id": "b6a57d9a-1728-4be5-9e89-e3c6ef3b471c",
+      "kecamatan_id": "fac6f383-f395-403c-9867-b519b0c389ee",
+      "nama": "Pulau Tidung"
+    },
+    {
+      "id": "bb3f6d3c-c8ca-4e30-948d-8a43757c8e17",
+      "kecamatan_id": "fac6f383-f395-403c-9867-b519b0c389ee",
+      "nama": "Pulau Untung Jawa"
+    },
+    {
+      "id": "a98ffe2e-0d34-451f-ab2d-2e68ce6ccc9a",
+      "kecamatan_id": "a31bb6d2-2d29-49cf-b0da-2a3cb49f89c2",
+      "nama": "Pulau Harapan"
+    },
+    {
+      "id": "a783d2cd-ed7c-45ea-954d-820ca6e3c89e",
+      "kecamatan_id": "a31bb6d2-2d29-49cf-b0da-2a3cb49f89c2",
+      "nama": "Pulau Kelapa"
+    },
+    {
+      "id": "b9662707-7e70-4944-abda-7e53ef038c7c",
+      "kecamatan_id": "a31bb6d2-2d29-49cf-b0da-2a3cb49f89c2",
+      "nama": "Pulau Panggang"
+    },
+    {
+      "id": "00ec301c-149f-486b-9459-0b890486f423",
+      "kecamatan_id": "0a499313-ae45-47a1-8791-2c855f0dc0a1",
+      "nama": "Kuningan Timur"
+    },
+    {
+      "id": "94b30d74-fa87-4511-9930-9b99bc09c2b3",
+      "kecamatan_id": "fec08063-7a56-4851-8026-c18d3631f3ec",
+      "nama": "Cipinang"
+    },
+    {
+      "id": "b145ca0c-2104-4049-af28-cc723d427e58",
+      "kecamatan_id": "584f6149-0024-4118-bc47-0bbdc64d450c",
+      "nama": "Sungai Bambu"
+    }
+  ],
+  "dprds": [
+    {
+      "id": "cadf1e9d-1912-4b66-84e5-f785b361fa44",
+      "name": "Hj. Yuke Yurike, ST., MM",
+      "description": "Dewan Perwakilan Rakyat Daerah Kota Jakarta Selatan",
+      "is_active": true,
+      "createdAt": "2026-08-14T15:36:16.985Z",
+      "updatedAt": "2026-08-16T04:53:55.020Z"
+    },
+    {
+      "id": "0a9fcf6e-3f0b-43b0-8af9-7514d87d94b7",
+      "name": "Chica Koeswoyo",
+      "description": "Dewan Perwakilan Rakyat Daerah Kota Jakarta Selatan Dapil VII",
+      "is_active": true,
+      "createdAt": "2026-08-16T04:55:21.240Z",
+      "updatedAt": "2026-08-16T04:55:21.240Z"
+    }
+  ],
+  "teams": [
+    {
+      "id": "3f2a1e0b-e431-4b53-ac8b-108ae2343098",
+      "dprd_id": "cadf1e9d-1912-4b66-84e5-f785b361fa44",
+      "name": "Tim Eksternal (Kantor)",
+      "description": "Tim kerja utama",
+      "is_active": true,
+      "createdAt": "2026-08-14T15:36:17.138Z",
+      "updatedAt": "2026-08-14T15:36:17.138Z"
+    },
+    {
+      "id": "0c936407-3a80-43c2-81e8-42e5f6930a10",
+      "dprd_id": "0a9fcf6e-3f0b-43b0-8af9-7514d87d94b7",
+      "name": "Tim Internal (Kantor)",
+      "description": "Tim yang tugasnya mostly di kantor",
+      "is_active": true,
+      "createdAt": "2026-08-16T04:55:51.922Z",
+      "updatedAt": "2026-08-16T04:55:51.922Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "b4e89bf1-d692-47e3-b312-18d273ed1efe",
+      "username": "admin",
+      "email": "admin@dprd-jaksel.go.id",
+      "password": "admin123",
+      "name": "Admin DPRD Jakarta Selatan",
+      "role": "admin",
+      "role_id": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "dprd_id": "cadf1e9d-1912-4b66-84e5-f785b361fa44",
+      "createdAt": "2026-08-14T15:36:17.444Z",
+      "updatedAt": "2026-08-14T15:36:27.571Z"
+    },
+    {
+      "id": "85b1bee3-c244-4797-8f71-daf56bf42c98",
+      "username": "superadmin",
+      "email": "superadmin@dprd-jaksel.go.id",
+      "password": "superadmin123",
+      "name": "Super Admin",
+      "role": "admin",
+      "role_id": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "dprd_id": "cadf1e9d-1912-4b66-84e5-f785b361fa44",
+      "createdAt": "2026-08-14T15:36:17.444Z",
+      "updatedAt": "2026-08-14T15:36:27.875Z"
+    },
+    {
+      "id": "0db74af7-d918-4624-bebd-752cf97ea5f6",
+      "username": "dinar",
+      "email": "dinararkana@gmail.com",
+      "password": "dinar123",
+      "name": "Dinar Arkana",
+      "role": "admin",
+      "role_id": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "dprd_id": "0a9fcf6e-3f0b-43b0-8af9-7514d87d94b7",
+      "createdAt": "2026-08-16T04:57:33.334Z",
+      "updatedAt": "2026-08-16T04:57:33.334Z"
+    }
+  ],
+  "userTeams": [
+    {
+      "id": "77218f70-f543-49fa-835f-6304ddae5898",
+      "user_id": "b4e89bf1-d692-47e3-b312-18d273ed1efe",
+      "team_id": "3f2a1e0b-e431-4b53-ac8b-108ae2343098",
+      "role": "ANGGOTA",
+      "createdAt": "2026-08-14T15:36:18.035Z",
+      "updatedAt": "2026-08-14T15:36:18.035Z"
+    },
+    {
+      "id": "94932f7b-58f6-4807-bc29-ced75a7ee4a5",
+      "user_id": "85b1bee3-c244-4797-8f71-daf56bf42c98",
+      "team_id": "3f2a1e0b-e431-4b53-ac8b-108ae2343098",
+      "role": "KETUA",
+      "createdAt": "2026-08-14T15:36:18.035Z",
+      "updatedAt": "2026-08-14T15:36:18.035Z"
+    },
+    {
+      "id": "184d8a89-7cb5-4547-8017-5d4a0ea516b7",
+      "user_id": "0db74af7-d918-4624-bebd-752cf97ea5f6",
+      "team_id": "0c936407-3a80-43c2-81e8-42e5f6930a10",
+      "role": "ANGGOTA",
+      "createdAt": "2026-08-16T04:57:33.334Z",
+      "updatedAt": "2026-08-16T04:57:33.334Z"
+    }
+  ],
+  "permissions": [
+    {
+      "id": "50d7ad1d-ecdc-4e05-b27c-6416388c28d3",
+      "name": "dashboard:read",
+      "resource": "dashboard",
+      "action": "read",
+      "description": "Melihat dashboard",
+      "createdAt": "2026-08-14T15:36:21.358Z"
+    },
+    {
+      "id": "1696ee28-1449-44d1-bf45-04fa96562895",
+      "name": "aspirasi:read",
+      "resource": "aspirasi",
+      "action": "read",
+      "description": "Melihat aspirasi",
+      "createdAt": "2026-08-14T15:36:21.507Z"
+    },
+    {
+      "id": "273dcc2d-ae68-4ff2-88b3-4b4a4cd2e9a6",
+      "name": "aspirasi:write",
+      "resource": "aspirasi",
+      "action": "write",
+      "description": "Input & edit aspirasi",
+      "createdAt": "2026-08-14T15:36:21.646Z"
+    },
+    {
+      "id": "b639681f-8fb4-41ab-b109-30414a719c9a",
+      "name": "aspirasi:delete",
+      "resource": "aspirasi",
+      "action": "delete",
+      "description": "Menghapus aspirasi",
+      "createdAt": "2026-08-14T15:36:21.796Z"
+    },
+    {
+      "id": "55054ae9-445e-48b9-91e2-4217b8210dc6",
+      "name": "kunjungan:read",
+      "resource": "kunjungan",
+      "action": "read",
+      "description": "Melihat kunjungan",
+      "createdAt": "2026-08-14T15:36:21.953Z"
+    },
+    {
+      "id": "4fa31abb-7a24-4003-82c0-3f41f468a931",
+      "name": "kunjungan:write",
+      "resource": "kunjungan",
+      "action": "write",
+      "description": "Input & edit kunjungan",
+      "createdAt": "2026-08-14T15:36:22.091Z"
+    },
+    {
+      "id": "793f6b61-3b38-4c5d-a8bc-a69d20e59262",
+      "name": "kunjungan:delete",
+      "resource": "kunjungan",
+      "action": "delete",
+      "description": "Menghapus kunjungan",
+      "createdAt": "2026-08-14T15:36:22.265Z"
+    },
+    {
+      "id": "21ef8cc6-eb6b-4a12-b8f9-d9be67935583",
+      "name": "relawan:read",
+      "resource": "relawan",
+      "action": "read",
+      "description": "Melihat relawan",
+      "createdAt": "2026-08-14T15:36:22.415Z"
+    },
+    {
+      "id": "b6bd121c-69ae-420d-acc4-8ee988064707",
+      "name": "relawan:write",
+      "resource": "relawan",
+      "action": "write",
+      "description": "Input & edit relawan",
+      "createdAt": "2026-08-14T15:36:22.565Z"
+    },
+    {
+      "id": "91e54d1e-cc90-4400-92ff-911d0f0158e5",
+      "name": "relawan:delete",
+      "resource": "relawan",
+      "action": "delete",
+      "description": "Menghapus relawan",
+      "createdAt": "2026-08-14T15:36:22.731Z"
+    },
+    {
+      "id": "053028c2-8407-46c0-ade8-55712998c624",
+      "name": "pengaturan:read",
+      "resource": "pengaturan",
+      "action": "read",
+      "description": "Melihat pengaturan",
+      "createdAt": "2026-08-14T15:36:22.977Z"
+    },
+    {
+      "id": "a604bbca-dd65-467d-903e-1cb271959d23",
+      "name": "pengaturan:write",
+      "resource": "pengaturan",
+      "action": "write",
+      "description": "Ubah pengaturan",
+      "createdAt": "2026-08-14T15:36:23.127Z"
+    },
+    {
+      "id": "e5b13edc-555d-4b27-91ea-a7241fa4dd08",
+      "name": "rbac:read",
+      "resource": "rbac",
+      "action": "read",
+      "description": "Melihat role & permission",
+      "createdAt": "2026-08-14T15:36:23.303Z"
+    },
+    {
+      "id": "06eb8e7d-ab85-4c57-a4a2-d38f2139779e",
+      "name": "rbac:write",
+      "resource": "rbac",
+      "action": "write",
+      "description": "Kelola role & permission",
+      "createdAt": "2026-08-14T15:36:23.457Z"
+    },
+    {
+      "id": "0bcc3ed8-d331-430f-a910-2cba786a4b2d",
+      "name": "teams:read",
+      "resource": "teams",
+      "action": "read",
+      "description": "Melihat tim kerja",
+      "createdAt": "2026-08-14T15:36:23.601Z"
+    },
+    {
+      "id": "cf9ac87a-2b13-4dd5-95bd-23a4543d7bb0",
+      "name": "teams:write",
+      "resource": "teams",
+      "action": "write",
+      "description": "Input & edit tim kerja",
+      "createdAt": "2026-08-14T15:36:23.745Z"
+    },
+    {
+      "id": "37fd0746-c6ce-4384-a509-3309dd5379f0",
+      "name": "teams:delete",
+      "resource": "teams",
+      "action": "delete",
+      "description": "Menghapus tim kerja",
+      "createdAt": "2026-08-14T15:36:23.914Z"
+    },
+    {
+      "id": "0a33e0fa-de15-4733-b064-9a92c5bd5726",
+      "name": "dprd:read",
+      "resource": "dprd",
+      "action": "read",
+      "description": "Melihat DPRD",
+      "createdAt": "2026-08-14T15:36:24.055Z"
+    },
+    {
+      "id": "3e952bac-f048-4d35-9f4d-2f432531dd68",
+      "name": "dprd:write",
+      "resource": "dprd",
+      "action": "write",
+      "description": "Input & edit DPRD",
+      "createdAt": "2026-08-14T15:36:24.190Z"
+    },
+    {
+      "id": "a308fbfe-9bce-4f43-924a-6b8bf0179ca0",
+      "name": "dprd:delete",
+      "resource": "dprd",
+      "action": "delete",
+      "description": "Menghapus DPRD",
+      "createdAt": "2026-08-14T15:36:24.323Z"
+    }
+  ],
+  "roles": [
+    {
+      "id": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "name": "Super Admin",
+      "description": "Akses penuh ke semua fitur & pengaturan aplikasi",
+      "createdAt": "2026-08-14T15:36:24.611Z",
+      "updatedAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "id": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "name": "Admin DPRD",
+      "description": "Mengelola data aspirasi, kunjungan, dan relawan",
+      "createdAt": "2026-08-14T15:36:26.032Z",
+      "updatedAt": "2026-08-14T15:36:26.032Z"
+    }
+  ],
+  "rolePermissions": [
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "50d7ad1d-ecdc-4e05-b27c-6416388c28d3",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "1696ee28-1449-44d1-bf45-04fa96562895",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "273dcc2d-ae68-4ff2-88b3-4b4a4cd2e9a6",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "b639681f-8fb4-41ab-b109-30414a719c9a",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "55054ae9-445e-48b9-91e2-4217b8210dc6",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "4fa31abb-7a24-4003-82c0-3f41f468a931",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "793f6b61-3b38-4c5d-a8bc-a69d20e59262",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "21ef8cc6-eb6b-4a12-b8f9-d9be67935583",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "b6bd121c-69ae-420d-acc4-8ee988064707",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "91e54d1e-cc90-4400-92ff-911d0f0158e5",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "053028c2-8407-46c0-ade8-55712998c624",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "a604bbca-dd65-467d-903e-1cb271959d23",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "e5b13edc-555d-4b27-91ea-a7241fa4dd08",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "06eb8e7d-ab85-4c57-a4a2-d38f2139779e",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "0bcc3ed8-d331-430f-a910-2cba786a4b2d",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "cf9ac87a-2b13-4dd5-95bd-23a4543d7bb0",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "37fd0746-c6ce-4384-a509-3309dd5379f0",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "0a33e0fa-de15-4733-b064-9a92c5bd5726",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "3e952bac-f048-4d35-9f4d-2f432531dd68",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "e8b93c36-5db9-44c4-b563-2ffd4c74a3db",
+      "permissionId": "a308fbfe-9bce-4f43-924a-6b8bf0179ca0",
+      "createdAt": "2026-08-14T15:36:24.611Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "50d7ad1d-ecdc-4e05-b27c-6416388c28d3",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "1696ee28-1449-44d1-bf45-04fa96562895",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "273dcc2d-ae68-4ff2-88b3-4b4a4cd2e9a6",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "b639681f-8fb4-41ab-b109-30414a719c9a",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "55054ae9-445e-48b9-91e2-4217b8210dc6",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "4fa31abb-7a24-4003-82c0-3f41f468a931",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "793f6b61-3b38-4c5d-a8bc-a69d20e59262",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "21ef8cc6-eb6b-4a12-b8f9-d9be67935583",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "b6bd121c-69ae-420d-acc4-8ee988064707",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "91e54d1e-cc90-4400-92ff-911d0f0158e5",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    },
+    {
+      "roleId": "8f6e2817-4d59-4fc8-b9e7-b756fbeace99",
+      "permissionId": "053028c2-8407-46c0-ade8-55712998c624",
+      "createdAt": "2026-08-14T15:36:26.032Z"
+    }
+  ],
+  "kunjungans": [
+    {
+      "id": "e8ed3366-1b72-423c-aa3b-526134dee940",
+      "tanggal": "2026-02-18T00:00:00.000Z",
+      "jam": "13:15",
+      "jalan": "Jl. Kalibata Timur",
+      "kelurahan_id": "b4634292-8921-43cc-9b2f-ea1da3798959",
+      "kecamatan_id": "598134d1-8906-4521-a2b2-fd2aac0b1660",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "link_gmaps": "",
+      "created_at": "2026-08-14T15:36:18.379Z",
+      "updated_at": "2026-08-14T15:36:18.379Z"
+    },
+    {
+      "id": "1f2fcb3d-477c-4993-a97c-d96eaee088ec",
+      "tanggal": "2026-02-05T00:00:00.000Z",
+      "jam": "08:45",
+      "jalan": "Jl. Cipulir Raya",
+      "kelurahan_id": "2b96e6ac-ded2-46fe-bd34-73553edd80ae",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "link_gmaps": "",
+      "created_at": "2026-08-14T15:36:18.379Z",
+      "updated_at": "2026-08-14T15:36:18.379Z"
+    },
+    {
+      "id": "8a400393-dab5-4563-9258-071028b4ed2c",
+      "tanggal": "2026-01-20T00:00:00.000Z",
+      "jam": "10:00",
+      "jalan": "Jl. Gandaria Tengah",
+      "kelurahan_id": "589af9b4-ba72-405c-aad5-78ebbf4cacc3",
+      "kecamatan_id": "c8ee650f-a82d-4718-99bc-32e580ba1c16",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "link_gmaps": "",
+      "created_at": "2026-08-14T15:36:18.379Z",
+      "updated_at": "2026-08-14T15:36:18.379Z"
+    },
+    {
+      "id": "8c5052df-9576-4a16-80d5-ae07c5e32aee",
+      "tanggal": "2026-03-02T00:00:00.000Z",
+      "jam": "09:00",
+      "jalan": "Jl. Pejaten Raya",
+      "kelurahan_id": "d2532cf1-4eae-43de-86c5-5282b405f69a",
+      "kecamatan_id": "9e08972b-ee31-4b79-8560-c813bdf3bcfd",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "link_gmaps": "",
+      "created_at": "2026-08-14T15:36:18.379Z",
+      "updated_at": "2026-08-14T15:36:18.379Z"
+    },
+    {
+      "id": "90d0efc1-6afb-46cc-a53c-322dc01bcc94",
+      "tanggal": "2026-08-14T00:00:00.000Z",
+      "jam": "22:49",
+      "jalan": "Jl. Cipete Raya No. 10",
+      "kelurahan_id": "60a7d07e-4162-4dba-a628-2cb570af742f",
+      "kecamatan_id": "dd5c7aeb-8d18-4d38-a562-1a792a347be2",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "link_gmaps": "",
+      "created_at": "2026-08-14T15:50:18.062Z",
+      "updated_at": "2026-08-14T15:50:18.062Z"
+    },
+    {
+      "id": "7be0ccc0-2a75-4e62-ad2a-a7f0f866a887",
+      "tanggal": "2026-08-14T00:00:00.000Z",
+      "jam": "23:05",
+      "jalan": "Jl. Usaha no. 17",
+      "kelurahan_id": "9f2f0744-e603-41dc-a621-a073facd010e",
+      "kecamatan_id": "9e3c8e78-431b-474f-8f6c-db8dd128dadb",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "link_gmaps": "",
+      "created_at": "2026-08-14T16:06:00.662Z",
+      "updated_at": "2026-08-14T16:06:00.662Z"
+    },
+    {
+      "id": "c99a61b7-7985-4a1a-98f1-da227908eccb",
+      "tanggal": "2026-08-14T00:00:00.000Z",
+      "jam": "23:09",
+      "jalan": "Jl. Pejaten Barat",
+      "kelurahan_id": "612ec26a-f09b-4667-a100-977d8339ea08",
+      "kecamatan_id": "c40e8b0f-d749-437e-8745-fd6cc3e90bc9",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "link_gmaps": "",
+      "created_at": "2026-08-14T16:09:59.853Z",
+      "updated_at": "2026-08-14T16:09:59.853Z"
+    },
+    {
+      "id": "36736f99-fef0-4679-a788-cd928a7cb634",
+      "tanggal": "2026-08-16T00:00:00.000Z",
+      "jam": "11:31",
+      "jalan": "Jl. Inspeksi 1",
+      "kelurahan_id": "2b96e6ac-ded2-46fe-bd34-73553edd80ae",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "link_gmaps": "",
+      "created_at": "2026-08-16T04:33:48.952Z",
+      "updated_at": "2026-08-16T04:39:51.452Z"
+    }
+  ],
+  "kegiatans": [
+    {
+      "id": "e2ac53d7-f038-4613-866c-b03734bb9055",
+      "jenis_kegiatan": "lainya",
+      "kunjungan_id": "90d0efc1-6afb-46cc-a53c-322dc01bcc94",
+      "isi": "Peninjauan Pansus Pengelolaan Sampah",
+      "hari": "",
+      "tanggal": "2026-08-14T00:00:00.000Z",
+      "foto": [
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786722613346-8b9e6862-3e70-4c76-ac1c-205ca3df0a82-file_example_JPG_100kB.jpg"
+      ],
+      "nama_kegiatan": "Peninjauan Pansus Pengelolaan Sampah",
+      "link_gmaps": "",
+      "tempat": "Balai RW",
+      "alamat": "Jl. Cipete Raya No. 10 RT  RW",
+      "rt": "",
+      "rw": "",
+      "jumlah_peserta": 9,
+      "catatan": "",
+      "dibuat_oleh_id": "b4e89bf1-d692-47e3-b312-18d273ed1efe",
+      "team_id": null
+    },
+    {
+      "id": "10d8bca0-0d12-4f8c-8f1a-4aed40c05f88",
+      "jenis_kegiatan": "sosperda",
+      "kunjungan_id": "7be0ccc0-2a75-4e62-ad2a-a7f0f866a887",
+      "isi": "reses periode ke dua",
+      "hari": "",
+      "tanggal": "2026-08-14T00:00:00.000Z",
+      "foto": [
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786723554526-7d6e3693-1d0d-4890-8c2c-95bdc7b72920-file_example_JPG_100kB.jpg"
+      ],
+      "nama_kegiatan": "reses periode ke dua",
+      "link_gmaps": "",
+      "tempat": "Balai RW",
+      "alamat": "Jl. Usaha no. 17 RT  RW",
+      "rt": "",
+      "rw": "",
+      "jumlah_peserta": 6,
+      "catatan": "",
+      "dibuat_oleh_id": "b4e89bf1-d692-47e3-b312-18d273ed1efe",
+      "team_id": null
+    },
+    {
+      "id": "b71e0fe5-a51a-467c-b058-c755ef1ae399",
+      "jenis_kegiatan": "reses",
+      "kunjungan_id": "c99a61b7-7985-4a1a-98f1-da227908eccb",
+      "isi": "Monitoring Drainase Lingkungan",
+      "hari": "",
+      "tanggal": "2026-08-14T00:00:00.000Z",
+      "foto": [
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786723794899-e0148e71-7ae6-4c59-8ab1-689783fa0b9d-file_example_JPG_100kB.jpg"
+      ],
+      "nama_kegiatan": "Monitoring Drainase Lingkungan",
+      "link_gmaps": "",
+      "tempat": "Balai RW",
+      "alamat": "Jl. Pejaten Barat RT  RW",
+      "rt": "",
+      "rw": "",
+      "jumlah_peserta": 6,
+      "catatan": "",
+      "dibuat_oleh_id": "b4e89bf1-d692-47e3-b312-18d273ed1efe",
+      "team_id": null
+    },
+    {
+      "id": "a3d7587a-d8fc-4faa-99d8-5db3df8ade77",
+      "jenis_kegiatan": "sosperda",
+      "kunjungan_id": "36736f99-fef0-4679-a788-cd928a7cb634",
+      "isi": "Fungsi pengawasan terhadap produk peraturan daerah",
+      "hari": "",
+      "tanggal": "2026-08-16T00:00:00.000Z",
+      "foto": [
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786854799131-5f5a00de-449e-4795-97ed-69b0cbbf3253-sample_51843456.jpeg",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786854805803-db95f2ab-2cad-4ac0-8ba1-124d7e7bb885-file_example_JPG_100kB.jpg",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786854807054-5714a354-6fb5-48dd-acb9-3fcba98cbb60-ChatGPT-Image-Aug-12-2026-01_10_17-PM.png",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786854808738-ff88b224-4bfc-4040-90ec-f6b73c823559-Surat_Lamaran_Yanti.docx",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786854809984-d0d2efb1-499f-4f5c-b826-f01f009c4b2e-sistem-pakar-berbasis-web.pdf",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786855174549-4ecd2bb5-0ed8-422f-ac59-ee7d5f76a7c6-bab-8.png",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786855178281-1537ec5b-27e9-45ae-8f0b-9d3ee6d2abd7-kerangka_pikir.pdf",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786855179506-7f1fe887-d13f-414c-ad0b-d775e02c3a9e-Presentation1.pptx",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786855181089-95affd91-8c20-4ca2-90fe-23e658cf9a47-Data_Komposisi_Jenis_Sampah_SIPSN_KLHK_2022.xlsx"
+      ],
+      "nama_kegiatan": "Fungsi pengawasan terhadap produk peraturan daerah",
+      "link_gmaps": "",
+      "tempat": "Balai RW 2",
+      "alamat": "Jl. Inspeksi 1 RT 11 RW 2",
+      "rt": "11",
+      "rw": "2",
+      "jumlah_peserta": 50,
+      "catatan": "Sosialisasi Pengolahan Sampah",
+      "dibuat_oleh_id": "b4e89bf1-d692-47e3-b312-18d273ed1efe",
+      "team_id": "3f2a1e0b-e431-4b53-ac8b-108ae2343098"
+    }
+  ],
+  "aspirasis": [
+    {
+      "id": "fec670cb-8e0a-4112-8a0e-e15208f9983f",
+      "id_laporan": "LAP-LZIXHLGMOB",
+      "nik": "35230943070099",
+      "sumber": "LEMBAR_ASPIRASI_SOSPERDA",
+      "deskripsi": "Desil tidak sesuai keaadan. tolong di koordinasikan",
+      "status": "BELUM_DITINDAKLANJUTI",
+      "pelapor_nama": "Imalia",
+      "pelapor_email": "imalia999@gmail.com",
+      "pelapor_telepon": "082334907999",
+      "lampiran": [
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786853525941-8236a057-390f-42d9-85fe-2363be98503e-CV-SABRINA.pdf",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786853549325-aa76dd33-9ce8-41ef-84af-658c802c78f0-ELFINAA.png",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786853583722-47b34704-37ae-4063-a3b6-1c84eadb2d20-DIAZZ.png",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786853602614-f92481c0-3d31-4973-90c6-4ee6eb64b16d-Notulensi-Rapat-Perdana-20-Mei-20221.docx",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786853620549-6a0f3881-9122-4a26-9b3e-f96b0ccf99dc-mountains-gc127fefaa_1920.jpg",
+        "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786853740905-926cc73c-5197-4cb2-b6ac-6272fcb17a9d-sample_51843456.jpeg"
+      ],
+      "kategori_usulan": "Kesejahteraan Sosial",
+      "jenis_usulan": "Desil",
+      "jenis_reses": "Reses III",
+      "tindak_lanjut": "Belum ditindaklanjuti",
+      "tanggal_dibuat": "2026-08-15T00:00:00.000Z",
+      "kota_id": "9de136f7-e800-409a-86fb-efa5f4b53dae",
+      "kecamatan_id": "34b05d66-03e3-4a02-be6c-e55db7e1624b",
+      "kelurahan_id": "c306b8b1-c9da-4e88-86c5-24e6b9ab01f9",
+      "alamat": "Jalan Masjid 4 SKKT",
+      "rt": "4",
+      "rw": "14",
+      "user_id": null,
+      "created_at": "2026-08-16T04:15:53.327Z",
+      "updated_at": "2026-08-16T04:29:54.987Z"
+    }
+  ],
+  "trackingAspirasis": [
+    {
+      "id": "aac346b0-7422-4bef-ac32-6e4b22622e64",
+      "aspirasi_id": "fec670cb-8e0a-4112-8a0e-e15208f9983f",
+      "status": "BELUM_DITINDAKLANJUTI",
+      "catatan": null,
+      "lampiran": [],
+      "created_at": "2026-08-16T04:15:53.616Z",
+      "diverifikasi_oleh_id": null
+    }
+  ],
+  "relawans": [
+    {
+      "id": "cf05ac21-05db-47be-bfda-d22d1fdda7da",
+      "nik": "41274814654147",
+      "nama": "Imalia Rosyida",
+      "no_telepon": "08892090800",
+      "jenis_kelamin": "PEREMPUAN",
+      "alamat": "Jalan Masjid 1 SKKT RT 7 RW 1",
+      "domisili_sekarang": "",
+      "posisi": "PROFESIONAL",
+      "foto": "https://vutppztqkuldiysgpjeo.supabase.co/storage/v1/object/public/aplikasi-tindaklanjut/uploads/1786855684660-be67c931-8319-46be-ad28-3d2633707bcb-file_example_JPG_100kB.jpg",
+      "created_at": "2026-08-16T04:46:41.617Z",
+      "updated_at": "2026-08-16T04:48:24.369Z",
+      "kota_id": "9161ac81-1260-4b0b-9379-4f4ad1e48ff6",
+      "kecamatan_id": "947d239e-ea13-4bbf-88da-9f1a40e8295b",
+      "kelurahan_id": "e369b87b-a226-461e-a776-91097d2f5feb",
+      "team_id": "3f2a1e0b-e431-4b53-ac8b-108ae2343098"
+    }
+  ],
+  "summary": {
+    "kotas": 6,
+    "kecamatans": 44,
+    "kelurahans": 267,
+    "dprds": 2,
+    "teams": 2,
+    "users": 3,
+    "userTeams": 3,
+    "permissions": 20,
+    "roles": 2,
+    "rolePermissions": 31,
+    "kunjungans": 8,
+    "kegiatans": 4,
+    "aspirasis": 1,
+    "trackingAspirasis": 1,
+    "relawans": 1
+  }
+}

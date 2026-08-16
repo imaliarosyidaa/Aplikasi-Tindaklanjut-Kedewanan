@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, dprdFilter } from '@/lib/scoping'
 
 export async function GET(request: NextRequest) {
+  const scope = await getDataScope()
   const { searchParams } = new URL(request.url)
   const pageParam = searchParams.get('page')
   const hasPagination = pageParam !== null
@@ -14,7 +16,7 @@ export async function GET(request: NextRequest) {
   const kecamatanNama = searchParams.get('kecamatan')
   const kelurahanNama = searchParams.get('kelurahan')
 
-  const where: Record<string, unknown> = {}
+  const where: Record<string, unknown> = { ...dprdFilter(scope) }
 
   if (sumber) where.sumber = sumber
   if (status) where.status = status
@@ -60,6 +62,7 @@ export async function GET(request: NextRequest) {
         kota: true,
         kecamatan: true,
         kelurahan: true,
+        dewan: true,
         trackings: {
           orderBy: { created_at: 'asc' },
           include: { diverifikasiOleh: true },
@@ -92,6 +95,8 @@ export async function GET(request: NextRequest) {
     kota: a.kota?.nama ?? '',
     kecamatan: a.kecamatan?.nama ?? '',
     kelurahan: a.kelurahan?.nama ?? '',
+    master_dewan: a.master_dewan ?? '',
+    dewan: a.dewan?.name ?? '',
     lokasi: a.alamat ?? '',
     rt: a.rt ?? '',
     rw: a.rw ?? '',
@@ -118,6 +123,12 @@ export async function POST(request: Request) {
   let kotaId: string | undefined
   let kecamatanId: string | undefined
   let kelurahanId: string | undefined
+  let masterDewan: string | null = null
+
+  if (body.master_dewan) {
+    const dprd = await prisma.dprd.findUnique({ where: { id: body.master_dewan } })
+    if (dprd) masterDewan = dprd.id
+  }
 
   if (body.kota) {
     const kota = await prisma.kota.findFirst({ where: { nama: body.kota } })
@@ -148,14 +159,30 @@ export async function POST(request: Request) {
       id_laporan: body.id_laporan ?? '',
       tindak_lanjut: 'Belum ditindaklanjuti',
       tanggal_dibuat: new Date(),
-      kota_id: kotaId,
-      kecamatan_id: kecamatanId,
-      kelurahan_id: kelurahanId,
+      kota: {
+        connect: {
+          id: kotaId ?? '',
+        },
+      },
+      kecamatan: {
+        connect: {
+          id: kecamatanId ?? '',
+        },
+      },
+      kelurahan: {
+        connect: {
+          id: kelurahanId ?? '',
+        },
+      },
       alamat: body.lokasi ?? body.alamat ?? '',
       rt: body.rt ?? '',
       rw: body.rw ?? '',
     },
   })
+
+  if (masterDewan) {
+    await prisma.$executeRaw`UPDATE aspirasis SET master_dewan = ${masterDewan}::uuid WHERE id = ${created.id}::uuid`
+  }
 
   await prisma.trackingAspirasi.create({
     data: {
@@ -184,6 +211,7 @@ export async function POST(request: Request) {
       jenis_usulan: created.jenis_usulan,
       jenis_reses: created.jenis_reses,
       tindak_lanjut: created.tindak_lanjut,
+      master_dewan: created.master_dewan ?? '',
       tanggal_dibuat: created.tanggal_dibuat.toISOString(),
       created_at: created.created_at.toISOString(),
       updated_at: created.updated_at.toISOString(),

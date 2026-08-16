@@ -39,13 +39,9 @@ interface DprdItem {
   teams: TeamItem[]
 }
 
-interface DprdResponse {
-  dprds: DprdItem[]
-}
-
 export const DprdManager = (): React.ReactNode => {
-  const { data, isLoading, mutate } = useSWR<DprdResponse>('/api/dprd', fetcher)
-  const dprds = data?.dprds ?? []
+  const { data, isLoading, mutate } = useSWR<DprdItem[]>('/api/dprd', fetcher)
+  const dprds = data ?? []
 
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [showDprdModal, setShowDprdModal] = useState(false)

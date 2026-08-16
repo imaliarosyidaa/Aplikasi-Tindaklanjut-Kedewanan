@@ -11,10 +11,24 @@ export default function UserHomePage() {
         title="Sampaikan"
         highlight="Aspirasi Anda Sekarang"
         subtitle="Portal resmi penyampaian aspirasi masyarakat kepada DPRD DKI Jakarta. Sampaikan usulan, pengaduan, maupun apresiasi secara mudah, transparan, dan dapat dipantau perkembangannya."
-      />
+        badge="Layanan aspirasi masyarakat terpercaya"
+      >
+        <a
+          href="#pengajuan"
+          className="inline-flex items-center justify-center rounded-full bg-slate-800 px-6 py-3 text-sm font-medium text-white transition hover:bg-black"
+        >
+          Ajukan Aspirasi
+        </a>
+        <a
+          href="/laporan-saya"
+          className="inline-flex items-center justify-center rounded-full border border-[var(--color-border)] px-6 py-3 text-sm font-medium text-[var(--color-text)] transition hover:bg-[var(--color-bg-secondary)]"
+        >
+          Cek Laporan Saya
+        </a>
+      </Hero>
 
       {/* Form Pengajuan */}
-      <section className="bg-white py-16">
+      <section id="pengajuan" className="bg-white py-16">
         <div className="mx-auto w-full max-w-6xl px-6">
           <div className="mb-10 text-start">
             <h2 className="text-3xl font-bold text-[var(--color-text)]">Ajukan Aspirasi Anda Sekarang</h2>

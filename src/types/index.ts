@@ -173,3 +173,9 @@ export interface Kegiatan {
   kota?: string
   dibuat_oleh?: string
 }
+
+export interface DPRD {
+  id: string
+  name: string
+  description: string
+}

@@ -44,7 +44,7 @@ export async function getDataScope(): Promise<DataScope> {
   return {
     isGlobal,
     teamIds: user.userTeams.map((t) => t.team_id),
-    dprdId: user.dprd_id,
+    dprdId: user.dprd_id ?? user.userTeams[0]?.team.dprd_id ?? null,
     userId: user.id,
   }
 }
@@ -58,6 +58,16 @@ export function teamFilter(scope: DataScope): Record<string, unknown> {
   return scope.teamIds.length
     ? { team_id: { in: scope.teamIds } }
     : { team_id: { in: [] } }
+}
+
+/**
+ * Membangun kondisi Prisma `master_dewan` untuk filter data aspirasi per dewan.
+ * - Global role → tanpa filter (bebas lihat semua dewan).
+ * - User biasa → hanya melihat aspirasi untuk dprd-nya sendiri.
+ */
+export function dprdFilter(scope: DataScope): Record<string, unknown> {
+  if (scope.isGlobal) return {}
+  return scope.dprdId ? { master_dewan: scope.dprdId } : { master_dewan: { in: [] } }
 }
 
 /**

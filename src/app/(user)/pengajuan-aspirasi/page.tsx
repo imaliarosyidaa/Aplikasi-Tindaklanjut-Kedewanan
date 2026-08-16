@@ -31,9 +31,10 @@ import {
 import useSWR from 'swr'
 import type { LucideIcon } from 'lucide-react'
 import { ClipboardList, Handshake, Home, Megaphone, PhoneCall, TextCursor } from 'lucide-react'
-import { MasterKecamatan, MasterKelurahan, MasterKota } from '../../../types/index'
+import { DPRD, MasterKecamatan, MasterKelurahan, MasterKota } from '../../../types/index'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { isImageUrl, getFileName } from '@/helper/file'
+import { useDprd } from '@/hooks/useDprds'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -49,6 +50,7 @@ const SUMBER_ASPIRASI: { id: string; title: string; desc?: string; icon?: Lucide
 
 interface TicketData {
   idLaporan: string
+  dewan: string
   nik: string
   nama: string
   email: string
@@ -116,6 +118,7 @@ function TicketLaporan({ data, onReset }: { data: TicketData; onReset: () => voi
           <div class="status-badge">BELUM DITINDAKLANJUTI</div>
         </div>
         <table>
+          <tr><td class="label">Dewan Tujuan</td><td class="value">${data.dewan || '-'}</td></tr>
           <tr><td class="label">Nama Pelapor</td><td class="value">${data.nama}</td></tr>
           <tr><td class="label">NIK</td><td class="value">${data.nik || '-'}</td></tr>
           <tr><td class="label">Email</td><td class="value">${data.email || '-'}</td></tr>
@@ -203,6 +206,11 @@ function TicketLaporan({ data, onReset }: { data: TicketData; onReset: () => voi
           </div>
 
           <div className="space-y-3 text-sm">
+            <div className="flex gap-2">
+              <MdBadge size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
+              <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Dewan Tujuan</span>
+              <span className="text-[var(--color-text)]">{data.dewan || '-'}</span>
+            </div>
             <div className="flex gap-2">
               <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Nama Lengkap</span>
@@ -362,8 +370,9 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [rt, setRt] = useState('')
   const [rw, setRw] = useState('')
   const [ticketData, setTicketData] = useState<TicketData | null>(null)
-
+  const { data: dprdList = [] } = useSWR<DPRD[]>('/api/dprd', fetcher)
   const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
+  const [masterDewan, setMasterDewan] = useState('')
   const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
     kotaId ? `/api/kecamatan?kota=${kotaId}` : null,
     fetcher,
@@ -376,6 +385,9 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
+  const dprdMap = Object.fromEntries(dprdList.map((k) => [k.id, k.name]))
+
+  const dprdOptions = dprdList.map((k) => ({ value: k.id, label: k.name }))
 
   const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setKotaId(e.target.value)
@@ -407,6 +419,10 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
 
     if (!sumber) {
       setError('Silakan pilih sumber aspirasi terlebih dahulu')
+      return
+    }
+    if (!masterDewan) {
+      setError('Silakan pilih dewan tujuan aspirasi terlebih dahulu')
       return
     }
     if (!nama.trim()) {
@@ -442,6 +458,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           nik,
           sumber: finalSumber,
           deskripsi: pengaduan,
+          master_dewan: masterDewan,
           pelapor_nama: nama,
           pelapor_email: email,
           pelapor_telepon: telepon,
@@ -465,6 +482,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
 
       setTicketData({
         idLaporan,
+        dewan: dprdMap[masterDewan] ?? '',
         nik,
         nama,
         email,
@@ -520,81 +538,83 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         </p>
       </div>
 
-      <Input id="id_laporan" label="ID Laporan" value={idLaporan} disabled className="bg-gray-100 text-gray-500" />
+      <Card>
+        <Input id="id_laporan" label="ID Laporan" value={idLaporan} disabled className="bg-gray-100 text-gray-500" />
+      </Card>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <MdSource size={20} className="text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Sumber Aspirasi</h2>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Sumber Aspirasi */}
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold text-[var(--color-text)]">Sumber Aspirasi</h2>
+            <p className="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">
+              Pilih sumber atau media penyampaian aspirasi yang Anda gunakan.
+            </p>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            {SUMBER_ASPIRASI.map((item) => {
-              const Icon = item.icon as LucideIcon
-              const active = sumber === item.id
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setSumber(item.id)}
-                  className={`cursor-pointer text-center flex h-40 flex-col justify-center items-center rounded-xl border-2 p-4 transition-all duration-200 ${
-                    active
-                      ? 'border-blue-600 bg-blue-50 shadow-sm'
-                      : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-blue-300 hover:bg-blue-50/50'
-                  }`}
-                >
-                  <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                      active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
+          <div className="md:col-span-2">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {SUMBER_ASPIRASI.map((item) => {
+                const Icon = item.icon as LucideIcon
+                const active = sumber === item.id
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setSumber(item.id)}
+                    className={`cursor-pointer text-center flex h-40 flex-col justify-center items-center rounded-xl border-2 p-4 transition-all duration-200 ${
+                      active
+                        ? 'border-blue-600 bg-blue-50 shadow-sm'
+                        : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-blue-300 hover:bg-blue-50/50'
                     }`}
                   >
-                    <Icon size={26} />
-                  </div>
-                  <h3 className={`text-sm font-semibold ${active ? 'text-blue-700' : 'text-[var(--color-text)]'}`}>
-                    {item.title}
-                  </h3>
-                </button>
-              )
-            })}
-          </div>
-
-          {sumber === 'LAINYA' && (
-            <div className="mt-4">
-              <Input
-                id="jenis-lainnya"
-                label="Sumber Aspirasi Lainnya"
-                value={sumberLainya}
-                onChange={(e) => setSumberLainya(e.target.value)}
-                placeholder="Masukkan sumber kegiatan"
-              />
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+                        active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      <Icon size={26} />
+                    </div>
+                    <h3 className={`text-sm font-semibold ${active ? 'text-blue-700' : 'text-[var(--color-text)]'}`}>
+                      {item.title}
+                    </h3>
+                  </button>
+                )
+              })}
             </div>
-          )}
 
-          <div className="mt-6 grid md:grid-cols-2 gap-4">
-            <div>
+            {sumber === 'LAINYA' && (
+              <div className="mt-4">
+                <Input
+                  id="jenis-lainnya"
+                  label="Sumber Aspirasi Lainnya"
+                  value={sumberLainya}
+                  onChange={(e) => setSumberLainya(e.target.value)}
+                  placeholder="Masukkan sumber kegiatan"
+                />
+              </div>
+            )}
+
+            <div className="sm:col-span-2">
               <Input
                 id="kategori-usulan"
                 label="Kategori Usulan"
                 value={kategoriUsulan}
                 onChange={(e) => setKategoriUsulan(e.target.value)}
-                placeholder="Pembangunan / Pendidikan / Kesehatan / Kesejahteraan Sosial / Dll"
+                placeholder="Pembangunan / Pendidikan / Kesehatan / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
-            <div>
+            <div className="sm:col-span-2">
               <Input
                 id="jenis-usulan"
                 label="Jenis Usulan"
                 value={jenisUsulan}
                 onChange={(e) => setJenisUsulan(e.target.value)}
-                placeholder="Pembuatan Drainase / KJP-KJMU / BPJS / Desil / Dll"
+                placeholder="Pembuatan Drainase / KJP-KJMU / BPJS / Dll"
               />
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
-            <div>
+            <div className="sm:col-span-2">
               <Input
                 id="jenis-reses"
                 label="Jenis Reses"
@@ -605,128 +625,193 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
               <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
             </div>
           </div>
-        </Card>
+        </section>
 
-        <Card>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <MdPerson size={20} className="text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Data Pelapor Aspirasi</h2>
+        <hr className="border-t border-[var(--color-border)]" />
+        {/* Pilih Dewan */}
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold text-[var(--color-text)]">Pilih Dewan</h2>
+            <p className="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">
+              Pilih dewan tujuan aspirasi Anda.
+            </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <Input
-              id="nama"
-              label="Nama Lengkap"
-              value={nama}
-              onChange={(e) => setNama(e.target.value)}
-              required
-              placeholder="Masukkan nama lengkap"
-            />
-            <div>
-              <Input
-                id="nik"
-                label="NIK (Opsional)"
-                value={nik}
-                onChange={(e) => setNik(e.target.value)}
-                placeholder="Masukkan NIK (opsional)"
-              />
-              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
-            </div>
-            <Input
-              id="telepon"
-              label="Nomor Handphone / Whatsapp Aktif"
-              type="tel"
-              value={telepon}
-              onChange={(e) => setTelepon(e.target.value)}
-              required
-              placeholder="08xxxxxxxxxx"
-              className="md:col-span-2"
-            />
-            <div className="md:col-span-2">
-              <Input
-                id="email"
-                label="Email Aktif (Opsional)"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="***@gmail.com"
-              />
-              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+          <div className="md:col-span-2">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {dprdOptions.map((item, index) => {
+                const active = masterDewan === item.value
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setMasterDewan(item.value)}
+                    className={`cursor-pointer text-center flex h-40 flex-col justify-center items-center rounded-xl border-2 p-4 transition-all duration-200 ${
+                      active
+                        ? 'border-blue-600 bg-blue-50 shadow-sm'
+                        : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-blue-300 hover:bg-blue-50/50'
+                    }`}
+                  >
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+                        active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
+                      }`}
+                    ></div>
+                    <h3 className={`text-sm font-semibold ${active ? 'text-blue-700' : 'text-[var(--color-text)]'}`}>
+                      {item.label}
+                    </h3>
+                  </button>
+                )
+              })}
             </div>
           </div>
-        </Card>
+        </section>
 
-        <Card>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <MdLocationOn size={20} className="text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Titik Lokasi Pengajuan Kegiatan Aspirasi</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <Select
-              id="kota"
-              label="Kota/Kabupaten"
-              placeholder="Pilih kota/kabupaten"
-              options={kotaOptions}
-              value={kotaId}
-              onChange={handleKotaChange}
-            />
-            <SearchableSelect
-              id="kecamatan"
-              label="Kecamatan"
-              placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
-              options={kecamatanOptions}
-              value={kecamatanId}
-              onChange={handleKecamatanChange}
-              disabled={!kotaId}
-            />
-            <SearchableSelect
-              id="kelurahan"
-              label="Kelurahan"
-              placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
-              options={kelurahanOptions}
-              value={kelurahanId}
-              onChange={handleKelurahanChange}
-              disabled={!kecamatanId}
-            />
-            <Input
-              id="alamat"
-              label="Alamat"
-              value={alamat}
-              onChange={(e) => setAlamat(e.target.value)}
-              placeholder="Masukkan alamat lengkap"
-            />
-            <div className="grid grid-cols-2 gap-3 md:col-span-2">
-              <Input
-                id="rt"
-                label="RT"
-                type="number"
-                value={rt}
-                onChange={(e) => setRt(e.target.value)}
-                placeholder="RT"
-              />
-              <Input
-                id="rw"
-                label="RW"
-                type="number"
-                value={rw}
-                onChange={(e) => setRw(e.target.value)}
-                placeholder="RW"
-              />
-            </div>
-          </div>
-        </Card>
+        <hr className="border-t border-[var(--color-border)]" />
 
-        <Card>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <MdDescription size={20} className="text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--color-text)]">Isi Aspirasi Anda</h2>
+        {/* Data Pelapor */}
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold text-[var(--color-text)]">Data Pelapor Aspirasi</h2>
+            <p className="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">
+              Informasi kontak Anda digunakan untuk tindak lanjut aspirasi yang disampaikan.
+            </p>
           </div>
-          <div className="space-y-4">
+          <div className="md:col-span-2">
+            <div className="grid gap-4 sm:grid-cols-6">
+              <div className="sm:col-span-3">
+                <Input
+                  id="nama"
+                  label="Nama Lengkap"
+                  value={nama}
+                  onChange={(e) => setNama(e.target.value)}
+                  required
+                  placeholder="Masukkan nama lengkap"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <Input
+                  id="nik"
+                  label="NIK (Opsional)"
+                  value={nik}
+                  onChange={(e) => setNik(e.target.value)}
+                  placeholder="Masukkan NIK (opsional)"
+                />
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+              </div>
+              <div className="sm:col-span-full">
+                <Input
+                  id="telepon"
+                  label="Nomor Handphone / Whatsapp Aktif"
+                  type="tel"
+                  value={telepon}
+                  onChange={(e) => setTelepon(e.target.value)}
+                  required
+                  placeholder="08xxxxxxxxxx"
+                />
+              </div>
+              <div className="sm:col-span-full">
+                <Input
+                  id="email"
+                  label="Email Aktif (Opsional)"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="***@gmail.com"
+                />
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-t border-[var(--color-border)]" />
+
+        {/* Titik Lokasi */}
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold text-[var(--color-text)]">Titik Lokasi Pengajuan</h2>
+            <p className="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">
+              Lengkapi lokasi kegiatan aspirasi agar mudah ditindaklanjuti.
+            </p>
+          </div>
+          <div className="md:col-span-2">
+            <div className="grid gap-4 sm:grid-cols-6">
+              <div className="sm:col-span-2">
+                <Select
+                  id="kota"
+                  label="Kota/Kabupaten"
+                  placeholder="Pilih kota/kabupaten"
+                  options={kotaOptions}
+                  value={kotaId}
+                  onChange={handleKotaChange}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <SearchableSelect
+                  id="kecamatan"
+                  label="Kecamatan"
+                  placeholder={kotaId ? 'Pilih kecamatan' : 'Pilih kota terlebih dahulu'}
+                  options={kecamatanOptions}
+                  value={kecamatanId}
+                  onChange={handleKecamatanChange}
+                  disabled={!kotaId}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <SearchableSelect
+                  id="kelurahan"
+                  label="Kelurahan"
+                  placeholder={kecamatanId ? 'Pilih kelurahan' : 'Pilih kecamatan terlebih dahulu'}
+                  options={kelurahanOptions}
+                  value={kelurahanId}
+                  onChange={handleKelurahanChange}
+                  disabled={!kecamatanId}
+                />
+              </div>
+              <div className="sm:col-span-full">
+                <Input
+                  id="alamat"
+                  label="Alamat"
+                  value={alamat}
+                  onChange={(e) => setAlamat(e.target.value)}
+                  placeholder="Masukkan alamat lengkap"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <Input
+                  id="rt"
+                  label="RT"
+                  type="number"
+                  value={rt}
+                  onChange={(e) => setRt(e.target.value)}
+                  placeholder="RT"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <Input
+                  id="rw"
+                  label="RW"
+                  type="number"
+                  value={rw}
+                  onChange={(e) => setRw(e.target.value)}
+                  placeholder="RW"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-t border-[var(--color-border)]" />
+
+        {/* Isi Aspirasi */}
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div>
+            <h2 className="text-base font-semibold text-[var(--color-text)]">Isi Aspirasi Anda</h2>
+            <p className="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">
+              Tuliskan aspirasi secara jelas dan lampirkan dokumen pendukung bila ada.
+            </p>
+          </div>
+          <div className="md:col-span-2 space-y-4">
             <div>
               <label htmlFor="pengaduan" className="block text-sm font-medium text-[var(--color-text)] mb-1">
                 Isi Pengaduan Aspirasi (Opsional)
@@ -748,7 +833,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             />
             <p className="text-xs text-[var(--color-text-secondary)]">*Boleh dikosongkan</p>
           </div>
-        </Card>
+        </section>
 
         {error && (
           <div className="flex items-center gap-2 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
@@ -757,22 +842,26 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
           </div>
         )}
 
-        <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Mengirim...
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              <MdSend size={20} />
-              Kirim Pengaduan Aspirasi Anda
-            </span>
-          )}
-        </Button>
+        <hr className="border-t border-[var(--color-border)]" />
+
+        <div className="flex justify-end">
+          <Button type="submit" className="h-12 px-8 text-base" disabled={loading}>
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Mengirim...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <MdSend size={20} />
+                Kirim Pengaduan Aspirasi Anda
+              </span>
+            )}
+          </Button>
+        </div>
       </form>
     </div>
   )

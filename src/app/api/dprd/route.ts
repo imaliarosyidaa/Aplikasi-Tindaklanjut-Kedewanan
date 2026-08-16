@@ -13,8 +13,8 @@ export async function GET() {
     },
   })
 
-  return NextResponse.json({
-    dprds: dprds.map((d) => ({
+  return NextResponse.json(
+    dprds.map((d) => ({
       id: d.id,
       name: d.name,
       description: d.description,
@@ -33,7 +33,7 @@ export async function GET() {
         relawan_count: t._count.relawans,
       })),
     })),
-  })
+  )
 }
 
 export async function POST(request: Request) {

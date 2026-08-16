@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getDataScope, teamFilter } from '@/lib/scoping'
+import { getDataScope, teamFilter, dprdFilter } from '@/lib/scoping'
 
 export async function GET() {
   const scope = await getDataScope()
   const scopedWhere = teamFilter(scope)
+  const scopedAspirasiWhere = dprdFilter(scope)
 
   const [
     total_kegiatan,
@@ -18,7 +19,7 @@ export async function GET() {
     sumberGroup,
   ] = await Promise.all([
     prisma.kegiatan.count({ where: scopedWhere }),
-    prisma.aspirasis.count(),
+    prisma.aspirasis.count({ where: scopedAspirasiWhere }),
     prisma.kunjungan.findMany({
       where: Object.keys(scopedWhere).length > 0 ? { kegiatans: { some: scopedWhere } } : undefined,
       select: { tanggal: true, kelurahan_id: true },
@@ -28,12 +29,13 @@ export async function GET() {
       select: { kunjungan: { select: { kelurahan_id: true } }, tanggal: true },
     }),
     prisma.aspirasis.findMany({
+      where: scopedAspirasiWhere,
       select: { created_at: true, status: true, sumber: true },
     }),
     prisma.kecamatan.findMany({ select: { id: true, nama: true } }),
     prisma.kelurahan.findMany({ select: { id: true, nama: true, kecamatan_id: true } }),
-    prisma.aspirasis.groupBy({ by: ['status'], _count: { status: true } }),
-    prisma.aspirasis.groupBy({ by: ['sumber'], _count: { sumber: true } }),
+    prisma.aspirasis.groupBy({ by: ['status'], where: scopedAspirasiWhere, _count: { status: true } }),
+    prisma.aspirasis.groupBy({ by: ['sumber'], where: scopedAspirasiWhere, _count: { sumber: true } }),
   ])
 
   const total_kunjungan = kunjungan_all.length

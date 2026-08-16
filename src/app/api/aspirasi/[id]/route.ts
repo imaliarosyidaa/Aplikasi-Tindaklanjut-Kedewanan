@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getDataScope, dprdFilter } from '@/lib/scoping'
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const scope = await getDataScope()
 
-  const a = await prisma.aspirasis.findUnique({
-    where: { id },
+  const a = await prisma.aspirasis.findFirst({
+    where: { id, ...dprdFilter(scope) },
     include: {
       kota: true,
       kecamatan: true,
       kelurahan: true,
+      dewan: true,
       trackings: {
         orderBy: { created_at: 'asc' },
         include: {
@@ -44,6 +47,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     kota: a.kota?.nama ?? '',
     kecamatan: a.kecamatan?.nama ?? '',
     kelurahan: a.kelurahan?.nama ?? '',
+    master_dewan: a.master_dewan ?? '',
+    dewan: a.dewan?.name ?? '',
     lokasi: a.alamat ?? '',
     rt: a.rt ?? '',
     rw: a.rw ?? '',
@@ -62,7 +67,13 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const scope = await getDataScope()
   const body = await request.json()
+
+  const existing = await prisma.aspirasis.findFirst({ where: { id, ...dprdFilter(scope) } })
+  if (!existing) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 
   if (body.status) {
     await prisma.aspirasis.update({
@@ -142,6 +153,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const scope = await getDataScope()
+
+  const existing = await prisma.aspirasis.findFirst({ where: { id, ...dprdFilter(scope) } })
+  if (!existing) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   await prisma.trackingAspirasi.deleteMany({ where: { aspirasi_id: id } })
   await prisma.aspirasis.delete({ where: { id } })
   return NextResponse.json({ success: true })
