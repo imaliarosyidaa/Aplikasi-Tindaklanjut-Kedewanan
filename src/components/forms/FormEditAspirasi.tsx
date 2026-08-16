@@ -83,6 +83,8 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const [kotaId, setKotaId] = useState('')
   const [kecamatanId, setKecamatanId] = useState('')
   const [kelurahanId, setKelurahanId] = useState('')
+  const [rt, setRt] = useState(aspirasi.rt ?? '')
+  const [rw, setRw] = useState(aspirasi.rw ?? '')
 
   // Setelah user mengubah wilayah, abaikan default dari data aspirasi
   const [wilayahTouched, setWilayahTouched] = useState(false)
@@ -164,6 +166,8 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           kota_id: finalKotaId || null,
           kecamatan_id: finalKecamatanId || null,
           kelurahan_id: finalKelurahanId || null,
+          rt: rt,
+          rw: rw,
         }),
       })
       if (!res.ok) throw new Error('Failed')
@@ -312,6 +316,10 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
             setKelurahanId(e.target.value)
           }}
         />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Input type="number" id="rt" label="RT" placeholder="001" value={rt} onChange={(e) => setRt(e.target.value)} />
+        <Input type="number" id="rw" label="RW" placeholder="005" value={rw} onChange={(e) => setRw(e.target.value)} />
       </div>
 
       <Input

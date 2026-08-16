@@ -99,6 +99,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         kota_id: body.kota_id ?? null,
         kecamatan_id: body.kecamatan_id ?? null,
         kelurahan_id: body.kelurahan_id ?? null,
+        rt: body.rt ?? null,
+        rw: body.rw ?? null,
       },
     })
   }
