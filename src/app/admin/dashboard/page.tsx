@@ -37,16 +37,16 @@ const LEGENDA_SUMBER = [
 export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanStat[] }) => {
   const router = useRouter()
 
-  // State untuk mengontrol Modal & Kecamatan yang sedang dipilih
   const [selectedKecamatan, setSelectedKecamatan] = useState<KecamatanStat | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const sortedStats = [...kecamatanStats].sort((a, b) => {
-    const aVisited = a.kelurahan_dikunjungi > 0
-    const bVisited = b.kelurahan_dikunjungi > 0
-    if (aVisited && !bVisited) return -1
-    if (!aVisited && bVisited) return 1
-    return b.kelurahan_dikunjungi - a.kelurahan_dikunjungi
+  // Sort: Prioritaskan yang punya kegiatan/kelurahan dikunjungi > 0
+  const sortedStats = [...(kecamatanStats ?? [])].sort((a, b) => {
+    const aCount = (a.kelurahan_dikunjungi ?? 0) > 0 || (a.jumlah_kunjungan ?? 0) > 0
+    const bCount = (b.kelurahan_dikunjungi ?? 0) > 0 || (b.jumlah_kunjungan ?? 0) > 0
+    if (aCount && !bCount) return -1
+    if (!aCount && bCount) return 1
+    return (b.kelurahan_dikunjungi ?? b.jumlah_kunjungan ?? 0) - (a.kelurahan_dikunjungi ?? a.jumlah_kunjungan ?? 0)
   })
 
   const handleKecamatanClick = (k: KecamatanStat) => {
@@ -58,18 +58,16 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
     if (!selectedKecamatan) return
     setIsModalOpen(false)
 
-    // 🛠️ Jika selectedKecamatan.kota tidak ada, jangan isi 'Gambir', tapi biarkan kosong/undefined
     const queryParams = new URLSearchParams()
-
     if (selectedKecamatan.kota) {
       queryParams.set('kota', selectedKecamatan.kota)
     }
     queryParams.set('kecamatan', selectedKecamatan.kecamatan)
     queryParams.set('kelurahan', kelurahanNama)
 
+    // Sesuaikan routing tujuan (kegiatan atau kunjungan)
     router.push(`/admin/kunjungan?${queryParams.toString()}`)
   }
-  const count = selectedKecamatan?.jumlah_kunjungan
 
   return (
     <>
@@ -81,9 +79,13 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
 
         <div className="space-y-3 transition-all max-h-[260px] duration-500 ease-in-out overflow-y-auto pb-12">
           {sortedStats.map((k) => {
-            const visited = k.kelurahan_dikunjungi > 0
-            const percentage =
-              k.jumlah_kelurahan > 0 ? Math.round((k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100) : 0
+            const totalKegiatan = k.jumlah_kunjungan ?? 0
+            const kelDikunjungi = k.kelurahan_dikunjungi ?? 0
+            const totalKelurahan = k.jumlah_kelurahan || 1
+
+            // Dianggap aktif jika ada kelurahan tercover ATAU ada record kegiatan
+            const visited = kelDikunjungi > 0 || totalKegiatan > 0
+            const percentage = Math.min(Math.round((kelDikunjungi / totalKelurahan) * 100), 100)
 
             return (
               <div
@@ -106,13 +108,13 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{
-                      width: `${(k.kelurahan_dikunjungi / k.jumlah_kelurahan) * 100}%`,
+                      width: `${visited && percentage === 0 ? 10 : percentage}%`,
                     }}
                   />
                 </div>
 
                 <p className="text-xs w-1/6 text-[var(--color-text-secondary)]">
-                  {k.kelurahan_dikunjungi}/{k.jumlah_kelurahan} kelurahan
+                  {kelDikunjungi}/{k.jumlah_kelurahan} kelurahan
                 </p>
 
                 <p
@@ -135,13 +137,17 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
         title={`Daftar Kelurahan - Kecamatan ${selectedKecamatan?.kecamatan || ''}`}
       >
         <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-          <p className="text-xs mb-3">Kelurahan yang sudah memiliki kegiatan: {count}</p>
+          <p className="text-xs mb-3 text-[var(--color-text-secondary)]">
+            Total kegiatan di kecamatan ini:{' '}
+            <span className="font-semibold text-[var(--color-text)]">{selectedKecamatan?.jumlah_kunjungan ?? 0}</span>
+          </p>
 
           {(() => {
             const list = selectedKecamatan?.kelurahan_list ?? []
 
             return list.map((kel) => {
-              const isKelVisited = kel.dikunjungi || (kel.jumlah_kunjungan ?? 0) > 0
+              const countKegiatan = kel.jumlah_kunjungan ?? 0
+              const isKelVisited = Boolean(kel.dikunjungi) || countKegiatan > 0
 
               return (
                 <div
@@ -166,7 +172,7 @@ export const KecamatanList = ({ kecamatanStats }: { kecamatanStats: KecamatanSta
                           : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
                       }`}
                     >
-                      {kel.jumlah_kunjungan ?? 0} Kegiatan
+                      {countKegiatan} Kegiatan
                     </span>
                     <MdChevronRight size={18} className="text-gray-400" />
                   </div>
@@ -192,7 +198,7 @@ export default function AdminDashboardPage(): React.ReactNode {
 
   const palingBanyak = kecamatanStats.toSorted((a, b) => b.jumlah_kunjungan - a.jumlah_kunjungan)[0]
   const palingSedikit = kecamatanStats.toSorted((a, b) => a.jumlah_kunjungan - b.jumlah_kunjungan)[0]
-  const rataKunjungan = totalKecamatan > 0 ? Math.round((data?.total_kunjungan ?? 0) / totalKecamatan) : 0
+  const rataKunjungan = totalKecamatan > 0 ? (data?.total_kegiatan ?? 0) / totalKecamatan : 0
 
   const kunjunganPerBulan = (data?.kunjungan_per_bulan ?? []).map((k) => ({
     label: k.bulan,
@@ -351,8 +357,8 @@ export default function AdminDashboardPage(): React.ReactNode {
               }}
             />
             <StatCard
-              title="Rata-rata Kegiatan/Kec"
-              value={rataKunjungan}
+              title="Rata-Rata Kegiatan Per Kecamatan"
+              value={rataKunjungan.toFixed(2)}
               icon={<MdTrackChanges size={24} />}
               variant="success"
               onClick={() => setModalType('rata-rata')}
@@ -434,32 +440,74 @@ export default function AdminDashboardPage(): React.ReactNode {
       </Modal>
 
       {/* Modal Rata-Rata */}
+      {/* Modal Rata-Rata */}
       <Modal
         isOpen={modalType === 'rata-rata'}
         onClose={() => setModalType(null)}
         title="Distribusi Kegiatan per Kecamatan"
       >
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+          {/* Header Info Rata-rata */}
           <div className="flex items-center justify-between rounded-lg bg-[var(--color-bg-secondary)] p-3 text-sm font-medium">
-            <span className="text-[var(--color-text-secondary)]">Rata-rata</span>
-            <span className="text-[var(--color-text)]">{rataKunjungan} kegiatan/kec</span>
+            <span className="text-[var(--color-text-secondary)]">Rata-rata Keseluruhan</span>
+            <span className="font-semibold text-[var(--color-primary)]">{rataKunjungan.toFixed(2)} kegiatan/kec</span>
           </div>
-          {kecamatanStats.map((k) => (
-            <div key={k.kecamatan} className="rounded-lg border border-[var(--color-border)] p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-[var(--color-text)]">{k.kecamatan}</span>
-                <span className="text-sm text-[var(--color-text-secondary)]">{k.jumlah_kunjungan} kegiatan</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-[var(--color-bg-secondary)]">
+
+          {/* List Progress Kecamatan (Sorted: Terbanyak -> Sedikit/0) */}
+          {(() => {
+            // 1. Sort descending berdasarkan jumlah_kunjungan
+            const sortedList = [...(kecamatanStats ?? [])].sort((a, b) => {
+              const countA = a.jumlah_kunjungan ?? 0
+              const countB = b.jumlah_kunjungan ?? 0
+              return countB - countA
+            })
+
+            // 2. Cari nilai tertinggi untuk basis persentase bar (minimal 1 agar tidak divide by zero)
+            const maxKunjungan = Math.max(...sortedList.map((k) => k.jumlah_kunjungan ?? 0), 1)
+
+            return sortedList.map((k) => {
+              const count = k.jumlah_kunjungan ?? 0
+              const percentage = Math.round((count / maxKunjungan) * 100)
+              const isAboveAverage = count >= rataKunjungan && count > 0
+
+              return (
                 <div
-                  className="h-2 rounded-full bg-[var(--color-primary)] transition-all"
-                  style={{
-                    width: `${rataKunjungan > 0 ? Math.min((k.jumlah_kunjungan / rataKunjungan) * 50, 100) : 0}%`,
-                  }}
-                />
-              </div>
-            </div>
-          ))}
+                  key={k.kecamatan}
+                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-3 shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-sm text-[var(--color-text)]">{k.kecamatan}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-[var(--color-text-secondary)]">{count} kegiatan</span>
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                          count === 0
+                            ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
+                            : isAboveAverage
+                              ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300'
+                              : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+                        }`}
+                      >
+                        {count === 0 ? 'Belum Ada' : isAboveAverage ? '≥ Rata-rata' : '< Rata-rata'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="h-2 w-full rounded-full bg-[var(--color-bg-secondary)] overflow-hidden">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        count === 0 ? 'bg-transparent' : isAboveAverage ? 'bg-[var(--color-primary)]' : 'bg-amber-500'
+                      }`}
+                      style={{
+                        width: `${percentage}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )
+            })
+          })()}
         </div>
       </Modal>
     </div>

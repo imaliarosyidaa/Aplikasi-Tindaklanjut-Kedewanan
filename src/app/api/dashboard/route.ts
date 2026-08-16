@@ -20,10 +20,7 @@ export async function GET() {
     prisma.kegiatan.count({ where: scopedWhere }),
     prisma.aspirasis.count(),
     prisma.kunjungan.findMany({
-      where:
-        Object.keys(scopedWhere).length > 0
-          ? { kegiatans: { some: scopedWhere } }
-          : undefined,
+      where: Object.keys(scopedWhere).length > 0 ? { kegiatans: { some: scopedWhere } } : undefined,
       select: { tanggal: true, kelurahan_id: true },
     }),
     prisma.kegiatan.findMany({
@@ -42,16 +39,11 @@ export async function GET() {
   const total_kunjungan = kunjungan_all.length
   const total_kelurahan = kelurahans.length
 
-  const kelurahan_dikunjungi = new Set(
-    kegiatan_all.map((k) => k.kunjungan.kelurahan_id)
-  ).size
+  const kelurahan_dikunjungi = new Set(kegiatan_all.map((k) => k.kunjungan.kelurahan_id)).size
 
   const kelurahan_belum_dikunjungi = total_kelurahan - kelurahan_dikunjungi
 
-  const bulanNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
-  ]
+  const bulanNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
 
   const kunjungan_per_bulan = bulanNames.map((bulan, i) => {
     const month = String(i + 1).padStart(2, '0')
@@ -83,28 +75,20 @@ export async function GET() {
   }))
 
   const kunjungan_per_kecamatan = kecamatans.map((kec) => {
-    const kelIds = kelurahans
-      .filter((kel) => kel.kecamatan_id === kec.id)
-      .map((kel) => kel.id)
+    const kelIds = kelurahans.filter((kel) => kel.kecamatan_id === kec.id).map((kel) => kel.id)
     const uniqueKel = new Set(
-      kegiatan_all
-        .filter((k) => kelIds.includes(k.kunjungan.kelurahan_id))
-        .map((k) => k.kunjungan.kelurahan_id)
+      kegiatan_all.filter((k) => kelIds.includes(k.kunjungan.kelurahan_id)).map((k) => k.kunjungan.kelurahan_id),
     )
     const kelurahan_list = kelurahans
       .filter((kel) => kel.kecamatan_id === kec.id)
       .map((kel) => ({
         nama: kel.nama,
         dikunjungi: uniqueKel.has(kel.id),
-        jumlah_kunjungan: kegiatan_all.filter(
-          (k) => k.kunjungan.kelurahan_id === kel.id
-        ).length,
+        jumlah_kunjungan: kegiatan_all.filter((k) => k.kunjungan.kelurahan_id === kel.id).length,
       }))
     return {
       kecamatan: kec.nama,
-      jumlah_kunjungan: kegiatan_all.filter((k) =>
-        kelIds.includes(k.kunjungan.kelurahan_id)
-      ).length,
+      jumlah_kunjungan: kegiatan_all.filter((k) => kelIds.includes(k.kunjungan.kelurahan_id)).length,
       jumlah_kelurahan: kelIds.length,
       kelurahan_dikunjungi: uniqueKel.size,
       kelurahan_list,

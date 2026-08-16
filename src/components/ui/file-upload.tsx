@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, type ChangeEvent } from 'react'
-import { MdUploadFile, MdDelete, MdInsertDriveFile, MdClose } from 'react-icons/md'
+import React, { useState, useId, type ChangeEvent } from 'react'
+import { MdUploadFile, MdDelete, MdInsertDriveFile, MdClose, MdCloudUpload } from 'react-icons/md'
 import { cn } from '@/utils/cn'
 import { Button } from './button'
 
@@ -10,7 +10,7 @@ interface FileUploadProps {
   maxFiles?: number
   maxSizeMB?: number
   acceptedTypes?: string
-  value?: any // Dibuat any agar fleksibel menerima string / array / null dari DB
+  value?: any
   onChange: (files: string[]) => void
   className?: string
   multiple?: boolean
@@ -18,7 +18,7 @@ interface FileUploadProps {
 
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.jpg', '.jpeg', '.png', '.webp']
 
-// HELPER: Paksa ubah ke Array String yang aman
+// HELPER: Standarisasi Array String URL
 const ensureArray = (val: any): string[] => {
   if (!val) return []
 
@@ -26,6 +26,7 @@ const ensureArray = (val: any): string[] => {
     return val
       .map((item) => {
         if (typeof item === 'string') return item
+        if (typeof item === 'object' && item?.url) return item.url
         if (typeof item === 'object' && item?.base64) return item.base64
         return null
       })
@@ -39,7 +40,7 @@ const ensureArray = (val: any): string[] => {
         return parsed.filter((item): item is string => typeof item === 'string')
       }
     } catch {
-      // bukan JSON array
+      // String biasa
     }
     return [val]
   }
@@ -57,38 +58,68 @@ export const FileUpload = ({
   className,
   multiple = true,
 }: FileUploadProps): React.ReactNode => {
+  const inputId = useId()
   const [isDragging, setIsDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadingFileName, setUploadingFileName] = useState('')
+
   const fileList = ensureArray(value)
 
   const getFileName = (fileString: string, index: number): string => {
-    if (!fileString) return `File ${index + 1}`
-    if (fileString.startsWith('data:')) return `File_Base64_${index + 1}`
+    if (!fileString) return `Berkas ${index + 1}`
+    if (fileString.startsWith('data:')) return `Berkas_${index + 1}`
 
     const cleanUrl = fileString.split('?')[0].split('#')[0]
     const fileName = cleanUrl.split('/').pop()
-    return fileName ? decodeURIComponent(fileName) : `File ${index + 1}`
+    return fileName ? decodeURIComponent(fileName) : `Berkas ${index + 1}`
   }
 
-  const handleViewFile = (fileString: string) => {
-    if (!fileString) return
-    window.open(fileString, '_blank')
+  const uploadToSignedUrlWithProgress = async (
+    signedUrl: string,
+    file: File,
+    onProgress: (progress: number) => void,
+  ): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+
+      xhr.open('PUT', signedUrl)
+      xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream')
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100)
+          onProgress(progress)
+        }
+      }
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          onProgress(100)
+          resolve()
+        } else {
+          reject(new Error(`Upload gagal (${xhr.status}): ${xhr.responseText}`))
+        }
+      }
+
+      xhr.onerror = () => reject(new Error('Network error saat upload ke storage'))
+      xhr.onabort = () => reject(new Error('Upload dibatalkan'))
+
+      xhr.send(file)
+    })
   }
 
-  // 1. TAHAP PEMILIHAN FILE (Hanya simpan di state lokal)
-  const handleSelectFiles = (inputFiles: FileList) => {
+  const handleSelectFiles = (inputFiles: FileList | File[]) => {
     const incomingFiles = Array.from(inputFiles)
     if (incomingFiles.length === 0) return
 
-    // Validasi kuota file (file terunggah + file di antrean + file baru)
     const currentTotal = multiple ? fileList.length + selectedFiles.length : 0
     if (currentTotal + incomingFiles.length > maxFiles) {
-      alert(`Maksimal hanya dapat memilih ${maxFiles} file.`)
+      alert(`Maksimal hanya dapat memilih total ${maxFiles} file.`)
       return
     }
 
-    // Validasi ukuran tiap file
     const validFiles: File[] = []
     for (const file of incomingFiles) {
       if (file.size > maxSizeMB * 1024 * 1024) {
@@ -104,7 +135,7 @@ export const FileUpload = ({
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (e.target.files && e.target.files.length > 0) {
       handleSelectFiles(e.target.files)
       e.target.value = ''
     }
@@ -114,64 +145,85 @@ export const FileUpload = ({
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
-  // 2. TAHAP EKSEKUSI UPLOAD (Dipicu oleh tombol "Unggah")
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return
 
     setUploading(true)
+    setUploadProgress(0)
+
     const newUploadedUrls: string[] = []
 
     try {
       for (const file of selectedFiles) {
-        const formData = new FormData()
-        formData.append('file', file)
+        setUploadingFileName(file.name)
+        setUploadProgress(0)
 
-        const res = await fetch('/api/upload', {
+        // 1. Minta Signed URL dari Backend
+        const signResponse = await fetch('/api/upload/sign', {
           method: 'POST',
-          body: formData,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size,
+          }),
         })
 
-        const data = await res.json()
+        const signData = await signResponse.json()
 
-        if (data.success && data.url) {
-          newUploadedUrls.push(data.url)
-        } else {
-          alert(`Gagal mengunggah ${file.name}\n\nAlasan: ${data.message || 'Unknown error'}`)
+        if (!signResponse.ok || !signData.success) {
+          alert(`Gagal mempersiapkan upload ${file.name}: ${signData.message || 'Error server'}`)
+          continue
+        }
+
+        // 2. Upload langsung dengan progress bar
+        await uploadToSignedUrlWithProgress(signData.signedUrl || signData.url, file, (progress) => {
+          setUploadProgress(progress)
+        })
+
+        // 3. Ambil URL Publik (dikembalikan oleh api/upload/sign)
+        const publicUrl = signData.publicUrl || signData.url || null
+
+        if (publicUrl) {
+          newUploadedUrls.push(publicUrl)
         }
       }
 
       if (newUploadedUrls.length > 0) {
         onChange(multiple ? [...fileList, ...newUploadedUrls] : [newUploadedUrls[0]])
-        setSelectedFiles([]) // Kosongkan antrean setelah selesai
+        setSelectedFiles([])
       }
     } catch (error) {
-      alert('Terjadi kesalahan saat mengunggah file.')
+      console.error('Upload error:', error)
+      alert(`Terjadi kesalahan saat mengunggah: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setUploading(false)
+      setUploadProgress(0)
+      setUploadingFileName('')
     }
   }
 
   const removeUploadedFile = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
     e.preventDefault()
     e.stopPropagation()
-
     const updatedFiles = fileList.filter((_, i) => i !== index)
     onChange(updatedFiles)
   }
 
-  const inputId = `file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`
-
   return (
     <div className={cn('flex flex-col h-full w-full gap-2', className)}>
-      <label className="block text-sm font-medium text-[var(--color-text)] shrink-0">{label}</label>
+      <label htmlFor={inputId} className="block text-sm font-medium text-[var(--color-text)] shrink-0">
+        {label}
+      </label>
 
-      {/* DROPZONE / AREA PILIH FILE */}
+      {/* DROPZONE AREA */}
       <div
         className={cn(
-          'flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 text-center transition-colors min-h-[160px]',
+          'flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 text-center transition-colors min-h-[150px] cursor-pointer',
           isDragging
-            ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
-            : 'border-[var(--color-border)] hover:border-[var(--color-primary)] bg-[var(--color-bg)]',
+            ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/20'
+            : 'border-[var(--color-border)] hover:border-blue-400 bg-[var(--color-bg)]',
+          uploading && 'opacity-60 pointer-events-none',
         )}
         onDragOver={(e) => {
           e.preventDefault()
@@ -186,65 +238,81 @@ export const FileUpload = ({
           setIsDragging(false)
           if (e.dataTransfer.files) handleSelectFiles(e.dataTransfer.files)
         }}
+        onClick={() => document.getElementById(inputId)?.click()}
       >
-        <MdUploadFile size={36} className="mx-auto mb-2 text-[var(--color-text-secondary)]" />
+        <MdUploadFile size={36} className="mx-auto mb-2 text-gray-400" />
         <p className="text-sm font-medium text-[var(--color-text)] mb-1">
-          Drag & drop file atau klik tombol di bawah untuk memilih
+          Tarik & letakkan berkas di sini, atau <span className="text-blue-600 underline">pilih dari perangkat</span>
         </p>
-        <p className="text-xs text-[var(--color-text-secondary)] mb-3">
-          PDF, Word, Excel, PPT, JPEG, JPG, PNG (Maks {maxSizeMB}MB per file, maks {maxFiles} file)
+        <p className="text-xs text-[var(--color-text-secondary)]">
+          PDF, Word, Excel, PPT, Gambar (Maks {maxSizeMB}MB/file, maks {maxFiles} berkas)
         </p>
 
         <input
+          id={inputId}
           type="file"
           multiple={multiple}
           accept={acceptedTypes || ALLOWED_EXTENSIONS.join(',')}
           onChange={handleInputChange}
           className="hidden"
           disabled={uploading}
-          id={inputId}
         />
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={uploading}
-          className="cursor-pointer"
-          onClick={() => document.getElementById(inputId)?.click()}
-        >
-          Pilih Berkas
-        </Button>
       </div>
 
-      {/* ANTREAN FILE YANG DIPILIH (BELUM DIUNGGAH) */}
-      {selectedFiles.length > 0 && (
-        <div className="p-3 border border-amber-200 bg-amber-50/50 rounded-lg space-y-2">
+      {/* PROGRESS BAR SAAT UPLOAD BERJALAN */}
+      {uploading && (
+        <div className="space-y-1.5 p-3 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30">
+          <div className="flex items-center justify-between text-xs font-medium">
+            <span className="text-amber-800 dark:text-amber-200 truncate max-w-[80%]">
+              Mengunggah: {uploadingFileName}
+            </span>
+            <span className="text-amber-700 dark:text-amber-300 font-bold">{uploadProgress}%</span>
+          </div>
+          <div className="w-full h-2 overflow-hidden rounded-full bg-amber-200/60 dark:bg-amber-900/40">
+            <div
+              className="h-full rounded-full bg-amber-600 transition-all duration-200 ease-out"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ANTREAN FILE TERPILIH (BELUM DIUNGGAH) */}
+      {selectedFiles.length > 0 && !uploading && (
+        <div className="space-y-2 p-3 rounded-lg border border-blue-200 bg-blue-50/40 dark:bg-blue-950/20">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-800">File siap diunggah ({selectedFiles.length})</span>
+            <span className="text-xs font-semibold text-blue-800 dark:text-blue-300">
+              Berkas Siap Diunggah ({selectedFiles.length})
+            </span>
             <Button
               type="button"
               size="sm"
-              disabled={uploading}
               onClick={handleUpload}
-              className="h-7 text-xs bg-amber-600 hover:bg-amber-700 text-white"
+              className="flex items-center gap-1.5 h-7 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {uploading ? 'Mengunggah...' : 'Unggah Sekarang'}
+              <MdCloudUpload size={16} />
+              Mulai Unggah
             </Button>
           </div>
 
-          <div className="space-y-1">
-            {selectedFiles.map((file, index) => (
+          <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+            {selectedFiles.map((file, idx) => (
               <div
-                key={index}
-                className="flex items-center justify-between text-xs bg-white p-2 rounded border border-amber-100"
+                key={idx}
+                className="flex items-center justify-between p-2 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs"
               >
-                <span className="truncate max-w-[80%] font-medium">{file.name}</span>
+                <div className="flex items-center gap-2 truncate">
+                  <MdInsertDriveFile className="text-blue-500 shrink-0" size={16} />
+                  <span className="truncate">{file.name}</span>
+                  <span className="text-gray-400 shrink-0">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                </div>
                 <button
                   type="button"
-                  disabled={uploading}
-                  onClick={() => removeSelectedFile(index)}
-                  className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    removeSelectedFile(idx)
+                  }}
+                  className="text-gray-400 hover:text-red-500 transition-colors p-1"
                 >
                   <MdClose size={16} />
                 </button>
@@ -254,47 +322,46 @@ export const FileUpload = ({
         </div>
       )}
 
-      {/* DAFTAR FILE YANG SUDAH BERHASIL TER-UPLOAD */}
+      {/* DAFTAR FILE YANG SUDAH TERUNGGAH */}
       {fileList.length > 0 && (
-        <div className="space-y-2 mt-1 shrink-0 overflow-y-auto">
-          <p className="text-xs font-medium text-[var(--color-text-secondary)]">File Terunggah:</p>
-          {fileList.map((fileItem, index) => (
-            <div
-              key={index}
-              className="flex items-center p-3 justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <MdInsertDriveFile className="text-blue-500 shrink-0" size={20} />
-                <div className="truncate">
+        <div className="space-y-2 mt-1 shrink-0">
+          <p className="text-xs font-medium text-[var(--color-text-secondary)]">
+            Berkas Terunggah ({fileList.length}):
+          </p>
+          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+            {fileList.map((fileItem, index) => (
+              <div
+                key={index}
+                className="flex items-center p-2.5 justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <MdInsertDriveFile className="text-emerald-500 shrink-0" size={20} />
                   <p className="text-xs font-medium truncate">{getFileName(fileItem, index)}</p>
                 </div>
-              </div>
 
-              {/* ACTION BUTTONS (LIHAT & HAPUS) */}
-              <div className="flex items-center gap-1 shrink-0">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  title="Lihat Berkas"
-                  className="h-7 px-3 text-xs font-medium border-blue-200 bg-blue-50/60 text-blue-700 hover:bg-blue-100 rounded-md transition-all"
-                  onClick={() => handleViewFile(fileItem)}
-                >
-                  Lihat
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  title="Hapus Berkas"
-                  className="cursor-pointer h-7 w-7 p-0"
-                  onClick={(e) => removeUploadedFile(e, index)}
-                >
-                  <MdDelete size={16} className="text-red-500 hover:text-red-600" />
-                </Button>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 px-2.5 text-xs font-medium border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded"
+                    onClick={() => window.open(fileItem, '_blank')}
+                  >
+                    Lihat
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                    onClick={(e) => removeUploadedFile(e, index)}
+                  >
+                    <MdDelete size={16} />
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>

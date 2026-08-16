@@ -2,34 +2,40 @@
 import React, { useState, useMemo, useEffect } from 'react'
 
 import { useKunjunganList } from '@/hooks/useKunjungan'
-import {
-  MdArrowBack,
-  MdHourglassEmpty,
-} from 'react-icons/md'
+import { MdArrowBack, MdHourglassEmpty } from 'react-icons/md'
 import { Link } from '@/routing'
 import { Pagination } from '@/components/ui/pagination'
-import { MASTER_WILAYAH } from '@/utils/masterWilayah'
-import type { Kunjungan } from '@/types'
+import type { Kegiatan, Kunjungan } from '@/types'
+import { useKecamatanAll, useKegiatanAll } from '@/hooks/useKegiatan'
 export default function KelurahanBelumPage(): React.ReactNode {
-  const { data: kunjunganList } = useKunjunganList()
+  const { data: kegiatanList } = useKegiatanAll()
+  const { data: kecamatan } = useKecamatanAll()
 
-  const allKelurahan = MASTER_WILAYAH.flatMap((kec) =>
-    kec.kelurahan.map((kel) => ({
-      ...kel,
-      kecamatan: kec.nama,
-    }))
-  )
+  const allKelurahan = useMemo(() => {
+    const kecamatanList = Array.isArray(kecamatan) ? kecamatan : []
 
-  const unvisitedKelurahan = allKelurahan.filter((kel) => {
-    return !(kunjunganList ?? []).some(
-      (k: Kunjungan) => k.kelurahan === kel.nama
+    return kecamatanList.flatMap((kec: any) =>
+      (kec.kelurahan || []).map((kel: any) => ({
+        ...kel,
+        kecamatan: kec.nama,
+      })),
     )
-  })
+  }, [kecamatan])
+
+  const unvisitedKelurahan = useMemo(() => {
+    const list = Array.isArray(kegiatanList) ? (kegiatanList as Kegiatan[]) : []
+
+    return (allKelurahan ?? []).filter((kel) => {
+      return !list.some((k: Kegiatan) => k.kelurahan === kel.nama)
+    })
+  }, [allKelurahan, kegiatanList])
 
   const PAGE_SIZE = 50
   const [currentPage, setCurrentPage] = useState(1)
   const paginatedData = unvisitedKelurahan.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-  useEffect(() => { setCurrentPage(1) }, [unvisitedKelurahan.length])
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [unvisitedKelurahan.length])
 
   return (
     <div className="space-y-6">
@@ -41,57 +47,47 @@ export default function KelurahanBelumPage(): React.ReactNode {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Kelurahan Belum Dikunjungi
-        </h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">Kelurahan Belum Dikunjungi</h1>
         <p className="text-sm text-[var(--color-text-secondary)]">
           {unvisitedKelurahan.length} kelurahan belum dikunjungi
         </p>
       </div>
 
       {unvisitedKelurahan.length === 0 ? (
-        <p className="text-[var(--color-text-secondary)]">
-          Semua kelurahan sudah dikunjungi
-        </p>
+        <p className="text-[var(--color-text-secondary)]">Semua kelurahan sudah dikunjungi</p>
       ) : (
-          <>
-        <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[var(--color-bg-secondary)]">
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
-                  No
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
-                  Kelurahan
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">
-                  Kecamatan
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map((kel, i) => (
-                <tr
-                  key={kel.id}
-                  className="border-t border-[var(--color-border)]"
-                >
-                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                    {(currentPage - 1) * PAGE_SIZE + i + 1}
-                  </td>
-                  <td className="px-4 py-3 flex items-center gap-2 text-[var(--color-text)]">
-                    <MdHourglassEmpty size={16} className="text-[var(--color-warning)]" />
-                    {kel.nama}
-                  </td>
-                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                    {kel.kecamatan}
-                  </td>
+        <>
+          <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-[var(--color-bg-secondary)]">
+                  <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">No</th>
+                  <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
+                  <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <Pagination currentPage={currentPage} totalItems={unvisitedKelurahan.length} pageSize={PAGE_SIZE} onPageChange={setCurrentPage} />
+              </thead>
+              <tbody>
+                {paginatedData.map((kel, i) => (
+                  <tr key={kel.id} className="border-t border-[var(--color-border)]">
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">
+                      {(currentPage - 1) * PAGE_SIZE + i + 1}
+                    </td>
+                    <td className="px-4 py-3 flex items-center gap-2 text-[var(--color-text)]">
+                      <MdHourglassEmpty size={16} className="text-[var(--color-warning)]" />
+                      {kel.nama}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-text-secondary)]">{kel.kecamatan}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={unvisitedKelurahan.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setCurrentPage}
+          />
         </>
       )}
     </div>
