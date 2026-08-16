@@ -3,12 +3,29 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   const dprds = await prisma.dprd.findMany({
-    orderBy: { name: 'asc' },
+    orderBy: {
+      createdAt: 'asc',
+    },
     include: {
-      _count: { select: { teams: true, users: true } },
+      _count: {
+        select: {
+          teams: true,
+          users: true,
+        },
+      },
       teams: {
-        orderBy: { name: 'asc' },
-        include: { _count: { select: { userTeams: true, kegiatans: true, relawans: true } } },
+        orderBy: {
+          createdAt: 'asc',
+        },
+        include: {
+          _count: {
+            select: {
+              userTeams: true,
+              kegiatans: true,
+              relawans: true,
+            },
+          },
+        },
       },
     },
   })
@@ -18,6 +35,7 @@ export async function GET() {
       id: d.id,
       name: d.name,
       description: d.description,
+      foto: d.foto ?? '',
       is_active: d.is_active,
       created_at: d.createdAt.toISOString(),
       updated_at: d.updatedAt.toISOString(),
@@ -57,11 +75,16 @@ export async function POST(request: Request) {
     },
   })
 
+  if (body?.foto) {
+    await prisma.$executeRaw`UPDATE dprds SET foto = ${body.foto} WHERE id = ${created.id}::uuid`
+  }
+
   return NextResponse.json(
     {
       id: created.id,
       name: created.name,
       description: created.description,
+      foto: body?.foto ?? '',
       is_active: created.is_active,
       created_at: created.createdAt.toISOString(),
       updated_at: created.updatedAt.toISOString(),

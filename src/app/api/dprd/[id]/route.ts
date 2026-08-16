@@ -30,11 +30,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     },
   })
 
+  if (body.foto !== undefined) {
+    const fotoVal = body.foto || null
+    await prisma.$executeRaw`UPDATE dprds SET foto = ${fotoVal} WHERE id = ${id}::uuid`
+  }
+
+  const result = await prisma.dprd.findUnique({ where: { id } })
+
   return NextResponse.json({
-    id: updated.id,
-    name: updated.name,
-    description: updated.description,
-    is_active: updated.is_active,
+    id: result!.id,
+    name: result!.name,
+    description: result!.description,
+    foto: result!.foto ?? '',
+    is_active: result!.is_active,
     created_at: updated.createdAt.toISOString(),
     updated_at: updated.updatedAt.toISOString(),
   })

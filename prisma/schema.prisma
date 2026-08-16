@@ -18,10 +18,11 @@ enum TeamRole {
 }
 
 model Dprd {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String   @unique
-  description String   @default("")
-  is_active   Boolean  @default(true) @map("is_active")
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String      @unique
+  description String      @default("")
+  foto        String?
+  is_active   Boolean     @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   teams       Team[]

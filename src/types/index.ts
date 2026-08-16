@@ -180,4 +180,5 @@ export interface DPRD {
   id: string
   name: string
   description: string
+  foto: string
 }

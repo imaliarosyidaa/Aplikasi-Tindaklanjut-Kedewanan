@@ -110,7 +110,7 @@ function TicketLaporan({ data, onReset }: { data: TicketData; onReset: () => voi
       <body>
         <div class="header">
           <h1>LAPORAN ASPIRASI WARGA</h1>
-          <p>DPRD Kota Administrasi Jakarta Selatan</p>
+          <p>DPRD DKI Jakarta</p>
         </div>
         <div class="id-laporan">
           <div class="label">ID Laporan</div>
@@ -371,6 +371,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [rw, setRw] = useState('')
   const [ticketData, setTicketData] = useState<TicketData | null>(null)
   const { data: dprdList = [] } = useSWR<DPRD[]>('/api/dprd', fetcher)
+  const dprdOptions = dprdList.map((k) => ({ value: k.id, label: k.name, foto: k.foto }))
   const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
   const [masterDewan, setMasterDewan] = useState('')
   const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
@@ -386,8 +387,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
   const dprdMap = Object.fromEntries(dprdList.map((k) => [k.id, k.name]))
-
-  const dprdOptions = dprdList.map((k) => ({ value: k.id, label: k.name }))
 
   const handleKotaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setKotaId(e.target.value)
@@ -651,11 +650,11 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                         : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-blue-300 hover:bg-blue-50/50'
                     }`}
                   >
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                        active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
-                      }`}
-                    ></div>
+                    <img
+                      src={item.foto}
+                      alt={item.label}
+                      className="h-24 w-24 rounded-lg object-cover border border-[var(--color-border)]"
+                    />
                     <h3 className={`text-sm font-semibold ${active ? 'text-blue-700' : 'text-[var(--color-text)]'}`}>
                       {item.label}
                     </h3>

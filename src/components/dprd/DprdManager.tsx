@@ -7,15 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Modal } from '@/components/ui/modal'
-import {
-  MdAdd,
-  MdEdit,
-  MdDelete,
-  MdAccountBalance,
-  MdGroups,
-  MdExpandMore,
-  MdExpandLess,
-} from 'react-icons/md'
+import { FileUpload } from '@/components/ui/file-upload'
+import { MdAdd, MdEdit, MdDelete, MdAccountBalance, MdGroups, MdExpandMore, MdExpandLess } from 'react-icons/md'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -33,6 +26,7 @@ interface DprdItem {
   id: string
   name: string
   description: string
+  foto: string
   is_active: boolean
   team_count: number
   user_count: number
@@ -46,7 +40,7 @@ export const DprdManager = (): React.ReactNode => {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [showDprdModal, setShowDprdModal] = useState(false)
   const [editingDprd, setEditingDprd] = useState<DprdItem | null>(null)
-  const [dprdForm, setDprdForm] = useState({ name: '', description: '', is_active: true })
+  const [dprdForm, setDprdForm] = useState({ name: '', description: '', foto: '', is_active: true })
   const [showTeamModal, setShowTeamModal] = useState(false)
   const [editingTeam, setEditingTeam] = useState<TeamItem | null>(null)
   const [teamForm, setTeamForm] = useState({ name: '', description: '' })
@@ -55,7 +49,7 @@ export const DprdManager = (): React.ReactNode => {
   const [error, setError] = useState('')
 
   const openAddDprd = () => {
-    setDprdForm({ name: '', description: '', is_active: true })
+    setDprdForm({ name: '', description: '', foto: '', is_active: true })
     setEditingDprd(null)
     setError('')
     setShowDprdModal(true)
@@ -63,7 +57,7 @@ export const DprdManager = (): React.ReactNode => {
 
   const openEditDprd = (d: DprdItem) => {
     setEditingDprd(d)
-    setDprdForm({ name: d.name, description: d.description, is_active: d.is_active })
+    setDprdForm({ name: d.name, description: d.description, foto: d.foto, is_active: d.is_active })
     setError('')
     setShowDprdModal(true)
   }
@@ -136,9 +130,7 @@ export const DprdManager = (): React.ReactNode => {
       const res = await fetch(isEdit ? `/api/teams/${editingTeam!.id}` : '/api/teams', {
         method: isEdit ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          isEdit ? teamForm : { ...teamForm, dprd_id: teamDprdId },
-        ),
+        body: JSON.stringify(isEdit ? teamForm : { ...teamForm, dprd_id: teamDprdId }),
       })
       const json = await res.json().catch(() => null)
       if (!res.ok) {
@@ -199,16 +191,22 @@ export const DprdManager = (): React.ReactNode => {
               <Card key={d.id} className="p-6">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <MdAccountBalance size={22} className="text-[var(--color-primary)]" />
+                    {d.foto ? (
+                      <img
+                        src={d.foto}
+                        alt={d.name}
+                        className="h-32 w-32 rounded-lg object-cover border border-[var(--color-border)]"
+                      />
+                    ) : (
+                      <MdAccountBalance size={22} className="text-[var(--color-primary)]" />
+                    )}
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-medium text-[var(--color-text)]">{d.name}</span>
                         {!d.is_active && <Badge variant="danger">Non-aktif</Badge>}
                       </div>
                       {d.description && (
-                        <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
-                          {d.description}
-                        </p>
+                        <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{d.description}</p>
                       )}
                     </div>
                   </div>
@@ -253,16 +251,11 @@ export const DprdManager = (): React.ReactNode => {
                     </div>
 
                     {d.teams.length === 0 ? (
-                      <p className="text-sm text-[var(--color-text-secondary)]">
-                        Belum ada tim kerja untuk DPRD ini.
-                      </p>
+                      <p className="text-sm text-[var(--color-text-secondary)]">Belum ada tim kerja untuk DPRD ini.</p>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {d.teams.map((t) => (
-                          <div
-                            key={t.id}
-                            className="rounded-lg border border-[var(--color-border)] p-4 space-y-2"
-                          >
+                          <div key={t.id} className="rounded-lg border border-[var(--color-border)] p-4 space-y-2">
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-medium text-[var(--color-text)]">{t.name}</span>
                               <div className="flex items-center gap-1">
@@ -283,9 +276,7 @@ export const DprdManager = (): React.ReactNode => {
                               </div>
                             </div>
                             {t.description && (
-                              <p className="text-xs text-[var(--color-text-secondary)]">
-                                {t.description}
-                              </p>
+                              <p className="text-xs text-[var(--color-text-secondary)]">{t.description}</p>
                             )}
                             <div className="flex flex-wrap gap-1.5">
                               <Badge variant="default">{t.member_count} Anggota</Badge>
@@ -329,6 +320,17 @@ export const DprdManager = (): React.ReactNode => {
               value={dprdForm.description}
               onChange={(e) => setDprdForm({ ...dprdForm, description: e.target.value })}
             />
+
+            <FileUpload
+              label="Foto DPRD"
+              maxFiles={1}
+              maxSizeMB={5}
+              acceptedTypes=".jpg,.jpeg,.png,.webp"
+              multiple={false}
+              value={dprdForm.foto ? [dprdForm.foto] : []}
+              onChange={(files) => setDprdForm((prev) => ({ ...prev, foto: files[0] ?? '' }))}
+            />
+
             <label className="flex items-center gap-2 text-sm text-[var(--color-text)] cursor-pointer">
               <input
                 type="checkbox"
