@@ -513,9 +513,7 @@ export default function AspirasiPage(): React.ReactNode {
               <th className="w-8 px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">No</th>
 
               {/* Wilayah */}
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kota/Kabupaten</th>
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kecamatan</th>
-              <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Kelurahan</th>
+              <th className="w-[20%] px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Alamat</th>
 
               {/* Sumber */}
               <th className="px-2 py-2 text-left font-medium text-[var(--color-text-secondary)]">Sumber</th>
@@ -532,6 +530,9 @@ export default function AspirasiPage(): React.ReactNode {
               <th className="w-20 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">Aksi</th>
               <th className="w-28 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
                 Diverifikasi Oleh
+              </th>
+              <th className="w-28 px-2 py-2 text-center font-medium text-[var(--color-text-secondary)]">
+                Ditunjukan untuk Dewan
               </th>
             </tr>
           </thead>
@@ -570,24 +571,15 @@ export default function AspirasiPage(): React.ReactNode {
                     {(currentPage - 1) * PAGE_SIZE + i + 1}
                   </td>
 
-                  {/* Kota */}
+                  {/* Alamat */}
                   <td className="px-2 py-2">
-                    <span className="line-clamp-1 max-w-[110px]" title={aspirasi.kota || '-'}>
-                      {aspirasi.kota || '-'}
-                    </span>
-                  </td>
-
-                  {/* Kecamatan */}
-                  <td className="px-2 py-2">
-                    <span className="line-clamp-1 max-w-[100px]" title={aspirasi.kecamatan || '-'}>
-                      {aspirasi.kecamatan || '-'}
-                    </span>
-                  </td>
-
-                  {/* Kelurahan */}
-                  <td className="px-2 py-2">
-                    <span className="line-clamp-1 max-w-[100px]" title={aspirasi.kelurahan || '-'}>
-                      {aspirasi.kelurahan || '-'}
+                    <span className="max-w-[100px]" title={aspirasi.kelurahan || '-'}>
+                      {aspirasi.lokasi || '-'}
+                      {aspirasi.rt ? ` RT ${aspirasi.rt}` : ''}
+                      {aspirasi.rw ? ` RW ${aspirasi.rw}` : ''}
+                      {aspirasi.kelurahan ? ` ${aspirasi.kelurahan}` : '-'}
+                      {aspirasi.kecamatan ? `, ${aspirasi.kecamatan}` : ''}
+                      {aspirasi.kota ? `, ${aspirasi.kota}` : ''}
                     </span>
                   </td>
 
@@ -597,19 +589,19 @@ export default function AspirasiPage(): React.ReactNode {
                   </td>
 
                   {/* Deskripsi */}
-                  <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                  <td className="px-2 py-2">
                     <p className="line-clamp-2 max-w-[180px]">{aspirasi?.deskripsi || '-'}</p>
                   </td>
 
                   {/* Pelapor */}
-                  <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                  <td className="px-2 py-2">
                     <span className="line-clamp-1 max-w-[110px]" title={aspirasi.pelapor_nama}>
                       {aspirasi.pelapor_nama}
                     </span>
                   </td>
 
                   {/* Tanggal */}
-                  <td className="px-2 py-2 text-[var(--color-text-secondary)]">
+                  <td className="px-2 py-2">
                     {new Date(aspirasi.tanggal_dibuat).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -618,14 +610,14 @@ export default function AspirasiPage(): React.ReactNode {
                   </td>
 
                   {/* Status */}
-                  <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
+                  <td className="px-2 py-2 text-center">
                     <Badge status={aspirasi.status}>
                       <span className="text-[10px]">{statusLabel[aspirasi.status] || aspirasi.status}</span>
                     </Badge>
                   </td>
 
                   {/* Aksi */}
-                  <td className="px-2 py-2 text-center text-[var(--color-text-secondary)]">
+                  <td className="px-2 py-2 text-center">
                     <div className="inline-flex items-center justify-center gap-1.5">
                       <Link
                         href={`/admin/aspirasi/${aspirasi.id}`}
@@ -673,7 +665,7 @@ export default function AspirasiPage(): React.ReactNode {
                   </td>
 
                   {/* Diverifikasi oleh */}
-                  <td className="px-2 py-2 text-center text-xs text-[var(--color-text-secondary)]">
+                  <td className="px-2 py-2 text-center text-xs">
                     {(() => {
                       const trackings = aspirasi.trackings
                       if (!trackings || trackings.length === 0) return '-'
@@ -683,6 +675,8 @@ export default function AspirasiPage(): React.ReactNode {
                       return latest.diverifikasi_oleh_nama || '-'
                     })()}
                   </td>
+
+                  <td className="px-2 py-2 text-center text-xs">{aspirasi.dewan || '-'}</td>
                 </tr>
               ))
             )}

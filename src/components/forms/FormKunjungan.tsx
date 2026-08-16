@@ -415,10 +415,6 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
           value={lampiran}
           onChange={(files) => setLampiran(files)}
         />
-
-        {/* Tampilan Grid Multi Preview */}
-        {renderPreview()}
-
         {errors.foto && <p className="text-xs text-[var(--color-danger)]">{errors.foto}</p>}
       </div>
 

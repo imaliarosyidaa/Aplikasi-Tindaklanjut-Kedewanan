@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import type { Aspirasi, SumberAspirasi } from '@/types'
+import type { Aspirasi, DPRD, SumberAspirasi } from '@/types'
 import { FileUpload } from '../ui/file-upload'
 import { useRouter } from '@/routing'
 
@@ -86,6 +86,14 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const [rt, setRt] = useState(aspirasi.rt ?? '')
   const [rw, setRw] = useState(aspirasi.rw ?? '')
 
+  const [dewanTouched, setDewanThouced] = useState(false)
+
+  const [dewanId, setDewanId] = useState('')
+  const { data: dewanList = [] } = useSWR<DPRD[]>('/api/dprd', fetcher)
+
+  const defaultDewanId = aspirasi.master_dewan || ''
+  const finalDewanId = dewanTouched ? dewanId : dewanId || defaultDewanId
+
   // Setelah user mengubah wilayah, abaikan default dari data aspirasi
   const [wilayahTouched, setWilayahTouched] = useState(false)
 
@@ -139,6 +147,8 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   // State untuk Input Teks Kustom
   const [sumberLainnya, setSumberLainnya] = useState<string>(isStandardOption ? '' : aspirasi.sumber || '')
 
+  const dewanOptions = dewanList.map((k) => ({ value: k.id, label: k.name }))
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -166,6 +176,7 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           kota_id: finalKotaId || null,
           kecamatan_id: finalKecamatanId || null,
           kelurahan_id: finalKelurahanId || null,
+          master_dewan: finalDewanId,
           rt: rt,
           rw: rw,
         }),
@@ -242,6 +253,18 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
           required
         />
       )}
+
+      <Select
+        id="master_dewan"
+        label="Dewan"
+        placeholder="Pilih dewan"
+        options={dewanOptions}
+        value={finalDewanId}
+        onChange={(e) => {
+          setDewanThouced(true)
+          setDewanId(e.target.value)
+        }}
+      />
 
       <div>
         <label htmlFor="deskripsi" className="block text-sm font-medium text-[var(--color-text)] mb-1">

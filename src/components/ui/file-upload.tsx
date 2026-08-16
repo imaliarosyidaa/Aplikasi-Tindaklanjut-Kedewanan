@@ -328,7 +328,7 @@ export const FileUpload = ({
           <p className="text-xs font-medium text-[var(--color-text-secondary)]">
             Berkas Terunggah ({fileList.length}):
           </p>
-          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+          <div className="space-y-2 pr-1">
             {fileList.map((fileItem, index) => (
               <div
                 key={index}

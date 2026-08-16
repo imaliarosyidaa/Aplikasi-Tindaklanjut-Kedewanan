@@ -107,10 +107,10 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
         </Button>
       </Link>
 
-      <Card className="flex justify-between p-4">
-        <div>
-          <div className="flex mb-2 items-start gap-2">
-            <h1 className="text-2xl mb-2 font-bold text-[var(--color-text)]">Laporan </h1>
+      <Card>
+        <div className="flex justify-between">
+          <div className="flex items-start gap-2">
+            <h1 className="text-2xl font-bold text-[var(--color-text)]">Laporan </h1>
             <div className="w-fit inline-flex items-center gap-1.5 ">
               <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-2.5 py-1">
                 <span className="font-mono text-base sm:text-lg font-bold text-[var(--color-text)]">
@@ -135,12 +135,17 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
               )}
             </div>
           </div>
-          <p className="text-[var(--color-text)] text-sm">Dibuat pada {formatDate(aspirasi?.created_at)} WIB</p>
+          <div>
+            <Badge status={aspirasi?.status as any}>
+              {statusLabel[aspirasi?.status ?? ''] || aspirasi?.status || '-'}
+            </Badge>
+          </div>
         </div>
-        <div>
-          <Badge status={aspirasi?.status as any}>
-            {statusLabel[aspirasi?.status ?? ''] || aspirasi?.status || '-'}
-          </Badge>
+        <div className="mt-2 flex justify-between">
+          <p className="text-[var(--color-text)] text-sm">Dibuat pada {formatDate(aspirasi?.created_at)} WIB</p>
+          <p className="text-[var(--color-text)] text-sm">
+            Diajukan pada Dewan: <span className="font-bold">{aspirasi?.dewan || '-'}</span>
+          </p>
         </div>
       </Card>
 

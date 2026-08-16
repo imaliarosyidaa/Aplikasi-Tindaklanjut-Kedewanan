@@ -107,13 +107,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         tindak_lanjut: body.tindak_lanjut ?? undefined,
         tanggal_dibuat: body.tanggal_dibuat ? new Date(body.tanggal_dibuat) : undefined,
         alamat: body.alamat ?? undefined,
-        kota_id: body.kota_id ?? null,
-        kecamatan_id: body.kecamatan_id ?? null,
-        kelurahan_id: body.kelurahan_id ?? null,
         rt: body.rt ?? null,
         rw: body.rw ?? null,
       },
     })
+
+    if (body.master_dewan !== undefined) {
+      const dewanVal = body.master_dewan || null
+      await prisma.$executeRaw`UPDATE aspirasis SET master_dewan = ${dewanVal}::uuid WHERE id = ${id}::uuid`
+    }
+
+    if (body.kota_id !== undefined || body.kecamatan_id !== undefined || body.kelurahan_id !== undefined) {
+      await prisma.$executeRaw`UPDATE aspirasis SET kota_id = ${body.kota_id || null}::uuid, kecamatan_id = ${body.kecamatan_id || null}::uuid, kelurahan_id = ${body.kelurahan_id || null}::uuid WHERE id = ${id}::uuid`
+    }
   }
 
   const updated = await prisma.aspirasis.findUnique({

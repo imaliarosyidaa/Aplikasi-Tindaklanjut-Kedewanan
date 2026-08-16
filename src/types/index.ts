@@ -56,6 +56,8 @@ export interface Aspirasi {
   rt?: string
   rw?: string
   trackings?: TrackingAspirasi[]
+  dewan: string
+  master_dewan: string
 }
 
 export interface TrackingAspirasi {
