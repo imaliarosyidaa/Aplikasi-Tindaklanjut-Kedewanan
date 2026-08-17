@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const kecamatanNama = searchParams.get('kecamatan')
   const kelurahanNama = searchParams.get('kelurahan')
 
-  const where: Record<string, unknown> = { ...dprdFilter(scope) }
+  const where: Record<string, unknown> = scope.userId ? { ...dprdFilter(scope) } : {}
 
   if (sumber) where.sumber = sumber
   if (status) where.status = status

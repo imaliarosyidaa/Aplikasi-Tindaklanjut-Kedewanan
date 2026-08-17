@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -22,7 +22,6 @@ import {
   MdSource,
 } from 'react-icons/md'
 import useSWR from 'swr'
-import { getKelurahanByKecamatanId } from '@/utils/masterWilayah'
 import Hero from '@/components/shared/Hero'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import FilterLaporan from '@/components/shared/Filter'
@@ -369,6 +368,7 @@ export default function LaporanSayaPage(): React.ReactNode {
   const [queryId, setQueryId] = useState('')
   const [searched, setSearched] = useState(false)
   const [results, setResults] = useState<Aspirasi[]>([])
+  const searchParamsRef = useRef<{ kotaId: string; kecamatanId: string; kelurahanId: string; q: string; qId: string } | null>(null)
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(kotaId ? `/api/kecamatan?kota=${kotaId}` : null, fetcher)
@@ -381,6 +381,36 @@ export default function LaporanSayaPage(): React.ReactNode {
   const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
+  const optionsRef = useRef({ kotaOptions, kecamatanOptions, kelurahanOptions })
+  optionsRef.current = { kotaOptions, kecamatanOptions, kelurahanOptions }
+
+  useEffect(() => {
+    if (!searchParamsRef.current) return
+    const f = searchParamsRef.current
+    const opts = optionsRef.current
+    const hasActiveFilter = f.kotaId !== '' || f.kecamatanId !== '' || f.kelurahanId !== '' || f.q !== '' || f.qId !== ''
+    if (!hasActiveFilter) return
+
+    const kotaNama = opts.kotaOptions.find((k) => k.value === f.kotaId)?.label ?? ''
+    const kecamatanNama = opts.kecamatanOptions.find((k) => k.value === f.kecamatanId)?.label ?? ''
+    const kelurahanNama = opts.kelurahanOptions.find((k) => k.value === f.kelurahanId)?.label ?? ''
+
+    const filtered = (allAspirasi ?? []).filter((a) => {
+      if (kotaNama && a.kota !== kotaNama) return false
+      if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
+      if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
+      if (f.qId && (a.id_laporan ?? '').toUpperCase() !== f.qId) return false
+      if (f.q) {
+        const matchNama = a.pelapor_nama?.toLowerCase().includes(f.q)
+        const matchTelp = a.pelapor_telepon?.includes(f.q)
+        if (!matchNama && !matchTelp) return false
+      }
+      return true
+    })
+    setResults(filtered)
+    setSearched(true)
+  }, [allAspirasi])
+
   const handleSearch = () => {
     const q = query.toLowerCase().trim()
     const qId = queryId.trim().toUpperCase()
@@ -390,25 +420,27 @@ export default function LaporanSayaPage(): React.ReactNode {
     if (!hasActiveFilter) {
       setResults([])
       setSearched(false)
+      searchParamsRef.current = null
       return
     }
 
+    const params = { kotaId, kecamatanId, kelurahanId, q, qId }
+    searchParamsRef.current = params
+
+    const kotaNama = kotaOptions.find((k) => k.value === kotaId)?.label ?? ''
     const kecamatanNama = kecamatanOptions.find((k) => k.value === kecamatanId)?.label ?? ''
-    const kelurahanOpts = kecamatanId ? getKelurahanByKecamatanId(kecamatanId) : []
-    const kelurahanNama = kelurahanOpts.find((k) => k.value === kelurahanId)?.label ?? ''
+    const kelurahanNama = kelurahanOptions.find((k) => k.value === kelurahanId)?.label ?? ''
 
     const filtered = (allAspirasi ?? []).filter((a) => {
+      if (kotaNama && a.kota !== kotaNama) return false
       if (kecamatanNama && a.kecamatan !== kecamatanNama) return false
       if (kelurahanNama && a.kelurahan !== kelurahanNama) return false
-
       if (qId && (a.id_laporan ?? '').toUpperCase() !== qId) return false
-
       if (q) {
         const matchNama = a.pelapor_nama?.toLowerCase().includes(q)
         const matchTelp = a.pelapor_telepon?.includes(q)
         if (!matchNama && !matchTelp) return false
       }
-
       return true
     })
 
@@ -417,8 +449,6 @@ export default function LaporanSayaPage(): React.ReactNode {
   }
 
   const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim() || queryId.trim()
-
-  console.log(results)
   return (
     <div>
       <Hero
@@ -501,7 +531,7 @@ export default function LaporanSayaPage(): React.ReactNode {
         </div>
       </FilterLaporan>
       {!searched && (
-        <div className="lg:h-screen flex items-end justify-center">
+        <div className="lg:h-screen relative z-0 flex items-end justify-center">
           <img src="/laporan.png" alt="Logo" className="lg:w-2/5 opacity-60 h-auto" />
         </div>
       )}
