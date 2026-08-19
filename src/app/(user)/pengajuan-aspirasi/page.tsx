@@ -551,7 +551,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
             </p>
           </div>
           <div className="md:col-span-2">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {SUMBER_ASPIRASI.map((item) => {
                 const Icon = item.icon as LucideIcon
                 const active = sumber === item.id
@@ -579,49 +579,50 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                   </button>
                 )
               })}
-            </div>
 
-            {sumber === 'LAINYA' && (
-              <div className="mt-4">
+              {sumber === 'LAINYA' && (
+                <div className="mt-4">
+                  <Input
+                    className="border-red-500 border-2"
+                    id="jenis-lainnya"
+                    label="Sumber Aspirasi Lainnya"
+                    value={sumberLainya}
+                    onChange={(e) => setSumberLainya(e.target.value)}
+                    placeholder="Masukkan sumber kegiatan"
+                  />
+                </div>
+              )}
+
+              <div className="sm:col-span-3">
                 <Input
-                  id="jenis-lainnya"
-                  label="Sumber Aspirasi Lainnya"
-                  value={sumberLainya}
-                  onChange={(e) => setSumberLainya(e.target.value)}
-                  placeholder="Masukkan sumber kegiatan"
+                  id="kategori-usulan"
+                  label="Kategori Usulan"
+                  value={kategoriUsulan}
+                  onChange={(e) => setKategoriUsulan(e.target.value)}
+                  placeholder="Pembangunan / Pendidikan / Kesehatan / Dll"
                 />
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
               </div>
-            )}
-
-            <div className="sm:col-span-2">
-              <Input
-                id="kategori-usulan"
-                label="Kategori Usulan"
-                value={kategoriUsulan}
-                onChange={(e) => setKategoriUsulan(e.target.value)}
-                placeholder="Pembangunan / Pendidikan / Kesehatan / Dll"
-              />
-              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
-            </div>
-            <div className="sm:col-span-2">
-              <Input
-                id="jenis-usulan"
-                label="Jenis Usulan"
-                value={jenisUsulan}
-                onChange={(e) => setJenisUsulan(e.target.value)}
-                placeholder="Pembuatan Drainase / KJP-KJMU / BPJS / Dll"
-              />
-              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
-            </div>
-            <div className="sm:col-span-2">
-              <Input
-                id="jenis-reses"
-                label="Jenis Reses"
-                value={jenisReses}
-                onChange={(e) => setJenisReses(e.target.value)}
-                placeholder="Reses I / Reses II / Reses III"
-              />
-              <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+              <div className="sm:col-span-3">
+                <Input
+                  id="jenis-usulan"
+                  label="Jenis Usulan"
+                  value={jenisUsulan}
+                  onChange={(e) => setJenisUsulan(e.target.value)}
+                  placeholder="Pembuatan Drainase / KJP-KJMU / BPJS / Dll"
+                />
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+              </div>
+              <div className="sm:col-span-3">
+                <Input
+                  id="jenis-reses"
+                  label="Jenis Reses"
+                  value={jenisReses}
+                  onChange={(e) => setJenisReses(e.target.value)}
+                  placeholder="Reses I / Reses II / Reses III"
+                />
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
+              </div>
             </div>
           </div>
         </section>
@@ -805,7 +806,7 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
         {/* Isi Aspirasi */}
         <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div>
-            <h2 className="text-base font-semibold text-[var(--color-text)]">Isi Aspirasi Anda</h2>
+            <h2 className="text-base font-semibold text-[var(--color-text)]">Isi Aspirasi Laporan Anda</h2>
             <p className="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">
               Tuliskan aspirasi secara jelas dan lampirkan dokumen pendukung bila ada.
             </p>

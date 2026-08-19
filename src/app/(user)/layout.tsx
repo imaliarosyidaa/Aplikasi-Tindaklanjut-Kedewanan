@@ -61,7 +61,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                 onClick={() => {
                   window.location.href = '/login'
                 }}
-                className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:opacity-90 sm:text-sm"
+                className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-hover)] px-3 py-2 text-xs font-semibold text-white shadow-sm hover:opacity-90 sm:text-sm"
                 title="Login sebagai admin"
               >
                 <MdLock size={18} />
@@ -105,7 +105,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                       setMobileOpen(false)
                       window.location.href = '/login'
                     }}
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-2 text-sm font-medium text-white"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-hover)] px-3 py-2 text-sm font-medium text-white"
                   >
                     <MdLock size={18} />
                     Login Admin

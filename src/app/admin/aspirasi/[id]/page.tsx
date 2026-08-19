@@ -144,7 +144,7 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
         <div className="mt-2 flex justify-between">
           <p className="text-[var(--color-text)] text-sm">Dibuat pada {formatDate(aspirasi?.created_at)} WIB</p>
           <p className="text-[var(--color-text)] text-sm">
-            Diajukan pada Dewan: <span className="font-bold">{aspirasi?.dewan || '-'}</span>
+            Diajukan kepada Dewan: <span className="font-bold">{aspirasi?.dewan || '-'}</span>
           </p>
         </div>
       </Card>
@@ -156,7 +156,7 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
           <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)] flex flex-col justify-between">
             <div>
               <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
-                Informasi Pelapor
+                Informasi Data Pelapor
               </h3>
               <div className="space-y-3.5 text-sm">
                 <div className="grid grid-cols-2 gap-2">
@@ -197,7 +197,7 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
           <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)] flex flex-col justify-between h-fit">
             <div>
               <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
-                Alamat Usulan
+                Alamat Wilayah Pelapor
               </h3>
               <div className="space-y-3.5 text-sm">
                 <div className="grid grid-cols-2 items-center gap-2">
@@ -221,7 +221,9 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
         <div className="lg:col-span-1 flex flex-col gap-5">
           {/* Isi Aspirasi (2 unit) */}
           <Card className="p-5 space-y-4 lg:row-span-2 flex flex-col overflow-y-auto">
-            <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">Isi Aspirasi Anda</h3>
+            <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">
+              Isi Aspirasi Laporan Anda
+            </h3>
             <p className="text-[var(--color-text)] text-sm">{aspirasi?.deskripsi || '-'}</p>
 
             <p className="text-sm font-semibold text-[var(--color-text)]">Lampiran</p>
@@ -351,7 +353,9 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
           <Card className="p-5 space-y-4 lg:row-span-4 flex flex-col justify-between overflow-y-auto">
             <div className="h-fit">
               <div className="space-y-4">
-                <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">Tindak Lanjut</h3>
+                <h3 className="text-base font-semibold text-[var(--color-text)] border-b pb-2">
+                  Tindak Lanjut Laporan Kegiatan
+                </h3>
 
                 {/* BADGE-STYLED STATUS SELECTOR */}
                 <div className="space-y-1">
@@ -429,7 +433,7 @@ export default function AspirasiDetailPage({ params }: AspirasiDetailProps): Rea
           <Card className="p-5 shadow-sm rounded-xl border border-[var(--color-border)] lg:row-span-2 flex flex-col justify-between">
             <div>
               <h3 className="text-base font-semibold text-[var(--color-text)] mb-4 pb-3 border-b border-[var(--color-border)]">
-                Informasi Tambahan
+                Informasi Tambahan Kegiatan
               </h3>
               <div className="space-y-3.5 text-sm">
                 <div className="grid grid-cols-2 items-center gap-2">

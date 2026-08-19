@@ -1,38 +1,38 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import Link from "next/link"
-import { MapPin, Mail, Phone, Send, Sun, Moon } from "lucide-react"
-import { FaFacebookF, FaInstagram, FaXTwitter, FaYoutube, FaTiktok } from "react-icons/fa6"
-import { SiLinktree } from "react-icons/si"
-import { cn } from "@/lib/utils"
+import * as React from 'react'
+import Link from 'next/link'
+import { MapPin, Mail, Phone, Send, Sun, Moon } from 'lucide-react'
+import { FaFacebookF, FaInstagram, FaXTwitter, FaYoutube, FaTiktok } from 'react-icons/fa6'
+import { SiLinktree } from 'react-icons/si'
+import { cn } from '@/lib/utils'
 
 const socialLinks = [
-  { name: "Facebook", href: "https://www.facebook.com/share/1KdHQpdz7S/", Icon: FaFacebookF },
-  { name: "Instagram", href: "https://www.instagram.com/yukeyurike", Icon: FaInstagram },
-  { name: "X (Twitter)", href: "https://x.com/yukeyurike", Icon: FaXTwitter },
-  { name: "YouTube", href: "https://www.youtube.com/@YUKTV", Icon: FaYoutube },
-  { name: "TikTok", href: "https://www.tiktok.com/@yukerjaa", Icon: FaTiktok },
-  { name: "Linktree", href: "https://linktr.ee/yukerjaa", Icon: SiLinktree },
+  { name: 'Facebook', href: 'https://www.facebook.com/share/1KdHQpdz7S/', Icon: FaFacebookF },
+  { name: 'Instagram', href: 'https://www.instagram.com/yukeyurike', Icon: FaInstagram },
+  { name: 'X (Twitter)', href: 'https://x.com/yukeyurike', Icon: FaXTwitter },
+  { name: 'YouTube', href: 'https://www.youtube.com/@YUKTV', Icon: FaYoutube },
+  { name: 'TikTok', href: 'https://www.tiktok.com/@yukerjaa', Icon: FaTiktok },
+  { name: 'Linktree', href: 'https://linktr.ee/yukerjaa', Icon: SiLinktree },
 ]
 
 function Footerdemo() {
   const [isDarkMode, setIsDarkMode] = React.useState(false)
 
   React.useEffect(() => {
-    setIsDarkMode(document.documentElement.classList.contains("dark"))
+    setIsDarkMode(document.documentElement.classList.contains('dark'))
   }, [])
 
   React.useEffect(() => {
     if (isDarkMode) {
-      document.documentElement.classList.add("dark")
+      document.documentElement.classList.add('dark')
     } else {
-      document.documentElement.classList.remove("dark")
+      document.documentElement.classList.remove('dark')
     }
   }, [isDarkMode])
 
   return (
-    <footer className="relative border-t bg-background text-foreground transition-colors duration-300">
+    <footer className="relative border-t border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] transition-colors duration-300">
       <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Logo & Hak Cipta */}
@@ -118,8 +118,8 @@ function Footerdemo() {
                 type="button"
                 onClick={() => setIsDarkMode(false)}
                 className={cn(
-                  "inline-flex h-6 w-6 items-center justify-center rounded-md transition-colors",
-                  !isDarkMode ? "text-primary" : "text-muted-foreground"
+                  'inline-flex h-6 w-6 items-center justify-center rounded-md transition-colors',
+                  !isDarkMode ? 'text-primary' : 'text-muted-foreground',
                 )}
               >
                 <Sun className="h-4 w-4" />
@@ -130,14 +130,14 @@ function Footerdemo() {
                 aria-checked={isDarkMode}
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className={cn(
-                  "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                  isDarkMode ? "bg-primary" : "bg-input"
+                  'peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                  isDarkMode ? 'bg-primary' : 'bg-input',
                 )}
               >
                 <span
                   className={cn(
-                    "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform",
-                    isDarkMode ? "translate-x-5" : "translate-x-0"
+                    'pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform',
+                    isDarkMode ? 'translate-x-5' : 'translate-x-0',
                   )}
                 />
               </button>
@@ -145,8 +145,8 @@ function Footerdemo() {
                 type="button"
                 onClick={() => setIsDarkMode(true)}
                 className={cn(
-                  "inline-flex h-6 w-6 items-center justify-center rounded-md transition-colors",
-                  isDarkMode ? "text-primary" : "text-muted-foreground"
+                  'inline-flex h-6 w-6 items-center justify-center rounded-md transition-colors',
+                  isDarkMode ? 'text-primary' : 'text-muted-foreground',
                 )}
               >
                 <Moon className="h-4 w-4" />
@@ -157,9 +157,7 @@ function Footerdemo() {
 
         {/* Bottom Bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
-          <p className="text-sm text-muted-foreground">
-            Dibuat dengan ❤️ untuk pelayanan masyarakat.
-          </p>
+          <p className="text-sm text-muted-foreground">Dibuat dengan ❤️ untuk pelayanan masyarakat.</p>
           <nav className="flex gap-4 text-sm">
             <Link href="#" className="transition-colors hover:text-primary">
               Kebijakan Privasi

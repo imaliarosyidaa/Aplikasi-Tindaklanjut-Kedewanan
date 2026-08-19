@@ -23,20 +23,43 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <SessionProvider>
-      <Navbar />
-      <div className="relative flex flex-1">
-        <div className="absolute inset-0 bg-[#F8FBFF] bg-cover bg-center bg-no-repeat opacity-100 pointer-events-none" />
+        <Navbar />
 
-          {/* 🛠️ Tambahkan w-full dan min-w-0 di pembungkus flex utama */}
-          <div className="relative z-10 flex w-full flex-1 justify-center min-w-0 px-4 sm:px-6 lg:px-8">
+        <div className="relative flex flex-1 overflow-hidden">
+          {/* Background */}
+          <div className="pointer-events-none absolute inset-0" />
+
+          {/* Grid Background */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage: `
+                repeating-linear-gradient(
+                  0deg,
+                  transparent,
+                  transparent 39px,
+                  var(--color-grid) 39px,
+                  var(--color-grid) 40px
+                ),
+                repeating-linear-gradient(
+                  90deg,
+                  transparent,
+                  transparent 39px,
+                  var(--color-grid) 39px,
+                  var(--color-grid) 40px
+                )
+              `,
+            }}
+          />
+
+          {/* Content */}
+          <div className="relative z-10 flex min-w-0 w-full flex-1 justify-center px-4 sm:px-6 lg:px-8">
             {/* <Sidebar /> */}
 
-            {/* 🛠️ Main diset w-full dan min-w-0 agar tabel di dalam children bisa menyesuaikan scrollbar-nya */}
-            <main className="w-full max-w-7xl flex-1 py-6 min-w-0">
-              {children}
-            </main>
+            <main className="min-w-0 w-full max-w-7xl flex-1 py-6">{children}</main>
           </div>
-      </div>
+        </div>
       </SessionProvider>
     </div>
   )

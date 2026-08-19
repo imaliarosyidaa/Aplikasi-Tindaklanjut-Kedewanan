@@ -483,7 +483,7 @@ export default function RelawanPage(): React.ReactNode {
             >
               <MdClose size={20} />
             </button>
-            <h2 className="text-lg font-bold text-[var(--color-text)]">Detail Relawan</h2>
+            <h2 className="text-lg font-bold text-[var(--color-text)]">Detail Data Relawan</h2>
             {preview.foto && (
               <div className="flex justify-center">
                 <img

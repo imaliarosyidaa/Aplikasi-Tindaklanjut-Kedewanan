@@ -18,7 +18,6 @@ interface FileUploadProps {
 
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.jpg', '.jpeg', '.png', '.webp']
 
-// HELPER: Standarisasi Array String URL
 const ensureArray = (val: any): string[] => {
   if (!val) return []
 
@@ -150,42 +149,63 @@ export const FileUpload = ({
 
     setUploading(true)
     setUploadProgress(0)
-
     const newUploadedUrls: string[] = []
+    const isDev = process.env.NODE_ENV === 'development'
 
     try {
-      for (const file of selectedFiles) {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i]
         setUploadingFileName(file.name)
         setUploadProgress(0)
 
-        // 1. Minta Signed URL dari Backend
-        const signResponse = await fetch('/api/upload/sign', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fileName: file.name,
-            fileType: file.type,
-            fileSize: file.size,
-          }),
-        })
+        if (isDev) {
+          // --- MODE DEVELOPMENT (Direct FormData API) ---
+          const formData = new FormData()
+          formData.append('file', file)
 
-        const signData = await signResponse.json()
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          })
 
-        if (!signResponse.ok || !signData.success) {
-          alert(`Gagal mempersiapkan upload ${file.name}: ${signData.message || 'Error server'}`)
-          continue
-        }
+          if (!res.ok) {
+            throw new Error(`Upload server error (${res.status})`)
+          }
 
-        // 2. Upload langsung dengan progress bar
-        await uploadToSignedUrlWithProgress(signData.signedUrl || signData.url, file, (progress) => {
-          setUploadProgress(progress)
-        })
+          const data = await res.json()
+          if (data.success && data.url) {
+            newUploadedUrls.push(data.url)
+            setUploadProgress(100)
+          } else {
+            alert(`Gagal mengunggah file ${file.name}: ${data.message || 'Unknown error'}`)
+          }
+        } else {
+          // --- MODE PRODUCTION (Presigned URL / Direct Cloud Storage) ---
+          const signResponse = await fetch('/api/upload/sign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileName: file.name,
+              fileType: file.type,
+              fileSize: file.size,
+            }),
+          })
 
-        // 3. Ambil URL Publik (dikembalikan oleh api/upload/sign)
-        const publicUrl = signData.publicUrl || signData.url || null
+          const signData = await signResponse.json()
 
-        if (publicUrl) {
-          newUploadedUrls.push(publicUrl)
+          if (!signResponse.ok || !signData.success) {
+            alert(`Gagal mempersiapkan upload ${file.name}: ${signData.message || 'Error server'}`)
+            continue
+          }
+
+          await uploadToSignedUrlWithProgress(signData.signedUrl || signData.url, file, (progress) => {
+            setUploadProgress(progress)
+          })
+
+          const publicUrl = signData.publicUrl || signData.url || null
+          if (publicUrl) {
+            newUploadedUrls.push(publicUrl)
+          }
         }
       }
 

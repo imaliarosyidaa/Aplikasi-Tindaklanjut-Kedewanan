@@ -195,28 +195,33 @@ export default function KegiatanBaruPage() {
                 {/* Angka Circle */}
                 <div
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white transition-colors sm:h-10 sm:w-10 sm:text-sm ${
-                    i <= step ? 'bg-blue-600' : 'bg-slate-300'
+                    i <= step ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-border)]'
                   }`}
                 >
                   {i + 1}
                 </div>
 
-                {/* Label & Subtitle (Hanya tampil penuh di Desktop/Tablet) */}
+                {/* Label & Subtitle */}
                 <div className="hidden text-start md:block">
-                  <div className={`text-xs font-semibold sm:text-sm ${i <= step ? 'text-blue-600' : 'text-slate-400'}`}>
+                  <div
+                    className={`text-xs font-semibold sm:text-sm ${
+                      i <= step ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)]'
+                    }`}
+                  >
                     {label}
                   </div>
-                  <div className="text-[11px] text-slate-400 sm:text-xs">
+
+                  <div className="text-[11px] text-[var(--color-text-secondary)] sm:text-xs">
                     {['Pilih jenis kegiatan', 'Pilih lokasi kegiatan', 'Informasi kegiatan', 'Dokumentasi kegiatan'][i]}
                   </div>
                 </div>
               </div>
 
-              {/* Garis Penghubung antar Step */}
+              {/* Garis Penghubung */}
               {i < stepLabels.length - 1 && (
                 <div
                   className={`mx-2 h-0.5 flex-1 transition-colors sm:mx-4 sm:h-1 ${
-                    i < step ? 'bg-blue-600' : 'bg-slate-200'
+                    i < step ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-border)]'
                   }`}
                 />
               )}
@@ -224,13 +229,22 @@ export default function KegiatanBaruPage() {
           ))}
         </div>
 
-        {/* KETERANGAN STEP AKTIF UNTUK MOBILE (Layar Kecil) */}
-        <div className="mt-3 block rounded-lg bg-slate-50 p-2.5 text-center text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300 md:hidden">
-          <span className="font-bold text-blue-600">
+        {/* KETERANGAN STEP AKTIF UNTUK MOBILE */}
+        <div
+          className="
+      mt-3 block rounded-lg
+      bg-[var(--color-bg-secondary)]
+      p-2.5
+      text-center text-xs font-medium
+      text-[var(--color-text-secondary)]
+      md:hidden
+    "
+        >
+          <span className="font-bold text-[var(--color-primary)]">
             Langkah {step + 1} dari {stepLabels.length}:
           </span>{' '}
           {stepLabels[step]} —{' '}
-          <span className="text-slate-400">
+          <span className="text-[var(--color-text-secondary)]">
             {['Pilih jenis kegiatan', 'Pilih lokasi kegiatan', 'Informasi kegiatan', 'Dokumentasi kegiatan'][step]}
           </span>
         </div>
@@ -239,25 +253,38 @@ export default function KegiatanBaruPage() {
       {/* Step 1: Jenis Kegiatan */}
       {step === 0 && (
         <div>
-          <h2 className="text-xl font-semibold">Pilih Jenis Kegiatan</h2>
-          <p className="mb-6 text-slate-500">Pilih jenis kegiatan yang ingin Anda tambahkan.</p>
-          <div className="grid md:grid-cols-3 gap-6">
+          <h2 className="text-xl font-semibold text-[var(--color-text)]">Pilih Jenis Kegiatan</h2>
+
+          <p className="mb-6 text-[var(--color-text-secondary)]">Pilih jenis kegiatan yang ingin Anda tambahkan.</p>
+
+          <div className="grid gap-6 md:grid-cols-3">
             {activities.map((item) => {
               const Icon = item.icon
               const active = jenisKegiatan === item.id
+
               return (
                 <button
                   key={item.id}
                   onClick={() => setJenisKegiatan(item.id)}
-                  className={`cursor-pointer text-center flex h-48 flex-col justify-center items-center rounded-2xl border p-6 transition duration-300 hover:bg-blue-50 hover:-translate-y-1 ${active ? 'border-blue-600 border-2' : 'border-slate-200 bg-white'}`}
+                  className={`flex h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border p-6 text-center transition duration-300 hover:-translate-y-1 hover:bg-[var(--color-primary-light)] ${
+                    active
+                      ? 'border-2 border-[var(--color-primary)] bg-[var(--color-primary-light)]'
+                      : 'border-[var(--color-border)] bg-[var(--color-bg)]'
+                  }`}
                 >
                   <div
-                    className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                    className={`mb-5 flex h-14 w-14 items-center justify-center rounded-xl ${
+                      active
+                        ? 'bg-[var(--color-primary)] text-white'
+                        : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'
+                    }`}
                   >
                     <Icon size={30} />
                   </div>
-                  <h3 className="font-bold text-lg">{item.title}</h3>
-                  <p className="text-slate-500 mt-2 text-sm">{item.desc}</p>
+
+                  <h3 className="text-lg font-bold text-[var(--color-text)]">{item.title}</h3>
+
+                  <p className="mt-2 text-sm text-[var(--color-text-secondary)]">{item.desc}</p>
                 </button>
               )
             })}

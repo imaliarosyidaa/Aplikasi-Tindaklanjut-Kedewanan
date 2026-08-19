@@ -25,6 +25,7 @@ import useSWR from 'swr'
 import Hero from '@/components/shared/Hero'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import FilterLaporan from '@/components/shared/Filter'
+import LaporanPicture from './laporanPicture'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -368,7 +369,13 @@ export default function LaporanSayaPage(): React.ReactNode {
   const [queryId, setQueryId] = useState('')
   const [searched, setSearched] = useState(false)
   const [results, setResults] = useState<Aspirasi[]>([])
-  const searchParamsRef = useRef<{ kotaId: string; kecamatanId: string; kelurahanId: string; q: string; qId: string } | null>(null)
+  const searchParamsRef = useRef<{
+    kotaId: string
+    kecamatanId: string
+    kelurahanId: string
+    q: string
+    qId: string
+  } | null>(null)
 
   const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(kotaId ? `/api/kecamatan?kota=${kotaId}` : null, fetcher)
@@ -384,11 +391,15 @@ export default function LaporanSayaPage(): React.ReactNode {
   const optionsRef = useRef({ kotaOptions, kecamatanOptions, kelurahanOptions })
   optionsRef.current = { kotaOptions, kecamatanOptions, kelurahanOptions }
 
+  // Gunakan panjang data / hash string agar useEffect hanya jalan saat isi data berubah
+  const aspirasiSignature = JSON.stringify(allAspirasi?.map((a) => a.id_laporan))
+
   useEffect(() => {
     if (!searchParamsRef.current) return
     const f = searchParamsRef.current
     const opts = optionsRef.current
-    const hasActiveFilter = f.kotaId !== '' || f.kecamatanId !== '' || f.kelurahanId !== '' || f.q !== '' || f.qId !== ''
+    const hasActiveFilter =
+      f.kotaId !== '' || f.kecamatanId !== '' || f.kelurahanId !== '' || f.q !== '' || f.qId !== ''
     if (!hasActiveFilter) return
 
     const kotaNama = opts.kotaOptions.find((k) => k.value === f.kotaId)?.label ?? ''
@@ -407,9 +418,10 @@ export default function LaporanSayaPage(): React.ReactNode {
       }
       return true
     })
+
     setResults(filtered)
     setSearched(true)
-  }, [allAspirasi])
+  }, [aspirasiSignature]) // 👈 Gunakan signature primitif, bukan array reference
 
   const handleSearch = () => {
     const q = query.toLowerCase().trim()
@@ -532,7 +544,7 @@ export default function LaporanSayaPage(): React.ReactNode {
       </FilterLaporan>
       {!searched && (
         <div className="lg:h-screen relative z-0 flex items-end justify-center">
-          <img src="/laporan.png" alt="Logo" className="lg:w-2/5 opacity-60 h-auto" />
+          <LaporanPicture width={550} height={550} />
         </div>
       )}
 

@@ -8,11 +8,7 @@ import { FormRelawan } from '@/components/forms/FormRelawan'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-export default function EditRelawanPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default function EditRelawanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { data: relawan, isLoading } = useSWR(`/api/relawan/${id}`, fetcher)
 
@@ -27,12 +23,8 @@ export default function EditRelawanPage({
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Edit Relawan
-        </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          {relawan?.nama}
-        </p>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">Edit Data Relawan</h1>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">{relawan?.nama}</p>
       </div>
 
       {isLoading ? (

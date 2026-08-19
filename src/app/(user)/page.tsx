@@ -28,7 +28,7 @@ export default function UserHomePage() {
       </Hero>
 
       {/* Form Pengajuan */}
-      <section id="pengajuan" className="bg-white py-16">
+      <section id="pengajuan" className="bg-[var(--color-bg)] py-16">
         <div className="mx-auto w-full max-w-6xl px-6">
           <div className="mb-10 text-start">
             <h2 className="text-3xl font-bold text-[var(--color-text)]">Ajukan Aspirasi Anda Sekarang</h2>

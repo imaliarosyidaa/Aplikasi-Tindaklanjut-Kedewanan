@@ -1,8 +1,9 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['192.168.80.108'],
   transpilePackages: ['@prisma/client', 'prisma'],
+  serverExternalPackages: ['pg', '@prisma/adapter-pg'],
 }
 
-export default nextConfig;
+export default nextConfig

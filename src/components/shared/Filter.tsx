@@ -10,7 +10,7 @@ interface FilterLaporanProps {
 
 export default function FilterLaporan({ children, searched = false, imageSrc = '/laporan.png' }: FilterLaporanProps) {
   return (
-    <div className="lg:px-16 p-4 w-full relative z-10 mx-auto border-purple-200">
+    <div className="lg:px-16 p-4 w-full mx-auto bg-[var(--color-bg)]">
       <div className="space-y-4">
         <p className="text-sm font-medium text-[var(--color-text)]">Filter & Pencarian Laporan</p>
 
