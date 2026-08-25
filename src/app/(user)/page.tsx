@@ -11,16 +11,15 @@ export default function UserHomePage() {
       <Hero
         title="Yuke"
         highlight="Yurike"
-        subtitle="Website aduan masyarakat agar segera ditindaklanjuti dengan membuat laporan kepada dewan DPRD Yuke Yurike."
+        subtitle="Pelayanan ini khusus untuk membantu warga DKI Jakarta dalam menindaklanjuti segala laporan terhadap Pemprov DKI Jakarta."
         badge="Layanan aspirasi masyarakat terpercaya"
       />
 
       {/* About */}
       <Hero04
         title="Melayani Aspirasi"
-        titleLine2="Masyarakat Jakarta"
-        description="Hj. YUKE YURIKE, S.T., M.M.  merupakan anggota DPRD Provinsi DKI Jakarta periode 2024-2029. Saat ini aktif menduduki posisi sebagai ketua Komisi E. 
-        Pada tahun 2024 perolehan suara mencapai 12.302 suara pada Dapil DKI Jakarta 8. Yuke Yurike aktif dalam menyarakan program lingkungan pemerintah Provinsi DKI Jakarta."
+        titleLine2="Masyarakat DKI Jakarta"
+        description="Hj. YUKE YURIKE, S.T., M.M.  merupakan anggota DPRD Provinsi DKI Jakarta periode 2024-2029. Saat ini aktif menduduki posisi sebagai ketua KOMISI D – Bidang Pembangunan."
         primaryImage="/yuke_yurike_rapat.jpg"
         secondaryImage="/yuke_yurike_dewan.jpg"
         primaryAlt="Yuke Yurike dalam rapat"
