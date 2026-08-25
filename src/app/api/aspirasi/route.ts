@@ -123,12 +123,6 @@ export async function POST(request: Request) {
   let kotaId: string | undefined
   let kecamatanId: string | undefined
   let kelurahanId: string | undefined
-  let masterDewan: string | null = null
-
-  if (body.master_dewan) {
-    const dprd = await prisma.dprd.findUnique({ where: { id: body.master_dewan } })
-    if (dprd) masterDewan = dprd.id
-  }
 
   if (body.kota) {
     const kota = await prisma.kota.findFirst({ where: { nama: body.kota } })
@@ -180,9 +174,7 @@ export async function POST(request: Request) {
     },
   })
 
-  if (masterDewan) {
-    await prisma.$executeRaw`UPDATE aspirasis SET master_dewan = ${masterDewan}::uuid WHERE id = ${created.id}::uuid`
-  }
+  await prisma.$executeRaw`UPDATE aspirasis SET master_dewan = ${'cadf1e9d-1912-4b66-84e5-f785b361fa44'}::uuid WHERE id = ${created.id}::uuid`
 
   await prisma.trackingAspirasi.create({
     data: {

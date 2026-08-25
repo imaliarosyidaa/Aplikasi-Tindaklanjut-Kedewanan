@@ -34,7 +34,6 @@ import { ClipboardList, Handshake, Home, Megaphone, PhoneCall, TextCursor } from
 import { DPRD, MasterKecamatan, MasterKelurahan, MasterKota } from '../../../types/index'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { isImageUrl, getFileName } from '@/helper/file'
-import { useDprd } from '@/hooks/useDprds'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -50,7 +49,6 @@ const SUMBER_ASPIRASI: { id: string; title: string; desc?: string; icon?: Lucide
 
 interface TicketData {
   idLaporan: string
-  dewan: string
   nik: string
   nama: string
   email: string
@@ -118,7 +116,6 @@ function TicketLaporan({ data, onReset }: { data: TicketData; onReset: () => voi
           <div class="status-badge">BELUM DITINDAKLANJUTI</div>
         </div>
         <table>
-          <tr><td class="label">Dewan Tujuan</td><td class="value">${data.dewan || '-'}</td></tr>
           <tr><td class="label">Nama Pelapor</td><td class="value">${data.nama}</td></tr>
           <tr><td class="label">NIK</td><td class="value">${data.nik || '-'}</td></tr>
           <tr><td class="label">Email</td><td class="value">${data.email || '-'}</td></tr>
@@ -209,7 +206,6 @@ function TicketLaporan({ data, onReset }: { data: TicketData; onReset: () => voi
             <div className="flex gap-2">
               <MdBadge size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
               <span className="w-40 shrink-0 text-[var(--color-text-secondary)]">Dewan Tujuan</span>
-              <span className="text-[var(--color-text)]">{data.dewan || '-'}</span>
             </div>
             <div className="flex gap-2">
               <MdPerson size={16} className="shrink-0 mt-0.5 text-[var(--color-text-secondary)]" />
@@ -371,7 +367,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
   const [rw, setRw] = useState('')
   const [ticketData, setTicketData] = useState<TicketData | null>(null)
   const { data: dprdList = [] } = useSWR<DPRD[]>('/api/dprd', fetcher)
-  const dprdOptions = dprdList.map((k) => ({ value: k.id, label: k.name, foto: k.foto }))
   const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
   const [masterDewan, setMasterDewan] = useState('')
   const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
@@ -418,10 +413,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
 
     if (!sumber) {
       setError('Silakan pilih sumber aspirasi terlebih dahulu')
-      return
-    }
-    if (!masterDewan) {
-      setError('Silakan pilih dewan tujuan aspirasi terlebih dahulu')
       return
     }
     if (!nama.trim()) {
@@ -481,7 +472,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
 
       setTicketData({
         idLaporan,
-        dewan: dprdMap[masterDewan] ?? '',
         nik,
         nama,
         email,
@@ -623,45 +613,6 @@ export default function PengajuanAspirasiPage(): React.ReactNode {
                 />
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1">*Boleh dikosongkan</p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <hr className="border-t border-[var(--color-border)]" />
-        {/* Pilih Dewan */}
-        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div>
-            <h2 className="text-base font-semibold text-[var(--color-text)]">Pilih Dewan</h2>
-            <p className="mt-1 text-sm leading-6 text-[var(--color-text-secondary)]">
-              Pilih dewan tujuan aspirasi Anda.
-            </p>
-          </div>
-          <div className="md:col-span-2">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {dprdOptions.map((item, index) => {
-                const active = masterDewan === item.value
-                return (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => setMasterDewan(item.value)}
-                    className={`cursor-pointer text-center flex h-40 flex-col justify-center items-center rounded-xl border-2 p-4 transition-all duration-200 ${
-                      active
-                        ? 'border-blue-600 bg-blue-50 shadow-sm'
-                        : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-blue-300 hover:bg-blue-50/50'
-                    }`}
-                  >
-                    <img
-                      src={item.foto}
-                      alt={item.label}
-                      className="h-24 w-24 rounded-lg object-cover border border-[var(--color-border)]"
-                    />
-                    <h3 className={`text-sm font-semibold ${active ? 'text-blue-700' : 'text-[var(--color-text)]'}`}>
-                      {item.label}
-                    </h3>
-                  </button>
-                )
-              })}
             </div>
           </div>
         </section>
