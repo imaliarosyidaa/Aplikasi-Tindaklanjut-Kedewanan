@@ -22,7 +22,7 @@ import {
   MdSource,
 } from 'react-icons/md'
 import useSWR from 'swr'
-import Hero from '@/components/shared/Hero'
+import HeroClassic from '@/components/shared/HeroClassic'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import FilterLaporan from '@/components/shared/Filter'
 import LaporanPicture from './laporanPicture'
@@ -463,7 +463,7 @@ export default function LaporanSayaPage(): React.ReactNode {
   const hasFilter = kotaId || kecamatanId || kelurahanId || query.trim() || queryId.trim()
   return (
     <div>
-      <Hero
+      <HeroClassic
         title="Lacak"
         highlight="Status Aspirasi"
         subtitle="Masukkan nomor registrasi atau identitas pelapor untuk melihat perkembangan aspirasi yang telah diajukan."

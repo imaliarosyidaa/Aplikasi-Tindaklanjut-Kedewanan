@@ -1,6 +1,7 @@
 'use client'
 
 import Hero from '@/components/shared/Hero'
+import { Hero04 } from '@/components/ui/hero-04'
 import PengajuanAspirasiPage from './pengajuan-aspirasi/page'
 
 export default function UserHomePage() {
@@ -8,24 +9,24 @@ export default function UserHomePage() {
     <div className="w-full">
       {/* Hero */}
       <Hero
-        title="Sampaikan"
-        highlight="Aspirasi Anda Sekarang"
-        subtitle="Portal resmi penyampaian aspirasi masyarakat kepada DPRD DKI Jakarta. Sampaikan usulan, pengaduan, maupun apresiasi secara mudah, transparan, dan dapat dipantau perkembangannya."
+        title="Yuke"
+        highlight="Yurike"
+        subtitle="Website aduan masyarakat agar segera ditindaklanjuti dengan membuat laporan kepada dewan DPRD Yuke Yurike."
         badge="Layanan aspirasi masyarakat terpercaya"
-      >
-        <a
-          href="#pengajuan"
-          className="inline-flex items-center justify-center rounded-full bg-slate-800 px-6 py-3 text-sm font-medium text-white transition hover:bg-black"
-        >
-          Ajukan Aspirasi
-        </a>
-        <a
-          href="/laporan-saya"
-          className="inline-flex items-center justify-center rounded-full border border-[var(--color-border)] px-6 py-3 text-sm font-medium text-[var(--color-text)] transition hover:bg-[var(--color-bg-secondary)]"
-        >
-          Cek Laporan Saya
-        </a>
-      </Hero>
+      />
+
+      {/* About */}
+      <Hero04
+        title="Melayani Aspirasi"
+        titleLine2="Masyarakat Jakarta"
+        description="Hj. YUKE YURIKE, S.T., M.M.  merupakan anggota DPRD Provinsi DKI Jakarta periode 2024-2029. Saat ini aktif menduduki posisi sebagai ketua Komisi E. 
+        Pada tahun 2024 perolehan suara mencapai 12.302 suara pada Dapil DKI Jakarta 8. Yuke Yurike aktif dalam menyarakan program lingkungan pemerintah Provinsi DKI Jakarta."
+        primaryImage="/yuke_yurike_rapat.jpg"
+        secondaryImage="/yuke_yurike_dewan.jpg"
+        primaryAlt="Yuke Yurike dalam rapat"
+        secondaryAlt="Yuke Yurike di DPRD"
+        animation="subtle"
+      />
 
       {/* Form Pengajuan */}
       <section id="pengajuan" className="bg-[var(--color-bg)] py-16">
