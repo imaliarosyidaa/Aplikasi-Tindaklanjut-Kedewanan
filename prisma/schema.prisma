@@ -128,6 +128,7 @@ model User {
 model Kota {
   id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nama       String      @unique
+  flag       Boolean     @default(true)
   kecamatans Kecamatan[]
   kelurahans Kelurahan[]
   kunjungans Kunjungan[]
@@ -141,6 +142,7 @@ model Kecamatan {
   id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   kota_id    String      @db.Uuid
   nama       String      @unique
+  flag       Boolean     @default(true)
   kelurahans Kelurahan[]
   kunjungans Kunjungan[]
   kota       Kota        @relation(fields: [kota_id], references: [id])

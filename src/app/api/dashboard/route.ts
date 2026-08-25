@@ -32,8 +32,11 @@ export async function GET() {
       where: scopedAspirasiWhere,
       select: { created_at: true, status: true, sumber: true },
     }),
-    prisma.kecamatan.findMany({ select: { id: true, nama: true } }),
-    prisma.kelurahan.findMany({ select: { id: true, nama: true, kecamatan_id: true } }),
+    prisma.kecamatan.findMany({ where: { flag: true }, select: { id: true, nama: true } }),
+    prisma.kelurahan.findMany({
+      where: { kecamatan: { flag: true } },
+      select: { id: true, nama: true, kecamatan_id: true },
+    }),
     prisma.aspirasis.groupBy({ by: ['status'], where: scopedAspirasiWhere, _count: { status: true } }),
     prisma.aspirasis.groupBy({ by: ['sumber'], where: scopedAspirasiWhere, _count: { sumber: true } }),
   ])

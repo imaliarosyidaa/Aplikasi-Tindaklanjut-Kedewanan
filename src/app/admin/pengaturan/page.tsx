@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import useSWR from 'swr'
 
 import { DprdManager } from '@/components/dprd/DprdManager'
+import { WilayahTab } from '@/components/wilayah/WilayahTab'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,7 @@ import {
   MdAccountBalance,
   MdVisibilityOff,
   MdVisibility,
+  MdLocationOn,
 } from 'react-icons/md'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -63,7 +65,7 @@ interface TeamOption {
 
 type TeamRole = 'KETUA' | 'ANGGOTA'
 
-type Tab = 'rbac' | 'users' | 'dprd'
+type Tab = 'rbac' | 'users' | 'dprd' | 'wilayah'
 
 export default function PengaturanPage() {
   const [tab, setTab] = useState<Tab>('rbac')
@@ -72,6 +74,7 @@ export default function PengaturanPage() {
     { key: 'rbac', label: 'RBAC', icon: <MdSecurity size={18} /> },
     { key: 'users', label: 'Manajemen User', icon: <MdGroup size={18} /> },
     { key: 'dprd', label: 'Master Data DPRD', icon: <MdAccountBalance size={18} /> },
+    { key: 'wilayah', label: 'Pengaturan Wilayah', icon: <MdLocationOn size={18} /> },
   ]
 
   return (
@@ -103,6 +106,7 @@ export default function PengaturanPage() {
       {tab === 'rbac' && <RbacTab />}
       {tab === 'users' && <UsersTab />}
       {tab === 'dprd' && <DprdManager />}
+      {tab === 'wilayah' && <WilayahTab />}
     </div>
   )
 }
