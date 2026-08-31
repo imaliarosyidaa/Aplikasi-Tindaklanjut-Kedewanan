@@ -57,7 +57,7 @@
         "arch": ["x64"]
       }
     ],
-    "icon": "public/Lambang_DPRD_Generik.png"
+    "icon": "public/Lambang_DPRD.png"
   },
   "nsis": {
     "oneClick": false,

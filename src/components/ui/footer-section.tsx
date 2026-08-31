@@ -38,7 +38,7 @@ function Footerdemo() {
           {/* Logo & Hak Cipta */}
           <div className="relative">
             <div className="flex items-center gap-4">
-              <img src="/Lambang_DPRD_Generik.png" alt="Logo DPRD" className="h-24 w-auto" />
+              <img src="/Lambang_DPRD.png" alt="Logo DPRD" className="h-24 w-auto" />
               <img
                 src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png"
                 alt="Logo PDIP"

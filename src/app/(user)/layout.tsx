@@ -27,7 +27,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             {/* Logo & Desktop Nav Items */}
             <div className="flex items-center gap-3 py-2">
-              <img src="/Lambang_DPRD_Generik.png" alt="Logo DPRD" className="h-8 w-auto sm:h-10 md:h-12" />
+              <img src="/Lambang_DPRD.png" alt="Logo DPRD" className="h-8 w-auto sm:h-10 md:h-12" />
               <img
                 src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png"
                 alt="Logo PDIP"

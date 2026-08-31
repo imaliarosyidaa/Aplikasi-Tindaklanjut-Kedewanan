@@ -59,8 +59,12 @@ export default function LoginPage(): React.ReactNode {
           <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-blue-300 blur-3xl" />
         </div>
         <div className="relative z-10 flex items-center gap-5 p-10">
-          <img src="/Lambang_DPRD_Generik.png" alt="Logo DPRD" className="h-20 w-auto drop-shadow-lg" />
-          <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo PDI Perjuangan" className="h-20 w-auto drop-shadow-lg" />
+          <img src="/Lambang_DPRD.png" alt="Logo DPRD" className="h-20 w-auto drop-shadow-lg" />
+          <img
+            src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png"
+            alt="Logo PDI Perjuangan"
+            className="h-20 w-auto drop-shadow-lg"
+          />
         </div>
         <div className="relative z-10 p-10 bg-gradient-to-t from-black pl-8 pb-8 pr-[25%]">
           <p className="text-4xl font-bold leading-tight text-white lg:text-5xl">
@@ -70,9 +74,7 @@ export default function LoginPage(): React.ReactNode {
             <br />
             Kedewanan
           </p>
-          <p className="mt-4 text-lg text-blue-200">
-            DPRD DKI Jakarta
-          </p>
+          <p className="mt-4 text-lg text-blue-200">DPRD DKI Jakarta</p>
         </div>
       </div>
 
@@ -80,8 +82,12 @@ export default function LoginPage(): React.ReactNode {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:hidden">
             <div className="relative z-10 flex items-center justify-center gap-5 p-10">
-              <img src="/Lambang_DPRD_Generik.png" alt="Logo DPRD" className="h-20 w-auto drop-shadow-lg" />
-              <img src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png" alt="Logo PDI Perjuangan" className="h-20 w-auto drop-shadow-lg" />
+              <img src="/Lambang_DPRD.png" alt="Logo DPRD" className="h-20 w-auto drop-shadow-lg" />
+              <img
+                src="/Lambang_Partai_Demokrasi_Indonesia_Perjuangan.svg.png"
+                alt="Logo PDI Perjuangan"
+                className="h-20 w-auto drop-shadow-lg"
+              />
             </div>
             <h1 className="mt-4 text-2xl font-bold text-[var(--color-text)]">
               Aplikasi Koordinasi Tindak Lanjut Kedewanan
@@ -89,12 +95,8 @@ export default function LoginPage(): React.ReactNode {
           </div>
 
           <div className="hidden lg:block text-center">
-            <h1 className="text-2xl font-semibold text-[var(--color-text)]">
-              Selamat Datang
-            </h1>
-            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-              Masuk untuk melanjutkan ke dashboard
-            </p>
+            <h1 className="text-2xl font-semibold text-[var(--color-text)]">Selamat Datang</h1>
+            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">Masuk untuk melanjutkan ke dashboard</p>
           </div>
 
           <div className="px-8">
@@ -147,7 +149,11 @@ export default function LoginPage(): React.ReactNode {
                   <span className="flex items-center gap-2">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
                     </svg>
                     Memproses...
                   </span>
