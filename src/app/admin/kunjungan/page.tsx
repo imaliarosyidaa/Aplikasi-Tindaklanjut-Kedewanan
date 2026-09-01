@@ -18,6 +18,8 @@ import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
 import { GrPowerReset } from 'react-icons/gr'
 import { BiFilterAlt } from 'react-icons/bi'
+import { MdDownload } from 'react-icons/md'
+import { buildCsv, downloadCsv } from '@/utils/csv'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -281,6 +283,62 @@ export default function KunjunganPage() {
     }
   }
 
+  const [exporting, setExporting] = useState(false)
+
+  const handleDownload = async () => {
+    setExporting(true)
+    try {
+      // Ambil semua data yang sesuai filter (tanpa pagination)
+      const exportParams = new URLSearchParams()
+      exportParams.set('page', '1')
+      exportParams.set('limit', '10000')
+      if (activeFilters.kota) exportParams.set('kota', activeFilters.kota)
+      if (activeFilters.kecamatan) exportParams.set('kecamatan', activeFilters.kecamatan)
+      if (activeFilters.kelurahan) exportParams.set('kelurahan', activeFilters.kelurahan)
+      if (activeFilters.search.trim()) exportParams.set('search', activeFilters.search.trim())
+
+      const resData = await fetch(`/api/kegiatan?${exportParams.toString()}`).then((r) => r.json())
+      let exportList: Kegiatan[] = resData?.data ?? []
+
+      // Terapkan filter yang sama seperti tampilan tabel (client-side filtering)
+      exportList = exportList.filter((item) => {
+        if (activeFilters.kota && item.kota !== activeFilters.kota) return false
+        if (activeFilters.kecamatan && item.kecamatan !== activeFilters.kecamatan) return false
+        if (activeFilters.kelurahan && item.kelurahan !== activeFilters.kelurahan) return false
+        if (activeFilters.bulan) {
+          const dateVal = item.tanggal || (item as unknown as Record<string, string>).tanggal_kegiatan || ''
+          if (!isMatchingMonth(dateVal, activeFilters.bulan)) return false
+        }
+        return true
+      })
+
+      const headers = [
+        'No',
+        'Nama Kegiatan',
+        'Jenis Kegiatan',
+        'Tempat Kegiatan',
+        'Jalan/Lokasi Detail',
+        'Tanggal',
+        'Dibuat Oleh',
+      ]
+      const rows = exportList.map((item, i) => [
+        i + 1,
+        item.nama_kegiatan || (item as unknown as Record<string, string>).isi || '-',
+        item.jenis_kegiatan || (item as unknown as Record<string, string>).isi || '-',
+        item.lokasi || item.tempat || '-',
+        [item?.alamat, item?.kelurahan, item?.kecamatan, item?.kota].filter(Boolean).join(' '),
+        formatTanggal(item.tanggal) || '-',
+        item.dibuat_oleh || '-',
+      ])
+
+      downloadCsv(`data-kegiatan-${new Date().toISOString().slice(0, 10)}.csv`, buildCsv(headers, rows))
+    } catch {
+      alert('Gagal mengekspor data')
+    } finally {
+      setExporting(false)
+    }
+  }
+
   const formatTanggal = (tanggal: string): string => {
     if (!tanggal) return ''
     const d = new Date(tanggal)
@@ -346,10 +404,26 @@ export default function KunjunganPage() {
       <Card className="p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Button onClick={() => setOpen(true)} label="Filter" variant="outline" className="flex gap-2">
-              <BiFilterAlt />
-              <p className="lg:block hidden">Filter Lainya</p>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button onClick={() => setOpen(true)} label="Filter" variant="outline" className="flex gap-2">
+                <BiFilterAlt />
+                <p className="lg:block hidden">Filter Lainya</p>
+              </Button>
+              <Button
+                onClick={handleDownload}
+                disabled={exporting || filteredData.length === 0}
+                variant="outline"
+                label="Download"
+                className="flex gap-2"
+              >
+                {exporting ? (
+                  <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-text)] border-t-transparent" />
+                ) : (
+                  <MdDownload size={16} />
+                )}
+                <p className="lg:block hidden">Download Data</p>
+              </Button>
+            </div>
             <div className="flex items-end gap-3">
               <div className="relative flex items-center">
                 <MdSearch size={20} className="absolute left-3 bottom-2 text-gray-400 pointer-events-none" />

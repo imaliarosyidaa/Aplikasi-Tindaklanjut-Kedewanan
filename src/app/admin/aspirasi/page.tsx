@@ -33,6 +33,8 @@ import { BiFilterAlt } from 'react-icons/bi'
 import Box from '@mui/material/Box'
 import { RadioButton } from '@/components/ui/radio-button'
 import { GrPowerReset } from 'react-icons/gr'
+import { MdDownload } from 'react-icons/md'
+import { buildCsv, downloadCsv } from '@/utils/csv'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -293,6 +295,76 @@ export default function AspirasiPage(): React.ReactNode {
     }
   }
 
+  const [exporting, setExporting] = useState(false)
+
+  const handleDownload = async () => {
+    setExporting(true)
+    try {
+      // Ambil semua data yang sesuai filter (tanpa pagination)
+      const exportParams = new URLSearchParams()
+      exportParams.set('page', '1')
+      exportParams.set('limit', '10000')
+      if (activeFilters.kota) exportParams.set('kota', activeFilters.kota)
+      if (activeFilters.kecamatan) exportParams.set('kecamatan', activeFilters.kecamatan)
+      if (activeFilters.kelurahan) exportParams.set('kelurahan', activeFilters.kelurahan)
+      if (activeFilters.sumber) exportParams.set('sumber', activeFilters.sumber)
+      if (activeFilters.status) exportParams.set('status', activeFilters.status)
+      if (activeFilters.search.trim()) exportParams.set('search', activeFilters.search.trim())
+
+      const resData = await fetch(`/api/aspirasi?${exportParams.toString()}`).then((r) => r.json())
+      let exportList: Aspirasi[] = resData?.data ?? []
+
+      // Terapkan filter bulan secara client-side, sama seperti tampilan tabel
+      if (activeFilters.bulan) {
+        const targetBulan = activeFilters.bulan.toLowerCase().trim()
+        exportList = exportList.filter((item) => {
+          if (!item.tanggal_dibuat) return true
+          const date = new Date(item.tanggal_dibuat)
+          if (isNaN(date.getTime())) return true
+          const monthShort = date.toLocaleDateString('id-ID', { month: 'short' }).toLowerCase()
+          const monthLong = date.toLocaleDateString('id-ID', { month: 'long' }).toLowerCase()
+          return monthShort.includes(targetBulan) || monthLong.includes(targetBulan)
+        })
+      }
+
+      const headers = [
+        'No',
+        'Alamat',
+        'Sumber',
+        'Deskripsi',
+        'Pelapor',
+        'Tanggal',
+        'Status',
+        'Diverifikasi Oleh',
+        'Ditunjukan untuk Dewan',
+      ]
+      const rows = exportList.map((a, i) => [
+        i + 1,
+        [a.lokasi, a.rt ? `RT ${a.rt}` : '', a.rw ? `RW ${a.rw}` : '', a.kelurahan, a.kecamatan, a.kota]
+          .filter(Boolean)
+          .join(' '),
+        sumberLabel[a.sumber] || a.sumber,
+        a.deskripsi || '-',
+        a.pelapor_nama,
+        new Date(a.tanggal_dibuat).toLocaleDateString('id-ID'),
+        statusLabel[a.status] || a.status,
+        (() => {
+          const trackings = a.trackings
+          if (!trackings || trackings.length === 0) return '-'
+          const latest = trackings.reduce((x, y) => (new Date(x.created_at) > new Date(y.created_at) ? x : y))
+          return latest.diverifikasi_oleh_nama || '-'
+        })(),
+        a.dewan || '-',
+      ])
+
+      downloadCsv(`data-aspirasi-${new Date().toISOString().slice(0, 10)}.csv`, buildCsv(headers, rows))
+    } catch {
+      alert('Gagal mengekspor data')
+    } finally {
+      setExporting(false)
+    }
+  }
+
   const sumberOptions = [
     { value: 'LEMBAR_ASPIRASI_RESES', label: 'Lembar Aspirasi Reses' },
     { value: 'LEMBAR_ASPIRASI_SOSPERDA', label: 'Lembar Aspirasi Sosperda' },
@@ -342,10 +414,26 @@ export default function AspirasiPage(): React.ReactNode {
       <Card className="p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Button onClick={() => setOpen(true)} label="Filter" variant="outline" className="flex gap-2">
-              <BiFilterAlt />
-              <p className="lg:block hidden">Filter Lainya</p>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button onClick={() => setOpen(true)} label="Filter" variant="outline" className="flex gap-2">
+                <BiFilterAlt />
+                <p className="lg:block hidden">Filter Lainya</p>
+              </Button>
+              <Button
+                onClick={handleDownload}
+                disabled={exporting || aspirasiList.length === 0}
+                variant="outline"
+                label="Download"
+                className="flex gap-2"
+              >
+                {exporting ? (
+                  <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-text)] border-t-transparent" />
+                ) : (
+                  <MdDownload size={16} />
+                )}
+                <p className="lg:block hidden">Download Data</p>
+              </Button>
+            </div>
             <div className="flex items-end gap-3">
               <div className="flex flex-wrap gap-3">
                 <div className="min-w-[160px] lg:flex lg:flex-1 hidden">
