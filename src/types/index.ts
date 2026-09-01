@@ -174,6 +174,7 @@ export interface Kegiatan {
   kelurahan?: string
   kota?: string
   dibuat_oleh?: string
+  jumlah?: number
 }
 
 export interface DPRD {

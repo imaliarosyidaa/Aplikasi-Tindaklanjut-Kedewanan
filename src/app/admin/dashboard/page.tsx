@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { useDashboardStats } from '@/hooks/useDashboard'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { BarChart } from '@/components/dashboard/BarChart'
+import { LineChart } from '@/components/dashboard/LineChart'
 import { PieChart } from '@/components/dashboard/PieChart'
 import { Modal } from '@/components/ui/modal'
 import { useRouter } from '@/routing'
@@ -222,15 +223,16 @@ export default function AdminDashboardPage(): React.ReactNode {
         <BarChart
           title="Statistik Kegiatan per Bulan"
           data={kunjunganPerBulan}
+          color="#3B82F6"
           onBarClick={(bulan) => {
             router.push(`/admin/kunjungan?bulan=${encodeURIComponent(bulan)}`)
           }}
         />
-        <BarChart
+        <LineChart
           title="Statistik Aspirasi per Bulan"
           data={aspirasiPerBulan}
-          color="var(--color-warning)"
-          onBarClick={(bulan) => {
+          color="#3B82F6"
+          onPointClick={(bulan) => {
             router.push(`/admin/aspirasi?bulan=${encodeURIComponent(bulan)}`)
           }}
         />
