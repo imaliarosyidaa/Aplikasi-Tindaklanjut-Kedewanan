@@ -47,7 +47,7 @@ export const LineChart = ({
             dataKey: 'value',
             label: 'Jumlah',
             color,
-            valueFormatter: (v) => `${v ?? 0} kegiatan`,
+            valueFormatter: (v) => `${v ?? 0} aspirasi`,
             curve: 'linear',
           },
         ]}

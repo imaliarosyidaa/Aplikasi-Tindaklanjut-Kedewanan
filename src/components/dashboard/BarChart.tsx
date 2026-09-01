@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
-import { BarChart as MuiBarChart, useAxesTooltip, ChartsTooltipContainer, type ChartsTooltipProps } from '@mui/x-charts'
+import React, { useCallback, useRef, useState } from 'react'
+import { BarChart as MuiBarChart } from '@mui/x-charts'
 import { Card } from '@/components/ui/card'
 import { useRouter } from '@/routing'
 import useSWR from 'swr'
@@ -56,29 +56,32 @@ const isMatchingMonth = (dateOrMonthString: string | undefined, paramBulan: stri
   return false
 }
 
+// Menentukan bulan yang di-hover berdasarkan posisi x pointer relatif terhadap
+// area plot. Area plot = lebar container dikurangi y-axis (lebar 60) + padding.
+function monthFromPointerX(x: number, containerWidth: number, labels: string[]): string | null {
+  if (containerWidth <= 0 || labels.length === 0) return null
+  const yAxisWidth = 60 // yAxis width di chartSetting
+  const padding = 8
+  const plotWidth = Math.max(1, containerWidth - yAxisWidth - padding * 2)
+  const bandWidth = plotWidth / labels.length
+  const index = Math.floor((x - yAxisWidth - padding) / bandWidth)
+  if (index < 0 || index >= labels.length) return null
+  return labels[index]
+}
+
 interface CustomTooltipProps {
-  kegiatanByMonth: (monthLabel: string) => Kegiatan[]
-  totalByMonth: (monthLabel: string) => number
+  month: string
+  total: number
+  items: Kegiatan[]
   color: string
 }
 
 // Custom tooltip yang menampilkan jumlah + nama kegiatan + lokasi per bulan
-function CustomTooltip({ kegiatanByMonth, totalByMonth, color }: CustomTooltipProps) {
-  const axesTooltip = useAxesTooltip()
-
-  const axis = axesTooltip?.[0]
-  const axisVal = axis?.axisValue ?? axis?.axisFormattedValue
-  const monthLabel = String(axisVal ?? '')
-
-  if (!monthLabel) return null
-
-  const items = kegiatanByMonth(monthLabel)
-  const total = totalByMonth(monthLabel)
-
+function CustomTooltip({ month, total, items, color }: CustomTooltipProps) {
   return (
-    <div className="min-w-[220px] max-w-[320px] rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 shadow-lg">
+    <div className="pointer-events-none min-w-[220px] max-w-[320px] rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 shadow-lg">
       <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] pb-2 mb-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text)]">{monthLabel}</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text)]">{month}</span>
         <span className="inline-flex items-center gap-1 text-xs font-semibold">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
           {total} kegiatan
@@ -95,7 +98,9 @@ function CustomTooltip({ kegiatanByMonth, totalByMonth, color }: CustomTooltipPr
               <li key={item.id || idx} className="flex items-start gap-2">
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-medium text-[var(--color-text)]">{item.nama_kegiatan || 'Kegiatan'}</p>
+                  <p className="truncate text-xs font-medium text-[var(--color-text)]">
+                    {item.nama_kegiatan || 'Kegiatan'}
+                  </p>
                   {lokasi && <p className="truncate text-[11px] text-[var(--color-text-secondary)]">{lokasi}</p>}
                 </div>
               </li>
@@ -117,6 +122,26 @@ export const BarChart = ({
   const router = useRouter()
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
 
+  // Posisi pointer relatif terhadap container chart (koordinat tooltip)
+  const [pointer, setPointer] = useState<{ x: number; y: number } | null>(null)
+  // Lebar container, hanya diisi setelah mount (lewat ResizeObserver) agar tidak
+  // memengaruhi render SSR (mencegah hydration mismatch).
+  const [containerWidth, setContainerWidth] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Ukur lebar container secara real-time (responsive terhadap resize/sidebar).
+  React.useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const update = () => {
+      if (el.clientWidth !== 0) setContainerWidth(el.clientWidth)
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   // Fetch semua kegiatan (API tidak mendukung filter bulan server-side)
   const { data: res, isLoading } = useSWR<{ data: Kegiatan[]; total: number } | Kegiatan[]>(
     '/api/kegiatan',
@@ -133,9 +158,22 @@ export const BarChart = ({
     })
   }
 
-  const totalByMonth = (monthLabel: string): number => {
-    return kegiatanByMonth(monthLabel).length
-  }
+  const totalByMonth = (monthLabel: string): number => kegiatanByMonth(monthLabel).length
+
+  const isKegiatanChart = title.toLowerCase().includes('kegiatan')
+
+  // Hitung posisi pointer relatif terhadap chart container (bukan viewport)
+  const handlePointerMove = useCallback((event: React.PointerEvent) => {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    // Pertahankan posisi terakhir saat mouse berhenti; jangan pernah reset ke 0,0
+    setPointer({ x: event.clientX - rect.left, y: event.clientY - rect.top })
+  }, [])
+
+  const handlePointerLeave = useCallback(() => {
+    // Cursor keluar chart -> tooltip hilang (default MUI behavior)
+    setPointer(null)
+  }, [])
 
   const chartSetting = {
     yAxis: [{ label: 'Jumlah', width: 60 }],
@@ -153,49 +191,52 @@ export const BarChart = ({
     if (targetUrl) router.push(`${targetUrl}?bulan=${encodeURIComponent(monthLabel)}`)
   }
 
-  const isKegiatanChart = title.toLowerCase().includes('kegiatan')
+  // Tentukan bulan yang di-hover dari posisi pointer (deterministik, tanpa store MUI)
+  const hoverMonth = !isKegiatanChart || !pointer
+    ? null
+    : monthFromPointerX(pointer.x, containerWidth, data.map((d) => d.label))
+
+  const showTooltip = isKegiatanChart && pointer && hoverMonth
 
   return (
     <Card className="p-4 space-y-4">
       <h3 className="text-sm font-semibold text-[var(--color-text)]">{title}</h3>
 
-      <MuiBarChart
-        dataset={data.map((item) => ({ month: item.label, value: item.value }))}
-        xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
-        series={[
-          {
-            dataKey: 'value',
-            label: 'Jumlah',
-            color,
-            valueFormatter: (v) => `${v ?? 0} kegiatan`,
-          },
-        ]}
-        slots={
-          isKegiatanChart
-            ? ({
-                // Terima props dari slotProps.tooltip agar ChartsTooltipContainer
-                // memakai anchor/position default yang benar dan tidak melompat
-                // ke pojok chart saat pointer diam/keluar.
-                tooltip: (props: ChartsTooltipProps<'axis'>) => (
-                  <ChartsTooltipContainer
-                    {...(props as unknown as React.ComponentProps<typeof ChartsTooltipContainer>)}
-                    trigger="axis"
-                    anchor="pointer"
-                  >
-                    <CustomTooltip
-                      kegiatanByMonth={kegiatanByMonth}
-                      totalByMonth={totalByMonth}
-                      color={color}
-                    />
-                  </ChartsTooltipContainer>
-                ),
-              } as NonNullable<React.ComponentProps<typeof MuiBarChart>['slots']>)
-            : undefined
-        }
-        slotProps={{ tooltip: { trigger: 'axis' as const } }}
-        onItemClick={handleItemClick}
-        {...chartSetting}
-      />
+      <div
+        ref={containerRef}
+        className="relative"
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
+      >
+        <MuiBarChart
+          dataset={data.map((item) => ({ month: item.label, value: item.value }))}
+          xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
+          series={[
+            {
+              dataKey: 'value',
+              label: 'Jumlah',
+              color,
+              valueFormatter: (v) => `${v ?? 0} kegiatan`,
+            },
+          ]}
+          slotProps={{ tooltip: { trigger: 'none' } }}
+          axisHighlight={{ x: 'line', y: 'none' }}
+          onItemClick={handleItemClick}
+          {...chartSetting}
+        />
+
+        {showTooltip && (
+          <HoverTooltip
+            x={pointer.x}
+            y={pointer.y}
+            month={hoverMonth}
+            total={totalByMonth(hoverMonth)}
+            items={kegiatanByMonth(hoverMonth)}
+            color={color}
+            containerWidth={containerWidth}
+          />
+        )}
+      </div>
 
       {selectedMonth && isKegiatanChart && (
         <div className="mt-4 border-t pt-4">
@@ -229,5 +270,40 @@ export const BarChart = ({
         </div>
       )}
     </Card>
+  )
+}
+
+// Tooltip yang diposisikan relatif terhadap container chart.
+function HoverTooltip({
+  x,
+  y,
+  month,
+  total,
+  items,
+  color,
+  containerWidth,
+}: {
+  x: number
+  y: number
+  month: string
+  total: number
+  items: Kegiatan[]
+  color: string
+  containerWidth: number
+}) {
+  // Offset kecil agar tooltip tidak menutupi kursor bar.
+  const OFFSET_X = 16
+  const TOOLTIP_WIDTH = 320 // max-w-[320px]
+
+  // Pertahankan posisi terakhir kursor; hanya clamp agar tidak keluar container.
+  const left = Math.min(x + OFFSET_X, Math.max(0, containerWidth - TOOLTIP_WIDTH))
+
+  return (
+    <div
+      className="pointer-events-none absolute z-30"
+      style={{ left, top: y, transform: 'none' }}
+    >
+      <CustomTooltip month={month} total={total} items={items} color={color} />
+    </div>
   )
 }
