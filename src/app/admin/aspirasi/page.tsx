@@ -35,6 +35,7 @@ import { RadioButton } from '@/components/ui/radio-button'
 import { GrPowerReset } from 'react-icons/gr'
 import { MdDownload } from 'react-icons/md'
 import { buildCsv, downloadCsv } from '@/utils/csv'
+import { isKotaActive, isKecamatanActive } from '@/utils/wilayah-config'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -104,9 +105,9 @@ export default function AspirasiPage(): React.ReactNode {
     return () => clearTimeout(t)
   }, [searchText])
 
-  const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota', fetcher)
+  const { data: kotaList = [] } = useSWR<MasterKota[]>('/api/kota?all=true', fetcher)
   const { data: kecamatanList = [] } = useSWR<MasterKecamatan[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    kotaId ? `/api/kecamatan?kota=${kotaId}&all=true` : '/api/kecamatan?all=true',
     fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<MasterKelurahan[]>(
@@ -118,6 +119,7 @@ export default function AspirasiPage(): React.ReactNode {
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
   const kotaOptions = [...kotaList]
+    .filter((k) => isKotaActive(k.id))
     .sort((a, b) => {
       if (a.nama === 'Jakarta Selatan') return -1
       if (b.nama === 'Jakarta Selatan') return 1
@@ -125,7 +127,9 @@ export default function AspirasiPage(): React.ReactNode {
     })
     .map((k) => ({ value: k.id, label: k.nama }))
 
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList
+    .filter((k) => isKecamatanActive(k.id))
+    .map((k) => ({ value: k.id, label: k.nama }))
 
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 

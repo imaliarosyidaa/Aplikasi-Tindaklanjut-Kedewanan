@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/select'
 import type { Aspirasi, DPRD, SumberAspirasi } from '@/types'
 import { FileUpload } from '../ui/file-upload'
 import { useRouter } from '@/routing'
+import { isKotaActive, isKecamatanActive } from '@/utils/wilayah-config'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -98,9 +99,9 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const [wilayahTouched, setWilayahTouched] = useState(false)
 
   // Master data wilayah (independen, tidak saling cascade)
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota?all=true', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    kotaId ? `/api/kecamatan?kota=${kotaId}&all=true` : '/api/kecamatan?all=true',
     fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
@@ -126,11 +127,13 @@ export const FormEditAspirasi = ({ aspirasi, onSuccess }: FormEditAspirasiProps)
   const finalKecamatanId = wilayahTouched ? kecamatanId : kecamatanId || defaultKecamatanId
   const finalKelurahanId = wilayahTouched ? kelurahanId : kelurahanId || defaultKelurahanId
 
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({
-    value: k.id,
-    label: k.nama,
-  }))
+  const kotaOptions = kotaList.filter((k) => isKotaActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList
+    .filter((k) => isKecamatanActive(k.id))
+    .map((k) => ({
+      value: k.id,
+      label: k.nama,
+    }))
   const kelurahanOptions = kelurahanList.map((k) => ({
     value: k.id,
     label: k.nama,

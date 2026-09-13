@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { useRouter } from '@/routing'
+import { isKotaActive, isKecamatanActive } from '@/utils/wilayah-config'
 import { FileUpload } from '../ui/file-upload'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -121,9 +122,9 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota?all=true', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    kotaId ? `/api/kecamatan?kota=${kotaId}&all=true` : '/api/kecamatan?all=true',
     fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
@@ -135,8 +136,8 @@ export const FormKunjungan = ({ initialData }: { initialData?: FormKunjunganInit
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))
   const kelurahanMap = Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama]))
 
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kotaOptions = kotaList.filter((k) => isKotaActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.filter((k) => isKecamatanActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   const validate = (): boolean => {

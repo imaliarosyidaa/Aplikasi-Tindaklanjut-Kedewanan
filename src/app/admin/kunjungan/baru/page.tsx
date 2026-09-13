@@ -19,6 +19,7 @@ import {
   MdLocationPin,
 } from 'react-icons/md'
 import { Home, Handshake, Megaphone, ClipboardList } from 'lucide-react'
+import { isKotaActive, isKecamatanActive } from '@/utils/wilayah-config'
 import Card from '@mui/material/Card'
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
 
@@ -87,9 +88,9 @@ export default function KegiatanBaruPage() {
 
   const [fotoFiles, setFotoFiles] = useState<string[]>([])
 
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota?all=true', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    kotaId ? `/api/kecamatan?kota=${kotaId}&all=true` : '/api/kecamatan?all=true',
     fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
@@ -97,8 +98,8 @@ export default function KegiatanBaruPage() {
     fetcher,
   )
 
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kotaOptions = kotaList.filter((k) => isKotaActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.filter((k) => isKecamatanActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
   const kotaMap = Object.fromEntries(kotaList.map((k) => [k.id, k.nama]))
   const kecamatanMap = Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama]))

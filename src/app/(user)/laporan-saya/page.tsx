@@ -26,6 +26,7 @@ import HeroClassic from '@/components/shared/HeroClassic'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import FilterLaporan from '@/components/shared/Filter'
 import LaporanPicture from './laporanPicture'
+import { isKotaActive, isKecamatanActive } from '@/utils/wilayah-config'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -377,15 +378,15 @@ export default function LaporanSayaPage(): React.ReactNode {
     qId: string
   } | null>(null)
 
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
-  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(kotaId ? `/api/kecamatan?kota=${kotaId}` : null, fetcher)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota?all=true', fetcher)
+  const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(kotaId ? `/api/kecamatan?kota=${kotaId}&all=true` : null, fetcher)
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
     kecamatanId ? `/api/kelurahan?kecamatan=${kecamatanId}` : '/api/kelurahan',
     fetcher,
   )
 
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kotaOptions = kotaList.filter((k) => isKotaActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.filter((k) => isKecamatanActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   const optionsRef = useRef({ kotaOptions, kecamatanOptions, kelurahanOptions })

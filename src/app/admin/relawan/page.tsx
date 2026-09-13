@@ -31,6 +31,7 @@ import Box from '@mui/material/Box'
 import { GrPowerReset } from 'react-icons/gr'
 import { RadioButton } from '@/components/ui/radio-button'
 import { BiFilterAlt } from 'react-icons/bi'
+import { isKotaActive, isKecamatanActive } from '@/utils/wilayah-config'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -113,9 +114,9 @@ export default function RelawanPage(): React.ReactNode {
   })
 
   // 4. Master Data Wilayah
-  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota', fetcher)
+  const { data: kotaList = [] } = useSWR<KotaItem[]>('/api/kota?all=true', fetcher)
   const { data: kecamatanList = [] } = useSWR<KecamatanItem[]>(
-    kotaId ? `/api/kecamatan?kota=${kotaId}` : '/api/kecamatan',
+    kotaId ? `/api/kecamatan?kota=${kotaId}&all=true` : '/api/kecamatan?all=true',
     fetcher,
   )
   const { data: kelurahanList = [] } = useSWR<KelurahanItem[]>(
@@ -127,8 +128,8 @@ export default function RelawanPage(): React.ReactNode {
   const kecamatanMap = useMemo(() => Object.fromEntries(kecamatanList.map((k) => [k.id, k.nama])), [kecamatanList])
   const kelurahanMap = useMemo(() => Object.fromEntries(kelurahanList.map((k) => [k.id, k.nama])), [kelurahanList])
 
-  const kotaOptions = kotaList.map((k) => ({ value: k.id, label: k.nama }))
-  const kecamatanOptions = kecamatanList.map((k) => ({ value: k.id, label: k.nama }))
+  const kotaOptions = kotaList.filter((k) => isKotaActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
+  const kecamatanOptions = kecamatanList.filter((k) => isKecamatanActive(k.id)).map((k) => ({ value: k.id, label: k.nama }))
   const kelurahanOptions = kelurahanList.map((k) => ({ value: k.id, label: k.nama }))
 
   // Helper extractor nilai Select (aman untuk custom component / e.target.value)

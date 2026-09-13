@@ -1,10 +1,16 @@
 'use client'
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import useSWR from 'swr'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { MdSearch, MdLocationOn, MdMap } from 'react-icons/md'
+import {
+  isKotaActive,
+  isKecamatanActive,
+  setKotaFlag,
+  setKecamatanFlag,
+} from '@/utils/wilayah-config'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -37,7 +43,7 @@ function KotaSection() {
   const { data: allKota, isLoading, mutate } = useSWR<Kota[]>('/api/kota?all=true', fetcher)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<StatusFilter>('all')
-  const [toggling, setToggling] = useState<string | null>(null)
+  const [localVersion, setLocalVersion] = useState(0)
 
   const filtered = useMemo(() => {
     let list = allKota ?? []
@@ -45,30 +51,23 @@ function KotaSection() {
       const q = search.toLowerCase()
       list = list.filter((k) => k.nama.toLowerCase().includes(q))
     }
-    if (filter === 'active') list = list.filter((k) => k.flag)
-    if (filter === 'inactive') list = list.filter((k) => !k.flag)
+    if (filter === 'active') list = list.filter((k) => isKotaActive(k.id))
+    if (filter === 'inactive') list = list.filter((k) => !isKotaActive(k.id))
     return list
-  }, [allKota, search, filter])
+  }, [allKota, search, filter, localVersion])
 
-  const toggleFlag = async (kota: Kota) => {
-    if (!kota.flag && !window.confirm(`Nonaktifkan kota "${kota.nama}"? Kecamatan di dalamnya juga tidak akan tampil di form user.`)) {
-      return
-    }
-    setToggling(kota.id)
-    try {
-      const res = await fetch(`/api/kota/${kota.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ flag: !kota.flag }),
-      })
-      if (!res.ok) throw new Error('Gagal mengubah status')
-      await mutate()
-    } catch (e) {
-      alert(e instanceof Error ? e.message : 'Terjadi kesalahan')
-    } finally {
-      setToggling(null)
-    }
-  }
+  const toggleFlag = useCallback(
+    (kota: Kota) => {
+      const isActive = isKotaActive(kota.id)
+      if (isActive && !window.confirm(`Nonaktifkan kota "${kota.nama}"? Kecamatan di dalamnya juga tidak akan tampil di form user.`)) {
+        return
+      }
+      setKotaFlag(kota.id, !isActive)
+      setLocalVersion((v) => v + 1)
+      mutate()
+    },
+    [mutate],
+  )
 
   return (
     <Card className="p-6">
@@ -130,32 +129,34 @@ function KotaSection() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((kota) => (
-                <tr key={kota.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50 transition-colors">
-                  <td className="px-4 py-3 font-medium text-[var(--color-text)]">{kota.nama}</td>
-                  <td className="px-4 py-3">
-                    <Badge variant={kota.flag ? 'success' : 'danger'}>
-                      {kota.flag ? 'Aktif' : 'Nonaktif'}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => toggleFlag(kota)}
-                      disabled={toggling === kota.id}
-                      className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors disabled:opacity-50 ${
-                        kota.flag ? 'bg-[var(--color-primary)]' : 'bg-gray-300'
-                      }`}
-                      title={kota.flag ? 'Nonaktifkan' : 'Aktifkan'}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                          kota.flag ? 'translate-x-6' : 'translate-x-1'
+              {filtered.map((kota) => {
+                const isActive = isKotaActive(kota.id)
+                return (
+                  <tr key={kota.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-[var(--color-text)]">{kota.nama}</td>
+                    <td className="px-4 py-3">
+                      <Badge variant={isActive ? 'success' : 'danger'}>
+                        {isActive ? 'Aktif' : 'Nonaktif'}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => toggleFlag(kota)}
+                        className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors ${
+                          isActive ? 'bg-[var(--color-primary)]' : 'bg-gray-300'
                         }`}
-                      />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                        title={isActive ? 'Nonaktifkan' : 'Aktifkan'}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                            isActive ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -169,7 +170,7 @@ function KecamatanSection() {
   const { data: allKota } = useSWR<Kota[]>('/api/kota?all=true', fetcher)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<StatusFilter>('all')
-  const [toggling, setToggling] = useState<string | null>(null)
+  const [localVersion, setLocalVersion] = useState(0)
 
   const kotaMap = useMemo(() => {
     const map: Record<string, string> = {}
@@ -179,9 +180,9 @@ function KecamatanSection() {
 
   const kotaFlagMap = useMemo(() => {
     const map: Record<string, boolean> = {}
-    ;(allKota ?? []).forEach((k) => { map[k.id] = k.flag })
+    ;(allKota ?? []).forEach((k) => { map[k.id] = isKotaActive(k.id) })
     return map
-  }, [allKota])
+  }, [allKota, localVersion])
 
   const filtered = useMemo(() => {
     let list = allKecamatan ?? []
@@ -189,30 +190,23 @@ function KecamatanSection() {
       const q = search.toLowerCase()
       list = list.filter((k) => k.nama.toLowerCase().includes(q))
     }
-    if (filter === 'active') list = list.filter((k) => k.flag)
-    if (filter === 'inactive') list = list.filter((k) => !k.flag)
+    if (filter === 'active') list = list.filter((k) => isKecamatanActive(k.id))
+    if (filter === 'inactive') list = list.filter((k) => !isKecamatanActive(k.id))
     return list
-  }, [allKecamatan, search, filter])
+  }, [allKecamatan, search, filter, localVersion])
 
-  const toggleFlag = async (kec: Kecamatan) => {
-    if (!kec.flag && !window.confirm(`Nonaktifkan kecamatan "${kec.nama}"?`)) {
-      return
-    }
-    setToggling(kec.id)
-    try {
-      const res = await fetch(`/api/kecamatan/${kec.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ flag: !kec.flag }),
-      })
-      if (!res.ok) throw new Error('Gagal mengubah status')
-      await mutate()
-    } catch (e) {
-      alert(e instanceof Error ? e.message : 'Terjadi kesalahan')
-    } finally {
-      setToggling(null)
-    }
-  }
+  const toggleFlag = useCallback(
+    (kec: Kecamatan) => {
+      const isActive = isKecamatanActive(kec.id)
+      if (isActive && !window.confirm(`Nonaktifkan kecamatan "${kec.nama}"?`)) {
+        return
+      }
+      setKecamatanFlag(kec.id, !isActive)
+      setLocalVersion((v) => v + 1)
+      mutate()
+    },
+    [mutate],
+  )
 
   return (
     <Card className="p-6">
@@ -277,6 +271,7 @@ function KecamatanSection() {
             <tbody>
               {filtered.map((kec) => {
                 const kotaActive = kotaFlagMap[kec.kota_id]
+                const isActive = isKecamatanActive(kec.id)
                 return (
                   <tr key={kec.id} className="border-t border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]/50 transition-colors">
                     <td className="px-4 py-3 font-medium text-[var(--color-text)]">{kec.nama}</td>
@@ -288,8 +283,8 @@ function KecamatanSection() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Badge variant={kec.flag ? 'success' : 'danger'}>
-                          {kec.flag ? 'Aktif' : 'Nonaktif'}
+                        <Badge variant={isActive ? 'success' : 'danger'}>
+                          {isActive ? 'Aktif' : 'Nonaktif'}
                         </Badge>
                         {kotaActive === false && (
                           <Badge variant="warning">Kota off</Badge>
@@ -299,15 +294,14 @@ function KecamatanSection() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => toggleFlag(kec)}
-                        disabled={toggling === kec.id}
-                        className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors disabled:opacity-50 ${
-                          kec.flag ? 'bg-[var(--color-primary)]' : 'bg-gray-300'
+                        className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors ${
+                          isActive ? 'bg-[var(--color-primary)]' : 'bg-gray-300'
                         }`}
-                        title={kec.flag ? 'Nonaktifkan' : 'Aktifkan'}
+                        title={isActive ? 'Nonaktifkan' : 'Aktifkan'}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                            kec.flag ? 'translate-x-6' : 'translate-x-1'
+                            isActive ? 'translate-x-6' : 'translate-x-1'
                           }`}
                         />
                       </button>
