@@ -1,18 +1,25 @@
-'use client'
-
 import Hero from '@/components/shared/Hero'
 import { Hero04 } from '@/components/ui/hero-04'
+import Gallery4Section from '@/components/home/Gallery4Section'
 import PengajuanAspirasiPage from './pengajuan-aspirasi/page'
+import { prisma } from '@/lib/prisma'
 
-export default function UserHomePage() {
+// Server Component: konten hero diambil langsung dari tabel `setting_page`.
+export default async function UserHomePage() {
+  const setting = await prisma.settingPage.findUnique({ where: { id: 1 } })
+
   return (
     <div className="w-full">
       {/* Hero */}
       <Hero
-        title="Yuke"
-        highlight="Yurike"
-        subtitle="Pelayanan ini khusus untuk membantu warga DKI Jakarta dalam menindaklanjuti segala laporan terhadap Pemprov DKI Jakarta."
-        badge="Layanan aspirasi masyarakat terpercaya"
+        title={setting?.heroTitle?.trim() || 'Yuke'}
+        highlight={setting?.heroHighlight?.trim() || 'Yurike'}
+        subtitle={
+          setting?.heroSubtitle?.trim() ||
+          'Pelayanan ini khusus untuk membantu warga DKI Jakarta dalam menindaklanjuti segala laporan terhadap Pemprov DKI Jakarta.'
+        }
+        badge={setting?.heroBadge?.trim() || 'Layanan aspirasi masyarakat terpercaya'}
+        image={setting?.heroImage?.trim() || '/yuke_yurike.png'}
       />
 
       {/* About */}
@@ -26,6 +33,9 @@ export default function UserHomePage() {
         secondaryAlt="Yuke Yurike di DPRD"
         animation="subtle"
       />
+
+      {/* Gallery */}
+      <Gallery4Section />
 
       {/* Form Pengajuan */}
       <section id="pengajuan" className="bg-[var(--color-bg)] py-16">

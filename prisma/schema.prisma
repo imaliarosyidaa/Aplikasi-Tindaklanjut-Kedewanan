@@ -298,3 +298,29 @@ model Kegiatan {
 
   @@map("kegiatans")
 }
+
+model SettingPage {
+  id            Int      @id @default(1)
+  heroImage     String   @default("") @map("hero_image")
+  heroTitle     String   @default("") @map("hero_title")
+  heroHighlight String   @default("") @map("hero_highlight")
+  heroSubtitle  String   @default("") @map("hero_subtitle")
+  heroBadge     String   @default("") @map("hero_badge")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("setting_page")
+}
+
+model GalleryItem {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  url       String
+  title     String   @default("")
+  caption   String   @default("")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([sortOrder])
+  @@map("gallery_items")
+}

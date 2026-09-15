@@ -1,14 +1,14 @@
 import { MinimalistHero } from '@/components/ui/minimalist-hero'
-import { Link } from '@/routing'
 
 interface HeroProps {
   title?: string
   highlight?: string
   subtitle?: string
   badge?: string
+  image?: string
 }
 
-export default function Hero({ title, highlight, subtitle, badge }: HeroProps) {
+export default function Hero({ title, highlight, subtitle, image }: HeroProps) {
   return (
     <MinimalistHero
       logoText="DPRD DKI Jakarta"
@@ -22,7 +22,7 @@ export default function Hero({ title, highlight, subtitle, badge }: HeroProps) {
         'Portal resmi penyampaian aspirasi masyarakat kepada DPRD DKI Jakarta. Sampaikan usulan, pengaduan, maupun apresiasi secara mudah, transparan, dan dapat dipantau perkembangannya.'
       }
       readMoreLink="/#about"
-      imageSrc="/yuke_yurike.png"
+      imageSrc={image || '/yuke_yurike.png'}
       imageAlt="Yuke Yurike - Anggota DPRD"
       overlayText={{
         part1: title ?? 'Sampaikan',

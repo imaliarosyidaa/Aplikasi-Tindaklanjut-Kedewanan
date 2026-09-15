@@ -4,6 +4,7 @@ import useSWR from 'swr'
 
 import { DprdManager } from '@/components/dprd/DprdManager'
 import { WilayahTab } from '@/components/wilayah/WilayahTab'
+import { BerandaTab } from '@/components/beranda/BerandaTab'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,7 @@ import {
   MdVisibilityOff,
   MdVisibility,
   MdLocationOn,
+  MdHome,
 } from 'react-icons/md'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -65,7 +67,7 @@ interface TeamOption {
 
 type TeamRole = 'KETUA' | 'ANGGOTA'
 
-type Tab = 'rbac' | 'users' | 'dprd' | 'wilayah'
+type Tab = 'rbac' | 'users' | 'dprd' | 'wilayah' | 'beranda'
 
 export default function PengaturanPage() {
   const [tab, setTab] = useState<Tab>('rbac')
@@ -75,6 +77,7 @@ export default function PengaturanPage() {
     { key: 'users', label: 'Manajemen User', icon: <MdGroup size={18} /> },
     { key: 'dprd', label: 'Master Data DPRD', icon: <MdAccountBalance size={18} /> },
     { key: 'wilayah', label: 'Pengaturan Wilayah', icon: <MdLocationOn size={18} /> },
+    { key: 'beranda', label: 'Pengaturan Beranda', icon: <MdHome size={18} /> },
   ]
 
   return (
@@ -107,15 +110,13 @@ export default function PengaturanPage() {
       {tab === 'users' && <UsersTab />}
       {tab === 'dprd' && <DprdManager />}
       {tab === 'wilayah' && <WilayahTab />}
+      {tab === 'beranda' && <BerandaTab />}
     </div>
   )
 }
 
 function RbacTab() {
-  const { data, isLoading, mutate } = useSWR<{ roles: Role[]; permissions: Permission[] }>(
-    '/api/rbac/roles',
-    fetcher
-  )
+  const { data, isLoading, mutate } = useSWR<{ roles: Role[]; permissions: Permission[] }>('/api/rbac/roles', fetcher)
   const roles = data?.roles ?? []
   const permissions = data?.permissions ?? []
 
@@ -158,18 +159,15 @@ function RbacTab() {
     setError('')
     try {
       const isEdit = !!editingRole
-      const res = await fetch(
-        isEdit ? `/api/rbac/roles/${editingRole!.id}` : '/api/rbac/roles',
-        {
-          method: isEdit ? 'PATCH' : 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: roleForm.name,
-            description: roleForm.description,
-            permission_ids: Array.from(selectedPerms),
-          }),
-        }
-      )
+      const res = await fetch(isEdit ? `/api/rbac/roles/${editingRole!.id}` : '/api/rbac/roles', {
+        method: isEdit ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: roleForm.name,
+          description: roleForm.description,
+          permission_ids: Array.from(selectedPerms),
+        }),
+      })
       if (!res.ok) {
         const json = await res.json().catch(() => null)
         setError(json?.error ?? `Gagal menyimpan role (HTTP ${res.status})`)
@@ -226,10 +224,7 @@ function RbacTab() {
         ) : (
           <div className="space-y-3">
             {roles.map((role) => (
-              <div
-                key={role.id}
-                className="rounded-lg border border-[var(--color-border)] p-4 space-y-2"
-              >
+              <div key={role.id} className="rounded-lg border border-[var(--color-border)] p-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 flex-wrap">
                     <MdLock size={16} className="text-[var(--color-primary)]" />
@@ -253,9 +248,7 @@ function RbacTab() {
                     </button>
                   </div>
                 </div>
-                {role.description && (
-                  <p className="text-xs text-[var(--color-text-secondary)]">{role.description}</p>
-                )}
+                {role.description && <p className="text-xs text-[var(--color-text-secondary)]">{role.description}</p>}
                 {role.permission_ids.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {role.permission_ids.map((pid) => {
@@ -270,9 +263,7 @@ function RbacTab() {
                     })}
                   </div>
                 ) : (
-                  <p className="text-xs text-[var(--color-text-secondary)] italic">
-                    Belum ada permission
-                  </p>
+                  <p className="text-xs text-[var(--color-text-secondary)] italic">Belum ada permission</p>
                 )}
               </div>
             ))}
@@ -290,9 +281,7 @@ function RbacTab() {
         </p>
 
         {Object.keys(groupedPermissions).length === 0 ? (
-          <p className="text-sm text-[var(--color-text-secondary)] text-center py-12">
-            Belum ada permission.
-          </p>
+          <p className="text-sm text-[var(--color-text-secondary)] text-center py-12">Belum ada permission.</p>
         ) : (
           <div className="space-y-4">
             {Object.entries(groupedPermissions).map(([resource, perms]) => (
@@ -344,13 +333,9 @@ function RbacTab() {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-[var(--color-text)] mb-2">
-                Pilih Permission
-              </p>
+              <p className="text-sm font-medium text-[var(--color-text)] mb-2">Pilih Permission</p>
               {Object.keys(groupedPermissions).length === 0 ? (
-                <p className="text-xs text-[var(--color-text-secondary)]">
-                  Belum ada permission yang tersedia.
-                </p>
+                <p className="text-xs text-[var(--color-text-secondary)]">Belum ada permission yang tersedia.</p>
               ) : (
                 <div className="max-h-64 overflow-y-auto rounded-lg border border-[var(--color-border)] divide-y divide-[var(--color-border)]">
                   {Object.entries(groupedPermissions).map(([resource, perms]) => (
@@ -405,9 +390,11 @@ function RbacTab() {
 }
 
 function UsersTab() {
-  const { data, isLoading, mutate } = useSWR<
-    { roles: { id: string; name: string }[]; users: User[]; dprds: { id: string; name: string }[] }
-  >('/api/rbac/users', fetcher)
+  const { data, isLoading, mutate } = useSWR<{
+    roles: { id: string; name: string }[]
+    users: User[]
+    dprds: { id: string; name: string }[]
+  }>('/api/rbac/users', fetcher)
   const { data: teamsData } = useSWR<{ teams: TeamOption[] }>('/api/teams', fetcher)
   const [showPassword, setShowPassword] = useState(false)
   const roles = data?.roles ?? []
@@ -462,9 +449,7 @@ function UsersTab() {
     setError('')
   }
 
-  const availableTeams = dprds.some((d) => d.id === form.dprd_id)
-    ? teams.filter((t) => t.dprd_id === form.dprd_id)
-    : []
+  const availableTeams = dprds.some((d) => d.id === form.dprd_id) ? teams.filter((t) => t.dprd_id === form.dprd_id) : []
 
   const handleSave = async () => {
     if (!form.username.trim() || !form.name.trim() || (!editing && !form.password)) {
@@ -541,10 +526,7 @@ function UsersTab() {
       ) : (
         <div className="space-y-3">
           {users.map((u) => (
-            <div
-              key={u.id}
-              className="rounded-lg border border-[var(--color-border)] p-4 space-y-2"
-            >
+            <div key={u.id} className="rounded-lg border border-[var(--color-border)] p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-wrap">
                   <MdPerson size={18} className="text-[var(--color-primary)]" />
@@ -572,9 +554,7 @@ function UsersTab() {
                   </button>
                 </div>
               </div>
-              {u.email && (
-                <p className="text-xs text-[var(--color-text-secondary)]">{u.email}</p>
-              )}
+              {u.email && <p className="text-xs text-[var(--color-text-secondary)]">{u.email}</p>}
               {u.dprd_name && <Badge variant="info">DPRD: {u.dprd_name}</Badge>}
               {u.teams.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
@@ -678,22 +658,15 @@ function UsersTab() {
 
             {form.dprd_id && (
               <div>
-                <p className="text-sm font-medium text-[var(--color-text)] mb-2">
-                  Tim Kerja
-                </p>
+                <p className="text-sm font-medium text-[var(--color-text)] mb-2">Tim Kerja</p>
                 {availableTeams.length === 0 ? (
-                  <p className="text-xs text-[var(--color-text-secondary)]">
-                    Belum ada tim kerja untuk DPRD ini.
-                  </p>
+                  <p className="text-xs text-[var(--color-text-secondary)]">Belum ada tim kerja untuk DPRD ini.</p>
                 ) : (
                   <div className="max-h-48 overflow-y-auto rounded-lg border border-[var(--color-border)] divide-y divide-[var(--color-border)]">
                     {availableTeams.map((t) => {
                       const checked = teamSelections[t.id] !== undefined
                       return (
-                        <div
-                          key={t.id}
-                          className="flex items-center justify-between gap-2 p-3"
-                        >
+                        <div key={t.id} className="flex items-center justify-between gap-2 p-3">
                           <label className="flex items-center gap-2 cursor-pointer text-sm text-[var(--color-text)]">
                             <input
                               type="checkbox"
