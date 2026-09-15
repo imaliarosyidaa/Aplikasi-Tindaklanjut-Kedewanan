@@ -19,37 +19,13 @@ export interface Gallery4Props {
   items: Gallery4Item[]
 }
 
-const data = [
-  {
-    id: 'reses',
-    title: 'Reses Kecamatan',
-    description: 'Menampung langsung aspirasi warga saat kegiatan reses di wilayah kecamatan.',
-    href: '#galeri',
-    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    id: 'kunjungan',
-    title: 'Kunjungan Lapangan',
-    description: 'Tinjauan langsung ke titik rawan banjir dan infrastruktur warga.',
-    href: '#galeri',
-    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    id: 'rapat',
-    title: 'Rapat Kerja Komisi',
-    description: 'Rapat kerja bersama mitra dan perangkat daerah untuk menindaklanjuti aspirasi.',
-    href: '#galeri',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
-  },
-]
-
-const Gallery4 = ({ items = data }: Gallery4Props) => {
+const Gallery4 = ({ items }: Gallery4Props) => {
   const [carouselApi, setCarouselApi] = useState<CarouselApi>()
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
 
-  // State untuk Modal
+  // State untuk mengontrol Modal / Lightbox
   const [selectedItem, setSelectedItem] = useState<Gallery4Item | null>(null)
 
   useEffect(() => {
@@ -68,7 +44,7 @@ const Gallery4 = ({ items = data }: Gallery4Props) => {
     }
   }, [carouselApi])
 
-  // Tutup modal dengan tombol ESC
+  // Menutup modal dengan tombol ESC pada keyboard
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -78,6 +54,8 @@ const Gallery4 = ({ items = data }: Gallery4Props) => {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
+
+  if (!items || items.length === 0) return null
 
   return (
     <section className="pb-8">
@@ -123,6 +101,7 @@ const Gallery4 = ({ items = data }: Gallery4Props) => {
           <CarouselContent className="ml-0 2xl:ml-[max(8rem,calc(50vw-700px))] 2xl:mr-[max(0rem,calc(50vw-700px))]">
             {items.map((item) => (
               <CarouselItem key={item.id} className="max-w-[320px] pl-[20px] lg:max-w-[360px]">
+                {/* Ketika card/foto diklik, buka modal */}
                 <div onClick={() => setSelectedItem(item)} className="group cursor-pointer rounded-xl">
                   <div className="group relative h-full min-h-[27rem] max-w-full overflow-hidden rounded-xl md:aspect-[5/4] lg:aspect-[16/9]">
                     <img
@@ -158,7 +137,7 @@ const Gallery4 = ({ items = data }: Gallery4Props) => {
         </div>
       </div>
 
-      {/* Modal / Lightbox */}
+      {/* Modal / Lightbox dengan Caption di Samping */}
       {selectedItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in duration-200"
@@ -183,7 +162,7 @@ const Gallery4 = ({ items = data }: Gallery4Props) => {
               <img src={selectedItem.image} alt={selectedItem.title} className="h-full w-full object-contain" />
             </div>
 
-            {/* Bagian Caption / Detail di Samping */}
+            {/* Bagian Caption di Samping */}
             <div className="flex w-full flex-col justify-between p-6 md:w-80 lg:w-96">
               <div>
                 <span className="mb-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
